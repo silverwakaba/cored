@@ -22,18 +22,18 @@ use Illuminate\Support\Facades\Validator;
 
 class UserAccessController extends Controller{
     // Property
-    private $userRepository;
+    private $repositoryInterface;
 
     // Constructor
-    public function __construct(UserRepositoryInterface $userRepository){
-        $this->userRepository = $userRepository;
+    public function __construct(UserRepositoryInterface $repositoryInterface){
+        $this->repositoryInterface = $repositoryInterface;
     }
 
     // List
     public function list(Request $request){
         try{
             // Get data
-            $datas = $this->userRepository;
+            $datas = $this->repositoryInterface;
 
             // Load relation
             if(isset($request->relation)){
@@ -68,7 +68,7 @@ class UserAccessController extends Controller{
             }
 
             // Create registered user
-            $datas = $this->userRepository->prepare([
+            $datas = $this->repositoryInterface->prepare([
                 'name'      => $request->name,
                 'email'     => $request->email,
                 'password'  => bcrypt(GeneralHelper::randomPassword()),
@@ -90,7 +90,7 @@ class UserAccessController extends Controller{
     public function read(Request $request){
         try{
             // Read user account
-            $datas = $this->userRepository;
+            $datas = $this->repositoryInterface;
 
             // Load relation
             if(isset($request->relation)){
@@ -150,7 +150,7 @@ class UserAccessController extends Controller{
             }
 
             // Update data
-            $datas = $this->userRepository->update($id, [
+            $datas = $this->repositoryInterface->update($id, [
                 'name'  => $request->name,
                 'email' => $request->email,
             ]);
@@ -163,7 +163,7 @@ class UserAccessController extends Controller{
             ], 200);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult($th);
+            return ErrorHelper::apiErrorResult();
         }
     }
 
@@ -205,7 +205,7 @@ class UserAccessController extends Controller{
             $activation = (bool) $request->activation;
 
             // Read user account
-            $datas = $this->userRepository->activation($id, $activation);
+            $datas = $this->repositoryInterface->activation($id, $activation);
 
             // State message
             $state = ($activation == true) ? 'activated' : 'deactivated';
@@ -218,7 +218,7 @@ class UserAccessController extends Controller{
             ], 200);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult($th);
+            return ErrorHelper::apiErrorResult();
         }
     }
 }

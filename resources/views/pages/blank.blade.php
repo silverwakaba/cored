@@ -2,7 +2,7 @@
 @section('title', 'Blank')
 @section('content')
     <x-Adminlte.ContentWrapperComponent>
-        <x-Adminlte.CardComponent>
+        <x-Adminlte.CardComponent :asForm="true" title="ABC">
             ABC
         </x-Adminlte.CardComponent>
     </x-Adminlte.ContentWrapperComponent>

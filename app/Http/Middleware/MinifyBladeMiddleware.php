@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class MinifyBladeMiddleware{
+    // Handle request
     public function handle($request, Closure $next){
         $response = $next($request);
 
@@ -19,12 +20,14 @@ class MinifyBladeMiddleware{
         return $response;
     }
     
+    // Check if the response is HTML
     protected function isHtmlResponse(Response $response) : bool{
         $contentType = $response->headers->get('Content-Type');
         
         return strpos($contentType, 'text/html') !== false;
     }
     
+    // Minify HTML
     protected function minifyHtml(string $html) : string{
         $replace = [
             '/<!--[^\[](.*?)[^\]]-->/s' => '', // Remove HTML comments except IE conditions

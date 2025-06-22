@@ -6,9 +6,22 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FE\PageController;
 
 // FE routing
-Route::prefix('/')->name('fe.')->middleware(['minify.blade'])->group(function(){
+Route::prefix('/')->name('fe.')->middleware([
+    // 'minify.blade'
+    ])->group(function(){
+
+    // Index
+    // Page
+    Route::controller(PageController::class)->group(function(){
+        // Index
+        Route::get('/', 'index')->name('index');
+    });
+
     // Page
     Route::prefix('page')->name('page.')->controller(PageController::class)->group(function(){
+        // Index
+        Route::get('/', 'index')->name('index');
+
         // Index
         Route::get('i1', 'index')->name('index1');
     });

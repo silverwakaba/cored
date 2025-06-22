@@ -8,15 +8,19 @@ use Illuminate\Support\Facades\View as ViewFacades;
 use Illuminate\View\Component;
 
 class ContentWrapperComponent extends Component{
-    public $title;
-    public $previous;
+    public int $col;
+    public string $title;
+    public string $breadcrumb;
+    public mixed $previous;
 
     /**
      * Create a new component instance.
      */
-    public function __construct($title = null, $previous = null){
+    public function __construct(int $col = 12, mixed $title = '', string $breadcrumb = '', string $previous = ''){
+        $this->col = $breadcrumb ? 6 : $col;
         $this->title = $title ? $title : ViewFacades::getSection('title');
-        $this->previous = $previous ? $previous : null;
+        $this->breadcrumb = $breadcrumb;
+        $this->previous = $previous;
     }
 
     /**

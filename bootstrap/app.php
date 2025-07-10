@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             // App-related
             'app.locale'            => \App\Http\Middleware\AppLocaleMiddleware::class,
+            'app.nodebug'           => \App\Http\Middleware\DisableDebuggerMiddleware::class,
             
             // JWT-related
             'jwt.be'                => \App\Http\Middleware\JwtAuthBeMiddleware::class,

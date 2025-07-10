@@ -9,10 +9,10 @@
     </div>
     @if($asForm)
         <div class="card-footer text-right p-2">
+            <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly />
             <div class="button-group" role="group" aria-label="Button Group">
                 <button type="submit" class="btn btn-outline-success">Submit</button>
             </div>
-            <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly />
         </div>
     @endif
 </{{ $tag }}>

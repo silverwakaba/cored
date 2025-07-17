@@ -4,25 +4,7 @@
     <x-Adminlte.ContentWrapperComponent title="Aru" :previous="route('fe.page.index1')">
         <x-Adminlte.CardComponent :asForm="true" title="ABC">
             <!-- Input -->
-            <div id="input-div" class="form-group">
-                <label for="input" class="form-label">Label</label>
-                <input id="input" name="input" type="text" class="form-control is-invalid">
-                <div id="input-error" class="invalid-feedback">Feedback</div>
-            </div>
-
-            <!-- Input Files -->
-            <div id="input-div" class="form-group">
-                <label for="input" class="form-label">Label</label>
-                <input id="input" name="input" type="file" class="form-control-file is-invalid">
-                <div id="input-error" class="invalid-feedback">Feedback</div>
-            </div>
-
-            <!-- Textarea -->
-            <div id="input-div" class="form-group">
-                <label for="input" class="form-label">Label</label>
-                <textarea id="input" name="input" class="form-control is-invalid"></textarea>
-                <div id="input-error" class="invalid-feedback">Feedback</div>
-            </div>
+            <x-Form.InputForm name="theInput" type="file" text="The Input" :hidden="false" :required="true" />
 
             <!-- Select2 Normal -->
             <div id="input-div" class="form-group">
@@ -39,7 +21,7 @@
             <!-- Select2 Multiple -->
             <div id="input-div" class="form-group">
                 <label for="input" class="form-label">Label</label>
-                <select id="input" name="input" multiple="multiple" data-placeholder="Select an option..." data-allow-clear="1" class="form-control is-invalid select2bs4">
+                <select id="input" name="input" multiple="multiple" data-placeholder="Select an option..." data-allow-clear="1" class="form-control is-invalid select2bs40">
                     <option value="">Select an Option</option>
                     <option value="1">1</option>
                     <option value="2">2</option>

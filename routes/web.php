@@ -11,6 +11,7 @@ Route::prefix('/')->name('fe.')->middleware(['minify.blade'])->group(function(){
     Route::controller(PageController::class)->group(function(){
         // Index
         Route::get('/', 'index')->name('index');
+        Route::post('/', 'action');
     });
 
     // Page

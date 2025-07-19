@@ -14,12 +14,14 @@ class CardComponent extends Component{
     public string $title;
     public string $button;
     public bool $asForm;
+    public bool $upsert;
 
     /**
      * Create a new component instance.
      */
-    public function __construct(bool $asForm = false, string $id = '', string $method = 'POST', string $enctype = 'application/x-www-form-urlencoded', string $title = '', string $button = ''){
+    public function __construct(bool $asForm = false, bool $upsert = false, string $id = '', string $method = 'POST', string $enctype = 'application/x-www-form-urlencoded', string $title = '', string $button = ''){
         $this->asForm = $asForm;
+        $this->upsert = $upsert;
         $this->tag = $asForm ? 'form' : 'div';
         $this->id = $id ? $id : md5(now());
         $this->method = in_array($method, ['GET', 'POST']) ? strtoupper($method) : 'POST';

@@ -29,6 +29,27 @@ class MinifyBladeMiddleware{
     
     // Minify HTML
     protected function minifyHtml(string $html) : string{
+        // First process inline script tags (without src attribute) separately
+        $html = preg_replace_callback(
+            '/<script(?!.*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script>/i',
+            function($matches){
+                $scriptContent = $matches[1];
+
+                // Remove JS comments (both single and multi-line)
+                $scriptContent = preg_replace([
+                    '/\/\*[\s\S]*?\*\//',    // Multi-line comments
+                    '/\/\/.*$/m'              // Single-line comments
+                ], '', $scriptContent);
+
+                // Collapse whitespace in script content
+                $scriptContent = preg_replace('/\s+/', ' ', $scriptContent);
+                
+                return '<script>' . trim($scriptContent) . '</script>';
+            },
+
+            $html
+        );
+
         $replace = [
             '/<!--[^\[](.*?)[^\]]-->/s' => '', // Remove HTML comments except IE conditions
             "/\s+/"                     => " ", // Collapse whitespace

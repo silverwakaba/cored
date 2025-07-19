@@ -1,9 +1,14 @@
 <{{ $tag }} {{ $attributes->merge(['id' => $id, 'class' => 'card', ...($asForm ? ['method' => $method, 'enctype' => $enctype, 'autocomplete' => 'off'] : [])]) }}>
-    @if($title)
-        <div class="card-header">
+    <div class="card-header">
+        @if($title)
             <h3 class="card-title">{{ $title }}</h3>
-        </div>
-    @endif
+        @endif
+        @if($upsert)
+            <div class="card-tools">
+                <button id="btn-upsert" href="javascript:void(0)" class="btn btn-tool btn-secondary"><i class="fas fa-plus"></i> Create</button>
+            </div>
+        @endif
+    </div>
     <div class="card-body">
         {{ $slot }}
     </div>

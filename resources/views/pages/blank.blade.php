@@ -21,8 +21,6 @@
     <script>
         // Init jquery
         $(document).ready(function(){
-            // $.fn.modal.Constructor.prototype.enforceFocus = function() {};
-
             // Handle overlay class for form processing state
             function setProcessingState(processing){
                 const submit = $('#buttonSubmit');

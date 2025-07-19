@@ -19,7 +19,7 @@
             </div>
             @if($asForm)
                 <div class="modal-footer">
-                    <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly />
+                    <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly>
                     <button id="buttonReset" type="reset" class="btn btn-danger">Reset</button>
                     <button id="buttonSubmit" type="submit" class="btn btn-success">{{ $button }}</button>
                 </div>

@@ -7,11 +7,8 @@
     word-break: break-all;
 }
 
-.select2-search__field {
+.select2-container .select2-search--inline .select2-search__field{
     width: 100%;
-}
-
-.select2-container .select2-search--inline .select2-search__field{    
     min-width: 160px;
 }
 

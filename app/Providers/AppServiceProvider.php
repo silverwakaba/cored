@@ -11,6 +11,7 @@ class AppServiceProvider extends ServiceProvider{
     public function register() : void{
         // Register 'bindings' as array
         $bindings = [
+            \App\Contracts\ApiRepositoryInterface::class   => \App\Repositories\ApiRepository::class,
             \App\Contracts\UserRepositoryInterface::class   => \App\Repositories\EloquentUserRepository::class,
             \App\Contracts\RoleRepositoryInterface::class   => \App\Repositories\EloquentRoleRepository::class,
         ];

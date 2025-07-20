@@ -27,6 +27,6 @@ class PageController extends Controller{
             // 
         ]);
 
-        return $response;
+        return $response->json();
     }
 }

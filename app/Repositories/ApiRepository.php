@@ -14,42 +14,79 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 class ApiRepository implements ApiRepositoryInterface{
+    protected bool $withToken = false;
+    protected array $attachments = [];
+
+    public function withToken(bool $withToken = false) : self{
+        $this->withToken = $withToken;
+        return $this;
+    }
+
+    public function attach(array $files) : self{
+        $this->attachments = $files;
+        
+        return $this;
+    }
+
     protected function baseRequest(){
-        return Http::withHeaders(
+        $http = Http::withHeaders(
             HeaderHelper::apiHeader()
         );
-        // ->withToken(
-        //     // CookiesHelper::jwtToken()
-        // );
+        
+        if($this->withToken){
+            $http->withToken(
+                CookiesHelper::jwtToken()
+            );
+        }
+        
+        return $http;
+    }
+
+    protected function prepareRequestWithAttachments($http, array $data){
+        if(empty($this->attachments)){
+            return $http->withOptions(['json' => $data]);
+        }
+
+        // Start with data as multipart
+        $multipart = [];
+        
+        // Add regular data fields
+        foreach($data as $name => $value){
+            $multipart[] = [
+                'name'      => $name,
+                'contents'  => is_array($value) ? json_encode($value) : $value
+            ];
+        }
+        
+        // Add file attachments
+        foreach($this->attachments as $name => $file){
+            $multipart[] = [
+                'name'      => $name,
+                'contents'  => fopen($file->getRealPath(), 'r'),
+                'filename'  => $file->getClientOriginalName()
+            ];
+        }
+        
+        return $http->asMultipart()->withOptions(['multipart' => $multipart]);
     }
 
     public function get(string $route, array $data = []){
-        return $this->baseRequest()->get(
-            route($route, array_merge(request()->all(), $data))
-        );
+        return $this->baseRequest()->get(route($route), $data);
     }
 
     public function post(string $route, array $data = []){
-        return $this->baseRequest()->post(
-            route($route), array_merge($data)
-        );
+        return $this->baseRequest()->post(route($route), $data);
     }
 
     public function put(string $route, array $data = []){
-        return $this->baseRequest()->put(
-            route($route), array_merge(request()->all(), $data)
-        );
+        return $this->baseRequest()->put(route($route), $data);
     }
 
     public function patch(string $route, array $data = []){
-        return $this->baseRequest()->patch(
-            route($route), array_merge(request()->all(), $data)
-        );
+        return $this->baseRequest()->patch(route($route), $data);
     }
 
-    // public function delete(string $route, array $data = []){
-    //     return $this->baseRequest()->delete(
-    //         route($route), array_merge(request()->all(), $data)
-    //     );
-    // }
+    public function delete(string $route, array $data = []){
+        return $this->baseRequest()->delete(route($route), $data);
+    }
 }

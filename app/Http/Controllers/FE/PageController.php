@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\FE;
 use App\Http\Controllers\Controller;
 
-use Illuminate\Support\Facades\Auth;
-
-use Illuminate\Http\Request;
-
+// Repository interface
 use App\Contracts\ApiRepositoryInterface;
 
+// Internal
+use Illuminate\Http\Request;
+
 class PageController extends Controller{
+    // Property
     protected $apiRepository;
 
+    // Constructor
     public function __construct(ApiRepositoryInterface $apiRepository){
         $this->apiRepository = $apiRepository;
     }
@@ -23,10 +25,6 @@ class PageController extends Controller{
 
     // Debug
     public function debug(){
-        $response = $this->apiRepository->post('be.core.auth.jwt.login', [
-            // 
-        ]);
-
-        return $response->json();
+        // 
     }
 }

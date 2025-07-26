@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Contracts\UserRepositoryInterface;
 
 // Helper
-use App\Helpers\ErrorHelper;;
+use App\Helpers\ErrorHelper;
 
 // Request
 use App\Http\Requests\UserAuthLoginRequest;
@@ -62,7 +62,7 @@ class JwtController extends Controller{
             ], 201);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult($th);
+            return ErrorHelper::apiErrorResult();
         }
     }
 

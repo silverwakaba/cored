@@ -1,7 +1,7 @@
 @extends('layouts.adminlte')
 @section('title', 'Blank')
 @section('content')
-    <x-Adminlte.ContentWrapperComponent title="Aru" :previous="route('fe.page.index1')">
+    <x-Adminlte.ContentWrapperComponent title="Aru">
         <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="ABC">
             <!--  -->
         </x-Adminlte.CardComponent>

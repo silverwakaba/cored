@@ -6,6 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+// To be honest this entire implementation is based on AI
+// Since idk shit about regex
 class MinifyBladeMiddleware{
     // Handle request
     public function handle($request, Closure $next){
@@ -34,26 +36,45 @@ class MinifyBladeMiddleware{
             '/<script(?!.*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script>/i',
             function($matches){
                 $scriptContent = $matches[1];
+    
+                // First protect URLs by temporarily replacing them with a placeholder
+                $urlPlaceholders = [];
+                $scriptContent = preg_replace_callback(
+                    '/(https?:\/\/[^\s"\']+)/',
+                    function($urlMatches) use(&$urlPlaceholders){
+                        $key = '___URL_' . count($urlPlaceholders) . '___';
+                        $urlPlaceholders[$key] = $urlMatches[0];
+                        
+                        return $key;
+                    },
 
+                    $scriptContent
+                );
+    
                 // Remove JS comments (both single and multi-line)
                 $scriptContent = preg_replace([
-                    '/\/\*[\s\S]*?\*\//',    // Multi-line comments
-                    '/\/\/.*$/m'              // Single-line comments
+                    '/\/\*[\s\S]*?\*\//',   // Multi-line comments
+                    '/\/\/.*$/m'            // Single-line comments
                 ], '', $scriptContent);
-
+    
                 // Collapse whitespace in script content
                 $scriptContent = preg_replace('/\s+/', ' ', $scriptContent);
+                
+                // Restore the protected URLs
+                foreach($urlPlaceholders as $key => $url){
+                    $scriptContent = str_replace($key, $url, $scriptContent);
+                }
                 
                 return '<script>' . trim($scriptContent) . '</script>';
             },
 
             $html
         );
-
+    
         $replace = [
-            '/<!--[^\[](.*?)[^\]]-->/s' => '', // Remove HTML comments except IE conditions
-            "/\s+/"                     => " ", // Collapse whitespace
-            "/\>\s+\</"                 => "><", // Remove whitespace between tags
+            '/<!--[^\[](.*?)[^\]]-->/s' => '',      // Remove HTML comments except IE conditions
+            "/\s+/"                     => " ",     // Collapse whitespace
+            "/\>\s+\</"                 => "><",    // Remove whitespace between tags
         ];
         
         $html = preg_replace(

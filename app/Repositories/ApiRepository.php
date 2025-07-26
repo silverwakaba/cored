@@ -17,8 +17,9 @@ class ApiRepository implements ApiRepositoryInterface{
     protected bool $withToken = false;
     protected array $attachments = [];
 
-    public function withToken(bool $withToken = false) : self{
+    public function withToken(bool $withToken = true) : self{
         $this->withToken = $withToken;
+        
         return $this;
     }
 

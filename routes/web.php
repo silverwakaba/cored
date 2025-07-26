@@ -2,26 +2,30 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Controller
+// Core Controller
+use App\Http\Controllers\FE\Core\Auth\GeneralAuthController;
+
+// General Controller
 use App\Http\Controllers\FE\PageController;
 
 // FE routing
-Route::prefix('/')->name('fe.')->middleware(['minify.blade'])->group(function(){
-    // Index
-    Route::controller(PageController::class)->group(function(){
-        // Index
-        Route::get('/', 'index')->name('index');
-        
-        Route::get('debug', 'debug');
-    });
-
-    // Page
+Route::prefix('/')->name('fe.')->middleware([
+    'minify.blade'
+])->group(function(){
+    // Page without much logic
     Route::prefix('page')->name('page.')->controller(PageController::class)->group(function(){
         // Index
         Route::get('/', 'index')->name('index');
+    });
 
-        // Index
-        Route::get('i1', 'index')->name('index1');
+    // General Auth
+    Route::prefix('auth')->name('auth.')->controller(GeneralAuthController::class)->group(function(){
+        // Login
+        Route::get('login', 'login')->name('login');
+        Route::post('login', 'loginPost');
+
+        // Validate
+        Route::get('validate', 'validate')->name('validate');
     });
 });
 

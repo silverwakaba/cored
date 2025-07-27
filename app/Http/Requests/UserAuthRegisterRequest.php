@@ -23,6 +23,7 @@ class UserAuthRegisterRequest extends FormRequest{
             'email'                 => ['required', 'email', 'unique:users'],
             'password'              => ['required', 'string', 'min:8', 'confirmed'],
             'password_confirmation' => ['required', 'string', 'same:password'],
+            'agreement'             => ['boolean', 'accepted'],
         ];
     }
 }

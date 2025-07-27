@@ -9,9 +9,7 @@ use App\Http\Controllers\FE\Core\Auth\GeneralAuthController;
 use App\Http\Controllers\FE\PageController;
 
 // FE routing
-Route::prefix('/')->name('fe.')->middleware([
-    'minify.blade'
-])->group(function(){
+Route::prefix('/')->name('fe.')->middleware(['minify.blade'])->group(function(){
     // Page without much logic
     Route::prefix('page')->name('page.')->controller(PageController::class)->group(function(){
         // Index
@@ -19,13 +17,19 @@ Route::prefix('/')->name('fe.')->middleware([
     });
 
     // General Auth
-    Route::prefix('auth')->name('auth.')->middleware(['jwt.guest'])->controller(GeneralAuthController::class)->group(function(){
+    Route::prefix('auth')->name('auth.')->middleware([
+        // 'jwt.guest'
+    ])->controller(GeneralAuthController::class)->group(function(){
+        // Register
+        Route::get('register', 'register')->name('register');
+        Route::post('register', 'registerPost');
+
         // Login
         Route::get('login', 'login')->name('login');
         Route::post('login', 'loginPost');
 
-        // Validate
-        Route::get('validate', 'validate')->name('validate');
+        // Validate Token
+        Route::get('validate-token', 'validate')->name('validate');
     });
 });
 

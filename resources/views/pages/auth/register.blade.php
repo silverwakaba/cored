@@ -1,11 +1,13 @@
 @extends('layouts.adminlte')
-@section('title', 'Login')
+@section('title', 'Register')
 @section('content')
     <x-Adminlte.ContentWrapperComponent>
-        <x-Adminlte.CardComponent id="theForm" :asForm="true" button="Login">
+        <x-Adminlte.CardComponent id="theForm" :asForm="true" button="Register">
+            <x-Form.InputForm name="name" type="text" text="Name" :required="true" />
             <x-Form.InputForm name="email" type="email" text="Email" :required="true" />
             <x-Form.InputForm name="password" type="password" text="Password" :required="true" />
-            <x-Form.CheckboxForm name="remember" :value="true">Remember Me</x-Form.CheckboxForm>
+            <x-Form.InputForm name="password_confirmation" type="password" text="Password Confirmation" :required="true" />
+            <x-Form.CheckboxForm name="agreement" :value="true" :required="true">I agree</x-Form.CheckboxForm>
         </x-Adminlte.CardComponent>
     </x-Adminlte.ContentWrapperComponent>
 @endsection
@@ -17,13 +19,18 @@
             function setProcessingState(processing){
                 // Submit button
                 const submit = $('#submitButton');
+                const overlay = $('#overlay');
 
                 // Set prop based on status
                 if(processing){
                     submit.prop('disabled', true);
+
+                    overlay.addClass('overlay').removeClass('d-none');
                 }
                 else{
                     submit.prop('disabled', false);
+
+                    overlay.addClass('d-none').removeClass('overlay');
                 }
             }
 
@@ -43,7 +50,7 @@
                 let formData = new FormData(this);
 
                 // Prepare url endpoint
-                let endpoint = `{{ route('fe.auth.login') }}`;
+                let endpoint = `{{ route('fe.auth.register') }}`;
 
                 // Handle ajax
                 $.ajax({
@@ -54,9 +61,6 @@
                     contentType: false,
                     url: endpoint,
                     success: function(response){
-                        // If success, form processing state is set as false
-                        setProcessingState(false);
-
                         // Handle success
                         if(response.success){
                             // Swal message
@@ -65,11 +69,11 @@
                                 icon: 'success',
                                 position: 'top-right',
                                 text: response.message,
-                                timer: 3000,
+                                timer: 5000,
                                 showConfirmButton: false,
                             }).then(() => {
                                 // Redirect
-                                // window.location.href = response.redirect;
+                                window.location.href = `{{ route('fe.auth.login') }}`;
                             });
                         }
                         else{

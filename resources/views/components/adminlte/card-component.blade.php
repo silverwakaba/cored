@@ -12,7 +12,12 @@
         </div>
     @endif
     <div class="card-body">
-        {{ $slot }}
+        <div class="overlay-wrapper">
+            <div id="overlay" class="d-none">
+                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+            </div>
+            {{ $slot }}
+        </div>
     </div>
     @if($asForm)
         <div class="card-footer text-right p-2">

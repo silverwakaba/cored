@@ -19,7 +19,7 @@ Route::prefix('/')->name('fe.')->middleware([
     });
 
     // General Auth
-    Route::prefix('auth')->name('auth.')->controller(GeneralAuthController::class)->group(function(){
+    Route::prefix('auth')->name('auth.')->middleware(['jwt.guest'])->controller(GeneralAuthController::class)->group(function(){
         // Login
         Route::get('login', 'login')->name('login');
         Route::post('login', 'loginPost');

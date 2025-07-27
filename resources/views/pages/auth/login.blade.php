@@ -56,35 +56,41 @@
                         // If success, form processing state is set as false
                         setProcessingState(false);
 
-                        // Swal message
-                        Swal.fire({
-                            toast: true,
-                            icon: 'success',
-                            position: 'top-right',
-                            text: response.message,
-                            timer: 3000,
-                            showConfirmButton: false,
-                        }).then(() => {
-                            // Redirect
-                            if(response.success){
-                                console.log('Redirect');
+                        // Handle success
+                        if(response.success){
+                            // Swal message
+                            Swal.fire({
+                                toast: true,
+                                icon: 'success',
+                                position: 'top-right',
+                                text: response.message,
+                                timer: 3000,
+                                showConfirmButton: false,
+                            }).then(() => {
+                                // Redirect
                                 // window.location.href = response.redirect;
-                            }
-                        });
+                            });
+                        }
+                        else{
+                            // unknown error
+                        }
                     },
                     error: function(response){
                         // If error, form processing state is set as false
                         setProcessingState(false);
 
-                        // Swal message
-                        Swal.fire({
-                            toast: true,
-                            icon: 'error',
-                            position: 'top-right',
-                            text: response.responseJSON.message,
-                            timer: 3000,
-                            showConfirmButton: false,
-                        });
+                        // Don't show message if status 422
+                        if(response.status != 422){
+                            // Swal message
+                            Swal.fire({
+                                toast: true,
+                                icon: 'error',
+                                position: 'top-right',
+                                text: response.responseJSON.message,
+                                timer: 3000,
+                                showConfirmButton: false,
+                            });
+                        }
 
                         // Handle error message
                         let errors = response.responseJSON.errors;

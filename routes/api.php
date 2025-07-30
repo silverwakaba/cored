@@ -8,6 +8,12 @@ use App\Http\Controllers\API\Core\Access\PermissionController;
 use App\Http\Controllers\API\Core\Access\RoleController;
 use App\Http\Controllers\API\Core\Access\UserAccessController;
 
+
+use App\Http\Controllers\API\Core\Access\LoremController;
+Route::prefix('/')->controller(LoremController::class)->middleware(['dummy.validation'])->group(function(){
+    Route::get('test', 'list');
+});
+
 // API routing
 Route::prefix('/')->name('be.')->group(function(){
     // Core

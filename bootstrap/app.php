@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function(Middleware $middleware){
         // Alias middleware
         $middleware->alias([
+            // Dummy (as in stupid) validation
+            'dummy.validation'      => \App\Http\Middleware\DummyValidationMiddleware::class,
+
             // App-related
             'app.locale'            => \App\Http\Middleware\AppLocaleMiddleware::class,
             'app.nodebug'           => \App\Http\Middleware\DisableDebuggerMiddleware::class,
@@ -48,6 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Spatie unauthorized exception response, only applied to the entire api route
         if(request()->is('api/*')){
+            // This one is for Spatie
             $exceptions->render(function(\Spatie\Permission\Exceptions\UnauthorizedException $e, $request){
                 return response()->json([
                     'success'   => false,

@@ -10,7 +10,7 @@ use App\Helpers\CookiesHelper;
 
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
-// This middleware is created to restrict access to frontend register/login routes for ALREADY authorized user
+// This middleware is created to restrict access to frontend auth routes for ALREADY authorized user
 class JwtAuthGuestMiddleware{
     /**
      * Handle an incoming request.
@@ -19,14 +19,22 @@ class JwtAuthGuestMiddleware{
      */
     public function handle(Request $request, Closure $next) : Response{
         try{
+            // Check the session
             JWTAuth::setToken(CookiesHelper::jwtToken())->authenticate();
 
-            return back()->with('class', 'warning')->with('message', __('auth.guest_only'));
+            // Redirect to previous page if history is available
+            if($request->session()->has('_previous.url')){
+                return back();
+            }
+    
+            // Default redirect when no history is available
+            return redirect()->route('fe.page.index');
         }
         catch(\Throwable $th){
-            // no restriction or error message
+            // no restriction or error message to avoid error
         }
 
+        // Don't have session
         return $next($request);
     }
 }

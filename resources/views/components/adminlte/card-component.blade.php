@@ -24,8 +24,20 @@
             <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly>
             <div class="button-group" role="group" aria-label="Button Group">
                 <button id="resetButton" type="reset" class="btn btn-outline-danger d-none">Reset</button>
-                <button id="submitButton" type="submit" class="btn btn-outline-success">{{ $button }}</button>
+                <button id="submitButton" @class(["btn btn-outline-success", "h-captcha" => $withCaptcha ]) {{ $attributes->merge(['data-callback' => 'onCaptchaVerified', ...($withCaptcha ? ['data-sitekey' => $sitekeyCaptcha] : [] )]) }}>{{ $button }}</button>
             </div>
         </div>
     @endif
 </{{ $tag }}>
+<script>
+    // Verify and append the response
+    function onCaptchaVerified(token){
+        // Add token to the form
+        @if($withCaptcha)
+            $('#{{ $id }}').append(`<input type="hidden" name="h-captcha-response" value="${ token }">`);
+        @endif
+        
+        // Trigger form submission
+        $('#{{ $id }}').submit();
+    }
+</script>

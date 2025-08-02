@@ -7,14 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Contracts\ApiRepositoryInterface;
 
 // Helper
+use App\Helpers\CookiesHelper;
 use App\Helpers\ErrorHelper;
 
 // Internal
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
-
-// Delete
-use App\Helpers\CookiesHelper;
 
 class GeneralAuthController extends Controller{
     // Property
@@ -96,6 +94,31 @@ class GeneralAuthController extends Controller{
 
             // Response
             return response()->json($http->json(), $http->status());
+        }
+        catch(\Throwable $th){
+            return ErrorHelper::apiErrorResult();
+        }
+    }
+
+    // Logout
+    public function logout(){
+        try{
+            // Make http call
+            $http = $this->apiRepository->withToken()->post('be.core.auth.jwt.logout');
+
+            // Delete JWT-related cookie
+            Cookie::expire('jwt_token');
+
+            Cookie::expire('jwt_ttl');
+
+            if(CookiesHelper::jwtRemember() == true){
+                Cookie::expire('jwt_remember');
+
+                Cookie::expire('jwt_user_id');
+            }
+
+            // Redirect to login page
+            return redirect()->route('fe.auth.login')->with('class', 'info')->with('message', "Session ended safely.");
         }
         catch(\Throwable $th){
             return ErrorHelper::apiErrorResult();

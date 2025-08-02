@@ -2,7 +2,13 @@
 @section('title', 'Login')
 @section('content')
     <x-Adminlte.ContentWrapperComponent>
-        <x-Adminlte.CardComponent id="theForm" :asForm="true" button="Login">
+        @if(session()->has('class') && session()->has('message'))
+            <div class="callout callout-warning">
+                <h2>Notice</h2>
+                <p class="m-0">{{ session()->get('message') }}</p>
+            </div>
+        @endif
+        <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="true" button="Login">
             <x-Form.InputForm name="email" type="email" text="Email" :required="true" />
             <x-Form.InputForm name="password" type="password" text="Password" :required="true" />
             <x-Form.CheckboxForm name="remember" :value="true">Remember Me</x-Form.CheckboxForm>
@@ -16,14 +22,19 @@
             // Handle form processing state
             function setProcessingState(processing){
                 // Submit button
-                const submit = $('#submitButton');
+                let submit = $('#submitButton');
+                let overlay = $('#overlay');
 
                 // Set prop based on status
                 if(processing){
                     submit.prop('disabled', true);
+
+                    overlay.addClass('overlay').removeClass('d-none');
                 }
                 else{
                     submit.prop('disabled', false);
+
+                    overlay.addClass('d-none').removeClass('overlay');
                 }
             }
 
@@ -69,7 +80,7 @@
                                 showConfirmButton: false,
                             }).then(() => {
                                 // Redirect
-                                // window.location.href = response.redirect;
+                                window.location.href = `{{ route('fe.apps.index') }}`;
                             });
                         }
                         else{
@@ -91,6 +102,13 @@
                                 timer: 3000,
                                 showConfirmButton: false,
                             });
+                        }
+
+                        // Refresh page if status is 419
+                        if(response.status == 419){
+                            setTimeout(function(){
+                                window.location.reload();
+                            }, 1500);
                         }
 
                         // Handle error message

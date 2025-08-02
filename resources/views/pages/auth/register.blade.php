@@ -2,7 +2,7 @@
 @section('title', 'Register')
 @section('content')
     <x-Adminlte.ContentWrapperComponent>
-        <x-Adminlte.CardComponent id="theForm" :asForm="true" button="Register">
+        <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="true" button="Register">
             <x-Form.InputForm name="name" type="text" text="Name" :required="true" />
             <x-Form.InputForm name="email" type="email" text="Email" :required="true" />
             <x-Form.InputForm name="password" type="password" text="Password" :required="true" />
@@ -18,8 +18,8 @@
             // Handle form processing state
             function setProcessingState(processing){
                 // Submit button
-                const submit = $('#submitButton');
-                const overlay = $('#overlay');
+                let submit = $('#submitButton');
+                let overlay = $('#overlay');
 
                 // Set prop based on status
                 if(processing){
@@ -84,7 +84,7 @@
                         // If error, form processing state is set as false
                         setProcessingState(false);
 
-                        // Don't show message if status 422
+                        // Don't show message if status is 422
                         if(response.status != 422){
                             // Swal message
                             Swal.fire({
@@ -95,6 +95,13 @@
                                 timer: 3000,
                                 showConfirmButton: false,
                             });
+                        }
+
+                        // Refresh page if status is 419
+                        if(response.status == 419){
+                            setTimeout(function(){
+                                window.location.reload();
+                            }, 1500);
                         }
 
                         // Handle error message

@@ -39,7 +39,7 @@ class JwtAuthFeMiddleware{
             }
 
             // Redirect to login page
-            return redirect()->route('fe.auth.login')->with('class', 'warning')->with('message', __('auth.expired'));
+            return redirect()->route('fe.auth.login')->with('class', 'warning')->with('message', "Session expired and/or invalid. Please try to login again.");
         }
     }
 }

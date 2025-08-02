@@ -20,10 +20,6 @@ class PageController extends Controller{
 
     // Index
     public function index(){
-        $hash = password_hash("majubersama", PASSWORD_DEFAULT);
-
-        return $hash;
-
         return view('pages/blank');
     }
 

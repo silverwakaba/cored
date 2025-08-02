@@ -9,27 +9,40 @@ use App\Http\Controllers\FE\Core\Auth\GeneralAuthController;
 use App\Http\Controllers\FE\PageController;
 
 // FE routing
-Route::prefix('/')->name('fe.')->middleware(['minify.blade'])->group(function(){
+Route::prefix('/')->name('fe.')->middleware([
+    'minify.blade',
+])->group(function(){
     // Page without much logic
-    Route::prefix('page')->name('page.')->controller(PageController::class)->group(function(){
+    Route::prefix('/')->name('page.')->controller(PageController::class)->group(function(){
         // Index
         Route::get('/', 'index')->name('index');
     });
 
     // General Auth
     Route::prefix('auth')->name('auth.')->middleware([
-        // 'jwt.guest'
+        'jwt.guest'
     ])->controller(GeneralAuthController::class)->group(function(){
         // Register
         Route::get('register', 'register')->name('register');
-        Route::post('register', 'registerPost');
+        Route::post('register', 'registerPost')->withoutMiddleware(['jwt.guest']);
 
         // Login
         Route::get('login', 'login')->name('login');
-        Route::post('login', 'loginPost');
+        Route::post('login', 'loginPost')->withoutMiddleware(['jwt.guest']);
+
+        // Logout
+        Route::get('logout', 'logout')->name('logout')->middleware(['jwt.fe'])->withoutMiddleware(['jwt.guest']);
 
         // Validate Token
         Route::get('validate-token', 'validate')->name('validate');
+    });
+
+    // Apps
+    Route::prefix('apps')->name('apps.')->middleware([
+        'jwt.fe'
+    ])->controller(PageController::class)->group(function(){
+        // Index
+        Route::get('/', 'index')->name('index');
     });
 });
 

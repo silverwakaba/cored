@@ -1,12 +1,18 @@
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <ul class="navbar-nav">
+    <ul class="navbar-nav"><!-- Right -->
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
+        @guest
+            <li class="nav-item">
+                <a class="nav-link" href="#">Register</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Login</a>
+            </li>
+        @endguest
     </ul>
-
-    <!-- Left -->
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto"><!-- Left -->
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="far fa-bell"></i>
@@ -23,12 +29,17 @@
                 <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
             </div>
         </li>
-
-        <li class="nav-item">
-            <a href="#" class="nav-link">Contact</a>
-        </li>
-        
+        @auth
+            <li class="nav-item">
+                <a href="javascript:void(0);" onclick="document.getElementById('myLogoutForm').submit();" class="nav-link">Logout</a>
+            </li>
+        @endauth
     </ul>
+    @auth
+        <form id="myLogoutForm" action="{{ route('fe.auth.logout') }}" method="POST" class="d-none">
+            <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly />
+        </form>
+    @endauth
 </nav>
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="/" class="brand-link">

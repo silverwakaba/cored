@@ -31,7 +31,7 @@ Route::prefix('/')->name('fe.')->middleware([
         Route::post('login', 'loginPost')->withoutMiddleware(['jwt.guest']);
 
         // Logout
-        Route::get('logout', 'logout')->name('logout')->middleware(['jwt.fe'])->withoutMiddleware(['jwt.guest']);
+        Route::post('logout', 'logout')->name('logout')->middleware(['jwt.fe'])->withoutMiddleware(['jwt.guest']);
 
         // Validate Token
         Route::get('validate-token', 'validate')->name('validate');

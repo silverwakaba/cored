@@ -11,11 +11,11 @@ class DatabaseSeeder extends Seeder{
      */
     public function run() : void{
         $this->call([
-            NavigationSeeder::class,
             BaseRequestSeeder::class,
             PermissionSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
+            MenuSeeder::class,
         ]);
     }
 }

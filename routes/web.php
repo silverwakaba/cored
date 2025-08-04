@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 // Core Controller
 use App\Http\Controllers\FE\Core\Auth\GeneralAuthController;
+use App\Http\Controllers\FE\Core\Shared\BasedataController;
 
 // General Controller
 use App\Http\Controllers\FE\PageController;
@@ -12,6 +13,12 @@ use App\Http\Controllers\FE\PageController;
 Route::prefix('/')->name('fe.')->middleware([
     'minify.blade',
 ])->group(function(){
+    // Page without much logic
+    Route::prefix('base')->name('base.')->controller(BasedataController::class)->group(function(){
+        // Menu
+        Route::get('menu', 'menu')->name('menu');
+    });
+
     // Page without much logic
     Route::prefix('/')->name('page.')->controller(PageController::class)->group(function(){
         // Index

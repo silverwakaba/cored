@@ -4,15 +4,10 @@ use Illuminate\Support\Facades\Route;
 
 // Controller
 use App\Http\Controllers\API\Core\Auth\JwtController;
+use App\Http\Controllers\API\Core\Access\MenuController;
 use App\Http\Controllers\API\Core\Access\PermissionController;
 use App\Http\Controllers\API\Core\Access\RoleController;
 use App\Http\Controllers\API\Core\Access\UserAccessController;
-
-
-use App\Http\Controllers\API\Core\Access\LoremController;
-Route::prefix('/')->controller(LoremController::class)->middleware(['dummy.validation'])->group(function(){
-    Route::get('test', 'list');
-});
 
 // API routing
 Route::prefix('/')->name('be.')->group(function(){
@@ -43,6 +38,12 @@ Route::prefix('/')->name('be.')->group(function(){
 
             // OAuth2
             // TBA
+        });
+
+        // Menu
+        Route::prefix('menu')->name('menu.')->controller(MenuController::class)->group(function(){
+            // Index
+            Route::get('/', 'index')->name('index');
         });
 
         // Role and Permission

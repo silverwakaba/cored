@@ -5,7 +5,7 @@
 @endphp
 
 <li class="nav-item">
-    <a href="{{ $hasChildren ? '#' : ($item['url'] ?? '#') }}" class="nav-link">
+    <a href="{{ $hasChildren ? '#' : ( Route::has($item['route']) ? route($item['route']) : '#' ) }}" class="nav-link">
         @if(!empty($item['icon']))
             <i class="nav-icon {{ $item['icon'] }}"></i>
         @endif
@@ -15,8 +15,7 @@
                 <i class="right fas fa-angle-left"></i>
             @endif
         </p>
-    </a>
-    
+    </a>  
     @if($hasChildren)
         <ul class="nav nav-treeview">
             @foreach($item['children'] as $child)

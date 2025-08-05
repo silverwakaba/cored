@@ -35,7 +35,7 @@ class MenuSeeder extends Seeder{
         ]);
 
         // Assign roles to menu items
-        $headerGeneral->roles()->attach(1);
+        // $headerGeneral->roles()->attach(1);
         // $parent->roles()->attach(1);
         // $child->roles()->attach(1);
     }

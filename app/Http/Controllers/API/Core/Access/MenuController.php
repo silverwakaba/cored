@@ -16,7 +16,7 @@ class MenuController extends Controller{
         $menus = Menu::whereNull('parent_id')
             ->with(['children' => function($query) use($user){
                 if($user){
-                    $query->whereHas('roles', function ($query) use ($user) {
+                    $query->whereHas('roles', function($query) use($user){
                         $query->whereIn('name', $user->roles->pluck('name'))
                             ->orWhereNull('menu_id');
                     })->orWhereDoesntHave('roles');
@@ -42,6 +42,7 @@ class MenuController extends Controller{
             })
         ->orderBy('order')->get();
 
+        // Response
         return response()->json($menus);
     }
 }

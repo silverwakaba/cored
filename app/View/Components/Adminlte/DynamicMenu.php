@@ -5,13 +5,11 @@ namespace App\View\Components\Adminlte;
 // Repository interface
 use App\Contracts\ApiRepositoryInterface;
 
+// Internal
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\Http;
-
-// D
-use Illuminate\Support\Facades\Log;
 
 class DynamicMenu extends Component{
     protected $apiRepository;

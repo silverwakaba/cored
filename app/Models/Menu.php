@@ -49,7 +49,8 @@ class Menu extends Model{
         });
     }
 
-    public function getUrlAttribute(){
-        return $this->route ? route($this->route) : '#';
-    }
+    // public function getUrlAttribute(){
+    //     return $this->route ? 'A' : '#';
+    //     // return $this->route ? route($this->route) : '#';
+    // }
 }

@@ -23,6 +23,11 @@
     <section class="content">
         <div class="row">
             <div class="col-12">
+                @if(session()->has('class') && session()->has('message'))
+                    <div class="callout callout-{{ session()->get('class') }}">
+                        <p class="m-0">{{ session()->get('message') }}</p>
+                    </div>
+                @endif
                 {{ $slot }}
             </div>
         </div>

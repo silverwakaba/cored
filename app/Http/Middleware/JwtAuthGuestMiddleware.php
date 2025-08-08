@@ -6,12 +6,28 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+// Repository interface
+use App\Contracts\ApiRepositoryInterface;
+
+// Helper
 use App\Helpers\CookiesHelper;
 
+// Internal
+use Illuminate\Support\Facades\Cookie;
+
+// External
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 // This middleware is created to restrict access to frontend auth routes for ALREADY authorized user
 class JwtAuthGuestMiddleware{
+    // Property
+    protected $apiRepository;
+
+    // Constructor
+    public function __construct(ApiRepositoryInterface $apiRepository){
+        $this->apiRepository = $apiRepository;
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -21,20 +37,27 @@ class JwtAuthGuestMiddleware{
         try{
             // Check the session
             JWTAuth::setToken(CookiesHelper::jwtToken())->authenticate();
-
-            // Redirect to previous page if history is available
-            if($request->session()->has('_previous.url')){
-                return back();
-            }
     
-            // Default redirect when no history is available
+            // If the user is authenticated, redirect to the index page
             return redirect()->route('fe.page.index');
         }
         catch(\Throwable $th){
-            // no restriction or error message to avoid error
-        }
+            // For some unknown reason authenticated user can't be redirected
+            // So we force them to logout and grant access to the request
+            $http = $this->apiRepository->withToken()->post('be.core.auth.jwt.logout');
 
-        // Don't have session
-        return $next($request);
+            // Delete JWT-related cookie
+            Cookie::expire('jwt_token');
+
+            Cookie::expire('jwt_ttl');
+
+            if(CookiesHelper::jwtRemember() == true){
+                Cookie::expire('jwt_remember');
+
+                Cookie::expire('jwt_user_id');
+            }
+
+            return $next($request);
+        }
     }
 }

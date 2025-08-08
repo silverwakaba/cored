@@ -11,7 +11,6 @@ use App\Helpers\CookiesHelper;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 // This middleware is created ONLY to facilitate Blade's @auth and/or @guest authentication-related directives WITHOUT any restriction
-// With the implementation of multi localization language
 class JwtAuthGlobalMiddleware{
     /**
      * Handle an incoming request.

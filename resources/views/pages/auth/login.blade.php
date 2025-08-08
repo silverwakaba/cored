@@ -2,12 +2,6 @@
 @section('title', 'Login')
 @section('content')
     <x-Adminlte.ContentWrapperComponent>
-        @if(session()->has('class') && session()->has('message'))
-            <div class="callout callout-warning">
-                <h2>Notice</h2>
-                <p class="m-0">{{ session()->get('message') }}</p>
-            </div>
-        @endif
         <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="true" button="Login">
             <x-Form.InputForm name="email" type="email" text="Email" :required="true" />
             <x-Form.InputForm name="password" type="password" text="Password" :required="true" />

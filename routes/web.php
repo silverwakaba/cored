@@ -11,7 +11,7 @@ use App\Http\Controllers\FE\PageController;
 
 // FE routing
 Route::prefix('/')->name('fe.')->middleware([
-    'minify.blade',
+    'jwt.global', 'minify.blade',
 ])->group(function(){
     // Page without much logic
     Route::prefix('base')->name('base.')->controller(BasedataController::class)->group(function(){
@@ -19,7 +19,7 @@ Route::prefix('/')->name('fe.')->middleware([
         Route::get('menu', 'menu')->name('menu');
     });
 
-    // Page without much logic
+    // Page without logic
     Route::prefix('/')->name('page.')->controller(PageController::class)->group(function(){
         // Index
         Route::get('/', 'index')->name('index');
@@ -27,7 +27,7 @@ Route::prefix('/')->name('fe.')->middleware([
 
     // General Auth
     Route::prefix('auth')->name('auth.')->middleware([
-        'jwt.guest'
+        'jwt.guest',
     ])->controller(GeneralAuthController::class)->group(function(){
         // Register
         Route::get('register', 'register')->name('register');
@@ -46,7 +46,7 @@ Route::prefix('/')->name('fe.')->middleware([
 
     // Apps
     Route::prefix('apps')->name('apps.')->middleware([
-        'jwt.fe'
+        'jwt.fe',
     ])->controller(PageController::class)->group(function(){
         // Index
         Route::get('/', 'index')->name('index');

@@ -56,9 +56,7 @@
             </div>
         </div>
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <x-Adminlte.Dynamic-Menu />
-            </ul>
+            <x-Adminlte.Dynamic-Menu />
         </nav>
     </div>
 </aside>

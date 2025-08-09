@@ -6,6 +6,7 @@ namespace App\Helpers;
 use App\Models\User;
 
 // Internal
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 class CookiesHelper{
@@ -48,19 +49,34 @@ class CookiesHelper{
 
     // JWT token
     public static function jwtToken(){
+        // Return token from cookie if user session is not remembered
         if((self::jwtRemember() == false)){
             return request()->cookie('jwt_token');
         }
 
-        return User::find(self::jwtUserID())->only('token')['token'];
+        try{
+            // Get the encrypted token from database
+            $token = User::find(self::jwtUserID())->only('token')['token'];
+
+            // Decrypt the token
+            // For fallback: App key used is "base64:5AhD5QdH54IaqvJp79wNpICu5d74RqyuRU0NtrM9/v4="
+            // Beware as different app key will produce different encrypt/decrypt result - If it was lost then all of the decrypted token will be useless!
+            return Crypt::decryptString($token);
+        }
+        catch(\Throwable $th){
+            // Return null token if decrypting is error
+            return null;
+        }
     }
 
     // JWT TTL (Time to Live)
     public static function jwtTTL(){
+        // Return token ttl from cookie if user session is not remembered
         if((self::jwtRemember() == false)){
             return request()->cookie('jwt_ttl');
         }
 
+        // Get the token ttl from database
         return User::find(self::jwtUserID())->only('token_expire_at')['token_expire_at'];
     }
 
@@ -77,6 +93,9 @@ class CookiesHelper{
 
         return $data;
     }
+
+    // Not being used anymore for now
+    // But will be maintained later
 
     // Darkmode
     // By default we're using light mode

@@ -9,10 +9,18 @@ use App\Http\Controllers\FE\Core\Shared\BasedataController;
 // General Controller
 use App\Http\Controllers\FE\PageController;
 
+// Delete
+use App\Http\Controllers\Cron\Core\JwtManagerController;
+
 // FE routing
 Route::prefix('/')->name('fe.')->middleware([
     'jwt.global', 'minify.blade',
 ])->group(function(){
+    // Page without much logic
+    Route::prefix('jwtest')->controller(JwtManagerController::class)->group(function(){
+        Route::get('refresh', 'refresh');
+    });
+
     // Page without much logic
     Route::prefix('base')->name('base.')->controller(BasedataController::class)->group(function(){
         // Menu
@@ -23,6 +31,9 @@ Route::prefix('/')->name('fe.')->middleware([
     Route::prefix('/')->name('page.')->controller(PageController::class)->group(function(){
         // Index
         Route::get('/', 'index')->name('index');
+
+        // Debug
+        Route::get('debug', 'debug')->name('menu');
     });
 
     // General Auth

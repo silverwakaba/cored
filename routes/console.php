@@ -2,4 +2,6 @@
 
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('app:cron-jwt-token-checker')->everyminute()->withoutOverlapping()->runInBackground();
+// Use "everyminute" for immediate test
+
+Schedule::command('app:cron-jwt-token-checker')->daily()->withoutOverlapping()->runInBackground();

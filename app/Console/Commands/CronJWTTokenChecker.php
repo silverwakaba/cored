@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\Cron\JWTController;
+use App\Http\Controllers\Cron\Core\JwtManagerController;
 
 use Illuminate\Console\Command;
 
@@ -24,7 +24,7 @@ class CronJWTTokenChecker extends Command{
     /**
      * Execute the console command.
      */
-    public function handle(JWTController $cron){
+    public function handle(JwtManagerController $cron){
         $cron->refresh();
     }
 }

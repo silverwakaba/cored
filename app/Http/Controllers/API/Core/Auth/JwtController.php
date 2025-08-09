@@ -17,6 +17,7 @@ use App\Http\Requests\UserAuthResetPasswordRequest;
 
 // Internal
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -110,7 +111,7 @@ class JwtController extends Controller{
             if(($request->remember == true)){
                 // Update token
                 $this->userRepository->update($user->id, [
-                    'token'             => $token,
+                    'token'             => Crypt::encryptString($token), // encrypt the token
                     'token_expire_at'   => $timestamp,
                 ]);
             }

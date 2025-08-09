@@ -9,10 +9,13 @@ return new class extends Migration{
      * Run the migrations.
      */
     public function up() : void{
+        // Request
         Schema::create('base_requests', function (Blueprint $table){
             $table->id();
             $table->string('name');
         });
+
+        // ..add more base here
     }
 
     /**
@@ -20,5 +23,7 @@ return new class extends Migration{
      */
     public function down() : void{
         Schema::dropIfExists('base_requests');
+
+        // ..add more base here
     }
 };

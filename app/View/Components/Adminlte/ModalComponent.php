@@ -24,7 +24,7 @@ class ModalComponent extends Component{
         $this->id = $id ? $id : md5(now());
         $this->method = in_array($method, ['GET', 'POST']) ? strtoupper($method) : 'POST';
         $this->enctype = $enctype;
-        $this->title = $title;
+        $this->title = $title ? $title : strtoupper('PLACEHOLDERTITLE');
         $this->button = $button ? $button : "Submit";
     }
 

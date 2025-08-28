@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FE\Core\Auth\GeneralAuthController;
 use App\Http\Controllers\FE\Core\Shared\BasedataController;
 
+use App\Http\Controllers\FE\Core\Access\RoleController;
+
 // General Controller
 use App\Http\Controllers\FE\PageController;
 
@@ -50,9 +52,30 @@ Route::prefix('/')->name('fe.')->middleware([
     // Apps
     Route::prefix('apps')->name('apps.')->middleware([
         'jwt.fe',
-    ])->controller(PageController::class)->group(function(){
-        // Index
-        Route::get('/', 'index')->name('index');
+    ])->group(function(){
+        // Page
+        Route::name('page.')->controller(PageController::class)->group(function(){
+            // Index
+            Route::get('/', 'app')->name('index');
+        });
+
+        // Page
+        Route::prefix('role')->name('role.')->controller(RoleController::class)->group(function(){
+            // Index
+            Route::get('/', 'index')->name('index');
+
+            // Index
+            Route::get('list', 'list')->name('list');
+
+            // Create
+            // Route::get('/', 'index')->name('index');
+
+            // Read
+            Route::get('read/{id}', 'read')->name('read');
+
+            // Update
+            Route::post('sync-to-permission/{id}', 'syncToPermission')->name('stp');
+        });
     });
 });
 

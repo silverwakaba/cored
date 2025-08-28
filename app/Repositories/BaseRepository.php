@@ -33,12 +33,70 @@ abstract class BaseRepository{
     }
 
     // Minimal select for better performance
-    public function minSelect(bool $status = false){
+    public function minSelect(){
         // Start the query
         $this->query->select('id');
         
         // Chainable
         return $this;
+    }
+
+    // Equivalent to select | Don't use alongside with excludeSelect
+    public function onlySelect(mixed $column = null){
+        // Get data type and its data
+        $column = GeneralHelper::getType($column);
+
+        // Start the query
+        $this->query->select($column);
+
+        // Chainable
+        return $this;
+    }
+
+    // Equivalent to select | Don't use alongside with onlySelect
+    public function excludeSelect(mixed $column = null){
+        // TBC
+        // // Selected by default
+        // $default = [
+        //     'id',
+        // ];
+
+        // // Selected only if timestamp is set to true
+        // if(isset($data['timestamps']) && ($data['timestamps'] == true)){
+        //     $default[] = 'created_at';
+        //     $default[] = 'updated_at';
+        // }
+
+        // // Init model
+        // $model = new $data['model'];
+
+        // // Get model fillable attributes
+        // $fillable = $model->getFillable();
+
+        // // Get model hidden attributes
+        // $hidden = $model->getHidden();
+
+        // // Get included column
+        // $include = isset($data['include']) ? (array) $data['include'] : [];
+
+        // // Selected column by default
+        // $selected = array_values(array_diff(
+        //     array_merge($default, $fillable, $include), $hidden,
+        // ));
+
+        // // Select column via custom properties
+        // if(isset($data['exclude']) && ($data['exclude'] != null)){
+        //     $exclude = array_values(array_diff(
+        //         $selected, $data['exclude'],
+        //     ));
+
+        //     // Return column
+        //     return $exclude;
+        // }
+
+        // // Return column
+        // return $selected;
+        // TBC
     }
 
     // Load relation

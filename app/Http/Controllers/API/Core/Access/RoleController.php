@@ -45,19 +45,18 @@ class RoleController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
-            // Return response as datatable
-            if(isset($request->type) && ($request->type == 'datatable')){
+            // Response
+            if(isset($request->type) && ($request->type != 'datatable')){
+                // Return response as plain query
+                $newDatas = $datas->all();
+            }
+            else{
+                // Return response as datatable
                 $newDatas = $datas->useDatatable()->all();
             }
 
             // Return response
-            $newDatas = $datas->all();
-
-            // Return response
-            return response()->json([
-                'success'   => true,
-                'data'      => $newDatas,
-            ], 200);
+            return $newDatas;
         }
         catch(\Throwable $th){
             return ErrorHelper::apiErrorResult();
@@ -99,7 +98,9 @@ class RoleController extends Controller{
     public function read(Request $request){
         try{
             // Get role data
-            $datas = $this->repositoryInterface->find($request->id);
+            $datas = $this->repositoryInterface->withRelation([
+                'permissions'
+            ])->find($request->id);
 
             // Return 404
             if(!$datas){

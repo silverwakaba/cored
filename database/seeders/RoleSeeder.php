@@ -15,7 +15,7 @@ class RoleSeeder extends Seeder{
         // 1
         Role::create([
             'name' => 'Root',
-        ]);
+        ])->givePermissionTo(['isRoot']);
 
         // 2
         Role::create([

@@ -7,12 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Contracts\ApiRepositoryInterface;
 
 // Helper
-use App\Helpers\CookiesHelper;
 use App\Helpers\ErrorHelper;
 
 // Internal
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
 
 class BasedataController extends Controller{
     // Property

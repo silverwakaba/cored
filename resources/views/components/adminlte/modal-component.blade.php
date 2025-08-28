@@ -2,9 +2,7 @@
     <{{ $tag }} {{ $attributes->merge(['id' => $id, 'class' => 'modal-dialog modal-xl modal-dialog-scrollable', ...($asForm ? ['method' => $method, 'enctype' => $enctype, 'autocomplete' => 'off'] : [])]) }}>
         <div class="modal-content">
             <div class="modal-header">
-                @if($title)
-                    <h5 class="modal-title" id="{{ $id }}Label">{{ $title }}</h5>
-                @endif
+                <h5 class="modal-title" id="{{ $id }}Label">{{ $title }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

@@ -23,6 +23,11 @@ class PageController extends Controller{
         return view('pages/blank');
     }
 
+    // Index app
+    public function app(){
+        return view('pages/app/index');
+    }
+
     // Debug
     public function debug(){
         // 

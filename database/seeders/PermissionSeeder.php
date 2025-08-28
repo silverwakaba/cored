@@ -12,16 +12,20 @@ class PermissionSeeder extends Seeder{
      * Run the database seeds.
      */
     public function run() : void{
-        // Permission::create([
-        //     'name' => 'isAdmin',
-        // ]);
+        Permission::create([
+            'name' => 'isRoot',
+        ]);
 
-        // Permission::create([
-        //     'name' => 'isModerator',
-        // ]);
+        Permission::create([
+            'name' => 'isAdmin',
+        ]);
 
-        // Permission::create([
-        //     'name' => 'isUser',
-        // ]);
+        Permission::create([
+            'name' => 'isModerator',
+        ]);
+
+        Permission::create([
+            'name' => 'isUser',
+        ]);
     }
 }

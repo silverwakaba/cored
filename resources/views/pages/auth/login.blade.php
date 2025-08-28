@@ -74,7 +74,7 @@
                                 showConfirmButton: false,
                             }).then(() => {
                                 // Redirect
-                                window.location.href = `{{ route('fe.apps.index') }}`;
+                                window.location.href = "{{ route('fe.apps.page.index') }}";
                             });
                         }
                         else{

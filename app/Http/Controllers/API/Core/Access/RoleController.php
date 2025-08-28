@@ -102,11 +102,6 @@ class RoleController extends Controller{
                 'permissions'
             ])->find($request->id);
 
-            // Return 404
-            if(!$datas){
-                return ErrorHelper::apiError404Result();
-            }
-
             // Return response
             return response()->json([
                 'success'   => true,

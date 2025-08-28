@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\API\Core\Access;
 use App\Http\Controllers\Controller;
 
+// Repository interface
+use App\Contracts\PermissionRepositoryInterface;
+
 // Helper
 use App\Helpers\ErrorHelper;
 
@@ -22,27 +25,37 @@ use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 
 class PermissionController extends Controller{
-    // List
-    public function list(){
-        try{
-            // Get permission data
-            $datas = Permission::with([
-                'roles'
-            ])->get();
+    // Property
+    private $repositoryInterface;
 
-            // Return response as datatable
-            if(isset($request->type) && ($request->type == 'datatable')){
-                return response()->json([
-                    'success'   => true,
-                    'data'      => DataTables::of($datas)->toJson(),
-                ], 200);
+    // Constructor
+    public function __construct(PermissionRepositoryInterface $repositoryInterface){
+        $this->repositoryInterface = $repositoryInterface;
+    }
+
+    // List
+    public function list(Request $request){
+        try{
+            // Get data
+            $datas = $this->repositoryInterface;
+
+            // Load relation
+            if(isset($request->relation)){
+                $datas->withRelation($request->relation);
+            }
+
+            // Response
+            if(isset($request->type) && ($request->type != 'datatable')){
+                // Return response as plain query
+                $newDatas = $datas->all();
+            }
+            else{
+                // Return response as datatable
+                $newDatas = $datas->useDatatable()->all();
             }
 
             // Return response
-            return response()->json([
-                'success'   => true,
-                'data'      => $datas,
-            ], 200);
+            return $newDatas;
         }
         catch(\Throwable $th){
             return ErrorHelper::apiErrorResult();
@@ -63,23 +76,20 @@ class PermissionController extends Controller{
                 ], 422);
             }
 
-            // Implementing db transaction
-            return DB::transaction(function() use($request){
-                // Create permission
-                $create = Permission::create([
-                    'name' => $request->name,
-                ]);
+            // Create permission
+            $datas = $this->repositoryInterface->create([
+                'name' => $request->name,
+            ]);
 
-                // Return response
-                return response()->json([
-                    'success'   => true,
-                    'data'      => $create,
-                    'message'   => "Permission created successfully.",
-                ], 201);
-            });
+            // Return response
+            return response()->json([
+                'success'   => true,
+                'data'      => $datas,
+                'message'   => "Permission created successfully.",
+            ], 201);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return ErrorHelper::apiErrorResult($th);
         }
     }
 
@@ -87,14 +97,9 @@ class PermissionController extends Controller{
     public function read(Request $request){
         try{
             // Get permission data
-            $datas = Permission::with([
+            $datas = $this->repositoryInterface->withRelation([
                 'roles'
             ])->find($request->id);
-
-            // Return 404
-            if(!$datas){
-                return ErrorHelper::apiError404Result();
-            }
 
             // Return response
             return response()->json([
@@ -110,20 +115,15 @@ class PermissionController extends Controller{
     // Delete
     public function delete(Request $request){
         try{
-            // Implementing db transaction
-            return DB::transaction(function() use($request){
-                // Find permission
-                $datas = Permission::find($request->id);
+            // Delete permission data
+            $datas = $this->repositoryInterface->delete($request->id);
 
-                // Delete permission
-                $datas->delete();
-
-                // Return response
-                return response()->json([
-                    'success'   => true,
-                    'message'   => "Permission successfully deleted.",
-                ], 200);
-            });
+            // Return response
+            return response()->json([
+                'success'   => true,
+                'data'      => $datas,
+                'message'   => "Permission deleted successfully.",
+            ], 201);
         }
         catch(\Throwable $th){
             return ErrorHelper::apiErrorResult();

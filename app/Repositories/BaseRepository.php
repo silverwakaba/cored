@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 // Helper
+use App\Helpers\ErrorHelper;
 use App\Helpers\GeneralHelper;
 
 // Internal
@@ -139,6 +140,11 @@ abstract class BaseRepository{
         // Start find query
         $datas = $this->query->find($id);
 
+        // Return 404
+        if(!$datas){
+            return ErrorHelper::apiError404Result();
+        }
+
         // Return response
         return $datas;
     }
@@ -180,7 +186,7 @@ abstract class BaseRepository{
         // Implementing db transaction
         return DB::transaction(function() use($id){
             // Start find query
-            $datas = $this->minSelect()->find($id);
+            $datas = $this->find($id);
 
             // Delete data
             $datas->delete();

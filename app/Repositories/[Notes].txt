@@ -1,0 +1,4 @@
+My reminder:
+- Don't forget to register interface and repo @ \app\Providers\AppServiceProvider.php
+
+or it will break.

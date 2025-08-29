@@ -20,10 +20,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-// External
-use Carbon\Carbon;
-use Yajra\DataTables\Facades\DataTables;
-
 class PermissionController extends Controller{
     // Property
     private $repositoryInterface;
@@ -36,8 +32,13 @@ class PermissionController extends Controller{
     // List
     public function list(Request $request){
         try{
-            // Get data
+            // Get data while sorting
             $datas = $this->repositoryInterface;
+
+            // Sort data
+            $datas->sort([
+                'name' => 'asc',
+            ]);
 
             // Load relation
             if(isset($request->relation)){
@@ -45,13 +46,13 @@ class PermissionController extends Controller{
             }
 
             // Response
-            if(isset($request->type) && ($request->type != 'datatable')){
-                // Return response as plain query
-                $newDatas = $datas->all();
-            }
-            else{
+            if(($request->type == 'datatable')){
                 // Return response as datatable
                 $newDatas = $datas->useDatatable()->all();
+            }
+            else{
+                // Return response as plain query
+                $newDatas = $datas->all();
             }
 
             // Return response
@@ -89,7 +90,7 @@ class PermissionController extends Controller{
             ], 201);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult($th);
+            return ErrorHelper::apiErrorResult();
         }
     }
 

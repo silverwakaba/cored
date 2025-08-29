@@ -22,9 +22,6 @@ use App\Http\Requests\RoleSyncToUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-// External
-use Carbon\Carbon;
-
 class RoleController extends Controller{
     // Property
     private $repositoryInterface;
@@ -40,19 +37,24 @@ class RoleController extends Controller{
             // Get data
             $datas = $this->repositoryInterface;
 
+            // Sort data
+            $datas->sort([
+                'name' => 'asc',
+            ]);
+
             // Load relation
             if(isset($request->relation)){
                 $datas->withRelation($request->relation);
             }
 
             // Response
-            if(isset($request->type) && ($request->type != 'datatable')){
-                // Return response as plain query
-                $newDatas = $datas->all();
-            }
-            else{
+            if(($request->type == 'datatable')){
                 // Return response as datatable
                 $newDatas = $datas->useDatatable()->all();
+            }
+            else{
+                // Return response as plain query
+                $newDatas = $datas->all();
             }
 
             // Return response

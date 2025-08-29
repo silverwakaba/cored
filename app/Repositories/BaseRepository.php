@@ -121,6 +121,20 @@ abstract class BaseRepository{
         return $this;
     }
 
+    // Sort data
+    public function sort(array $column){
+        // Init query
+        $datas = $this->query;
+
+        // Start order by query
+        foreach($column as $col => $sort){
+            $datas = $datas->orderBy($col, $sort);
+        }
+
+        // Return response
+        return $datas;
+    }
+
     // All data
     public function all(){
         // Start get query

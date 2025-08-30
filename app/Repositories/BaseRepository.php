@@ -180,7 +180,7 @@ abstract class BaseRepository{
         // Implementing db transaction
         return DB::transaction(function() use($id, $data){
             // Start update with pessimistic locking
-            $datas = $this->query->select('id')->lockForUpdate()->find($id);
+            $datas = $this->query->lockForUpdate()->find($id);
 
             // Populate data as is (we don't use mass assignment in case of partial update -- eg. only updating 'name')
             foreach($data as $key => $value){

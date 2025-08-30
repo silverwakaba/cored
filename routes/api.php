@@ -77,6 +77,9 @@ Route::prefix('/')->name('be.')->group(function(){
                 // Read
                 Route::get('read/{id}', 'read')->name('read');
 
+                // Update
+                Route::post('update/{id}', 'update')->name('update');
+
                 // Delete
                 Route::post('delete/{id}', 'delete')->name('delete');
             });

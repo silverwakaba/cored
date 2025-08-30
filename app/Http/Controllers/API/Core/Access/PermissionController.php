@@ -113,6 +113,25 @@ class PermissionController extends Controller{
         }
     }
 
+    // Update
+    public function update(Request $request){
+        try{
+            // Update permission data
+            $datas = $this->repositoryInterface->update($request->id, [
+                'name' => $request->name,
+            ]);
+
+            // Return response
+            return response()->json([
+                'success'   => true,
+                'data'      => $datas,
+            ], 200);
+        }
+        catch(\Throwable $th){
+            return ErrorHelper::apiErrorResult($th);
+        }
+    }
+
     // Delete
     public function delete(Request $request){
         try{

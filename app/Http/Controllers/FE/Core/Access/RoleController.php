@@ -23,6 +23,8 @@ class RoleController extends Controller{
 
     // Index
     public function index(){
+        $datas['roles'] = collect(auth()->user()->roles)->pluck('name')->all();
+
         return view('pages/app/role/index');
     }
 
@@ -37,13 +39,33 @@ class RoleController extends Controller{
         );
 
         // Response
-        // return response()->json($http->json(), $http->status());
         return response()->json($http->json(), $http->status());
     }
 
-    // create
+    // Create
+    public function create(Request $request){
+        // Create role
+        $create = $this->apiRepository->withToken()->post('be.core.rnp.role.create', [
+            'name' => $request->name,
+        ]);
 
-    // read
+        // Sync role to permission if create is success
+        if(($create->status() == 201) && ($request->permission)){
+            // Sync role
+            $sync = $this->apiRepository->withToken()->post('be.core.rnp.role.stp', [
+                'id'            => $create['data']['id'],
+                'permission'    => $request->permission,
+            ]);
+
+            // Response for $sync action
+            return response()->json($sync->json(), $sync->status());
+        }
+        
+        // Response for $create action
+        return response()->json($create->json(), $create->status());
+    }
+
+    // Read
     public function read($id){
         // Make http call
         $http = $this->apiRepository->withToken()->get('be.core.rnp.role.read', ['id' => $id]);
@@ -53,9 +75,14 @@ class RoleController extends Controller{
     }
 
     // Sync to permission
-    public function syncToPermission($id){
-        // 
-    }
+    public function syncToPermission($id, Request $request){
+        // Make http call
+        $http = $this->apiRepository->withToken()->post('be.core.rnp.role.stp', [
+            'id'            => $id,
+            'permission'    => $request->permission,
+        ]);
 
-    // delete
+        // Response
+        return response()->json($http->json(), $http->status());
+    }
 }

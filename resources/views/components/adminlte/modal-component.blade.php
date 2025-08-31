@@ -9,7 +9,7 @@
             </div>
             <div class="modal-body">
                 <div class="overlay-wrapper">
-                    <div id="overlay" class="d-none">
+                    <div id="overlay-modal" class="d-none">
                         <i class="fas fa-3x fa-sync-alt fa-spin"></i>
                     </div>
                     {{ $slot }}

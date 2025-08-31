@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Route;
 
 // Core Controller
+use App\Http\Controllers\FE\Core\Access\PermissionController;
+use App\Http\Controllers\FE\Core\Access\RoleController;
 use App\Http\Controllers\FE\Core\Auth\GeneralAuthController;
 use App\Http\Controllers\FE\Core\Shared\BasedataController;
-
-use App\Http\Controllers\FE\Core\Access\RoleController;
 
 // General Controller
 use App\Http\Controllers\FE\PageController;
@@ -21,7 +21,7 @@ Route::prefix('/')->name('fe.')->middleware([
         Route::get('menu', 'menu')->name('menu');
     });
 
-    // Page without logic
+    // Page without any logic
     Route::prefix('/')->name('page.')->controller(PageController::class)->group(function(){
         // Index
         Route::get('/', 'index')->name('index');
@@ -59,7 +59,7 @@ Route::prefix('/')->name('fe.')->middleware([
             Route::get('/', 'app')->name('index');
         });
 
-        // Page
+        // Role
         Route::prefix('role')->name('role.')->controller(RoleController::class)->group(function(){
             // Index
             Route::get('/', 'index')->name('index');
@@ -68,13 +68,31 @@ Route::prefix('/')->name('fe.')->middleware([
             Route::get('list', 'list')->name('list');
 
             // Create
-            // Route::get('/', 'index')->name('index');
+            Route::post('create', 'create')->name('create');
 
             // Read
             Route::get('read/{id}', 'read')->name('read');
 
-            // Update
+            // Sync role to Permission
             Route::post('sync-to-permission/{id}', 'syncToPermission')->name('stp');
+        });
+
+        // Role
+        Route::prefix('permission')->name('permission.')->controller(PermissionController::class)->group(function(){
+            // Index
+            Route::get('/', 'index')->name('index');
+
+            // List
+            Route::get('list', 'list')->name('list');
+
+            // // Create
+            // // Route::get('/', 'index')->name('index');
+
+            // // Read
+            // Route::get('read/{id}', 'read')->name('read');
+
+            // // Update
+            // Route::post('sync-to-permission/{id}', 'syncToPermission')->name('stp');
         });
     });
 });

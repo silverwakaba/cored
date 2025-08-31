@@ -13,7 +13,7 @@
     @endif
     <div class="card-body">
         <div class="overlay-wrapper">
-            <div id="overlay" class="d-none">
+            <div id="overlay-card" class="d-none">
                 <i class="fas fa-3x fa-sync-alt fa-spin"></i>
             </div>
             {{ $slot }}

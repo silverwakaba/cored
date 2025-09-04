@@ -60,6 +60,9 @@ class GeneralHelper{
         switch($type){
             // Return array if type is array
             case 'array': $data = (array) $datas; break;
+
+            // Explode object into array if type is object
+            case 'object': $data = collect($datas)->all(); break;
             
             // Explode string into array if type is string
             case 'string': $data = (array) explode(',', $datas); break;

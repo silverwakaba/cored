@@ -31,6 +31,7 @@
                 ordering: false,
                 processing: true,
                 serverSide: true,
+                searchDelay: 1500,
                 ajax: {
                     type: 'GET',
                     data: function(d){
@@ -38,6 +39,16 @@
                         d.type = 'datatable';
                     },
                     url: `{{ route('fe.apps.role.list') }}`,
+                    error: function(response){
+                        // API error
+                        Swal.fire({
+                            icon: 'warning',
+                            text: response.responseJSON.message,
+                            allowOutsideClick: () => {
+                                return false;
+                            },
+                        });
+                    }
                 },
                 columns: [
                     {
@@ -68,7 +79,7 @@
                                 <div class="btn-group btn-block" role="group">
                                     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Action</button>
                                     <div class="dropdown-menu btn-block">
-                                        <button id="btn-upsert" class="dropdown-item" data-id="${ row.id }">Edit</button>
+                                        <button id="btn-upsert" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-pen-to-square mr-2"></i>Edit</button>
                                     </div>
                                 </div>
                             `;
@@ -86,7 +97,7 @@
                 $('#theModalModal').modal('show');
 
                 // Reset the form
-                $('#buttonReset').trigger('click');
+                $('#buttonResetModal').trigger('click');
 
                 // Clear previous errors
                 $('.is-invalid').removeClass('is-invalid');
@@ -197,7 +208,7 @@
                 },
             });
         }
-        
+
         // Form action
         function formAction(route){
             // Handle form input while clearing previous action to avoid double submit
@@ -238,7 +249,7 @@
                                 },
                             }).then(() => {
                                 // Trigger reset button
-                                $('#buttonReset').trigger('click');
+                                $('#buttonResetModal').trigger('click');
                                 
                                 // Hide modal
                                 $('#theModalModal').modal('hide');
@@ -311,8 +322,8 @@
 
         // Handle overlay class for form processing state
         function setProcessingState(processing){
-            const reset = $('#buttonReset');
-            const submit = $('#buttonSubmit');
+            const reset = $('#buttonResetModal');
+            const submit = $('#buttonSubmitModal');
             const overlay = $('#overlay-modal');
 
             if(processing){

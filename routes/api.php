@@ -46,8 +46,8 @@ Route::prefix('/')->name('be.')->group(function(){
             Route::get('/', 'index')->name('index');
         });
 
-        // Role and Permission
-        Route::prefix('rnp')->name('rnp.')->middleware(['jwt.be', 'role:Root'])->group(function(){
+        // Role-based access control
+        Route::prefix('rbac')->name('rbac.')->middleware(['jwt.be', 'role:Root|Admin|Moderator'])->group(function(){
             // Role
             Route::prefix('role')->name('role.')->controller(RoleController::class)->group(function(){
                 // List

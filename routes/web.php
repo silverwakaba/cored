@@ -77,7 +77,7 @@ Route::prefix('/')->name('fe.')->middleware([
             Route::post('sync-to-permission/{id}', 'syncToPermission')->name('stp');
         });
 
-        // Role
+        // Permission
         Route::prefix('permission')->name('permission.')->controller(PermissionController::class)->group(function(){
             // Index
             Route::get('/', 'index')->name('index');

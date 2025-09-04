@@ -23,15 +23,13 @@ class RoleController extends Controller{
 
     // Index
     public function index(){
-        $datas['roles'] = collect(auth()->user()->roles)->pluck('name')->all();
-
         return view('pages/app/role/index');
     }
 
     // List
     public function list(){
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.rnp.role.list', array_merge(
+        $http = $this->apiRepository->withToken()->get('be.core.rbac.role.list', array_merge(
             request()->all(), [
                 'type'      => request()->type,
                 'relation'  => ['permissions:id,name'],
@@ -45,14 +43,14 @@ class RoleController extends Controller{
     // Create
     public function create(Request $request){
         // Create role
-        $create = $this->apiRepository->withToken()->post('be.core.rnp.role.create', [
+        $create = $this->apiRepository->withToken()->post('be.core.rbac.role.create', [
             'name' => $request->name,
         ]);
 
         // Sync role to permission if create is success
         if(($create->status() == 201) && ($request->permission)){
             // Sync role
-            $sync = $this->apiRepository->withToken()->post('be.core.rnp.role.stp', [
+            $sync = $this->apiRepository->withToken()->post('be.core.rbac.role.stp', [
                 'id'            => $create['data']['id'],
                 'permission'    => $request->permission,
             ]);
@@ -68,7 +66,10 @@ class RoleController extends Controller{
     // Read
     public function read($id){
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.rnp.role.read', ['id' => $id]);
+        $http = $this->apiRepository->withToken()->get('be.core.rbac.role.read', [
+            'id'        => $id,
+            'relation'  => ['permissions:id,name'],
+        ]);
 
         // Response
         return response()->json($http->json(), $http->status());
@@ -77,7 +78,7 @@ class RoleController extends Controller{
     // Sync to permission
     public function syncToPermission($id, Request $request){
         // Make http call
-        $http = $this->apiRepository->withToken()->post('be.core.rnp.role.stp', [
+        $http = $this->apiRepository->withToken()->post('be.core.rbac.role.stp', [
             'id'            => $id,
             'permission'    => $request->permission,
         ]);

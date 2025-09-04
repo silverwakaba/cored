@@ -8,6 +8,7 @@ use App\Contracts\RoleRepositoryInterface;
 
 // Helper
 use App\Helpers\ErrorHelper;
+use App\Helpers\RoleHelper;
 
 // Model
 use App\Models\User;
@@ -42,23 +43,25 @@ class RoleController extends Controller{
                 'name' => 'asc',
             ]);
 
-            // Load relation
-            if(isset($request->relation)){
-                $datas->withRelation($request->relation);
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
             }
+
+            // Load relation
+            $datas->withRelation($request->relation);
 
             // Response
             if(($request->type == 'datatable')){
                 // Return response as datatable
-                $newDatas = $datas->useDatatable()->all();
-            }
-            else{
+                $datas = $datas->useDatatable()->all();
+            } else {
                 // Return response as plain query
-                $newDatas = $datas->all();
+                $datas = $datas->all();
             }
 
             // Return response
-            return $newDatas;
+            return $datas;
         }
         catch(\Throwable $th){
             return ErrorHelper::apiErrorResult();
@@ -100,9 +103,18 @@ class RoleController extends Controller{
     public function read(Request $request){
         try{
             // Get role data
-            $datas = $this->repositoryInterface->withRelation([
-                'permissions'
-            ])->find($request->id);
+            $datas = $this->repositoryInterface;
+
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
+
+            // Load relation
+            $datas->withRelation($request->relation);
+            
+            // Continue variable
+            $datas = $datas->find($request->id);
 
             // Return response
             return response()->json([

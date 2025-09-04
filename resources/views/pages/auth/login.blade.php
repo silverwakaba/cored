@@ -2,7 +2,7 @@
 @section('title', 'Login')
 @section('content')
     <x-Adminlte.ContentWrapperComponent>
-        <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="true" button="Login">
+        <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="false" button="Login">
             <x-Form.InputForm name="email" type="email" text="Email" :required="true" />
             <x-Form.InputForm name="password" type="password" text="Password" :required="true" />
             <x-Form.CheckboxForm name="remember" :value="true">Remember Me</x-Form.CheckboxForm>
@@ -17,7 +17,7 @@
             function setProcessingState(processing){
                 // Submit button
                 let submit = $('#submitButton');
-                let overlay = $('#overlay');
+                let overlay = $('#overlay-card');
 
                 // Set prop based on status
                 if(processing){

@@ -54,7 +54,7 @@ abstract class BaseRepository{
         return $this;
     }
 
-    // Equivalent to select | Don't use alongside with onlySelect
+    // Equivalent to select certain column while ommit the rest | Don't use alongside with onlySelect | TBC: Needs to be implemented directly inside the repo since it needs to load the modal attributes directly
     public function excludeSelect(mixed $column = null){
         // TBC
         // // Selected by default

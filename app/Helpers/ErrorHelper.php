@@ -20,6 +20,14 @@ class ErrorHelper{
         ], 409);
     }
 
+    // Throw default 403 forbidden for API
+    public static function apiError403Result(){
+        return response()->json([
+            'success'   => false,
+            'message'   => "Forbidden action.",
+        ], 403);
+    }
+
     // Throw default 404 not found for API
     public static function apiError404Result(){
         return response()->json([

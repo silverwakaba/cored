@@ -30,7 +30,7 @@ class PermissionController extends Controller{
     // List
     public function list(){
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.rnp.permission.list', array_merge(
+        $http = $this->apiRepository->withToken()->get('be.core.rbac.permission.list', array_merge(
             request()->all(), [
                 'type'      => request()->type,
                 'relation'  => ['roles:id,name'],

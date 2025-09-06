@@ -27,7 +27,6 @@ class EloquentRoleRepository extends BaseRepository implements RoleRepositoryInt
     public function __construct(Role $model){
         $this->model = parent::__construct($model);
         $this->query = $model->query();
-        $this->role = auth()->user()->roles;
     }
 
     // Permission
@@ -59,14 +58,6 @@ class EloquentRoleRepository extends BaseRepository implements RoleRepositoryInt
         return DB::transaction(function() use($id){
             // Find role
             $datas = parent::find($id);
-
-            // Compare level
-            $sufficientLevel = RoleHelper::compareLevel($datas, $this->role);
-
-            // If the level sufficient then abort
-            if($sufficientLevel == false){
-                return abort(403);
-            }
 
             // Sync role to permission
             $datas->syncPermissions($this->permissionToSync);

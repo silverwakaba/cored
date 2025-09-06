@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Contracts\PermissionRepositoryInterface;
 
 // Helper
-use App\Helpers\ErrorHelper;
+use App\Helpers\GeneralHelper;
+use App\Helpers\RoleHelper;
 
 // Model
 use Spatie\Permission\Models\Permission;
@@ -17,7 +18,6 @@ use App\Http\Requests\PermissionCreateRequest;
 
 // Internal
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PermissionController extends Controller{
@@ -37,8 +37,13 @@ class PermissionController extends Controller{
 
             // Sort data
             $datas->sort([
-                'name' => 'asc',
+                'name' => 'ASC',
             ]);
+
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
 
             // Load relation
             if(isset($request->relation)){
@@ -48,15 +53,14 @@ class PermissionController extends Controller{
             // Response
             if(($request->type == 'datatable')){
                 // Return response as datatable
-                $newDatas = $datas->useDatatable()->all();
-            }
-            else{
+                $datas = $datas->useDatatable()->all();
+            } else {
                 // Return response as plain query
-                $newDatas = $datas->all();
+                $datas = $datas->all();
             }
 
             // Return response
-            return $newDatas;
+            return $datas;
         }
         catch(\Throwable $th){
             return ErrorHelper::apiErrorResult();

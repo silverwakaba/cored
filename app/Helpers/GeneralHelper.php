@@ -61,17 +61,59 @@ class GeneralHelper{
             // Return array if type is array
             case 'array': $data = (array) $datas; break;
 
-            // Explode object into array if type is object
+            // Convert object into array if type is object
             case 'object': $data = collect($datas)->all(); break;
             
             // Explode string into array if type is string
             case 'string': $data = (array) explode(',', $datas); break;
             
-            // Default is null
-            default: $data = (array) $datas;
+            // Default is convert as array but it need to be idenfied later
+			default: $data = (array) $datas;
         }
 
         // Return the result
         return $data;
+    }
+
+    // Json response
+    public static function jsonResponse($datas){
+        // Determine success status based on status
+        $is_success = in_array($datas['status'], [200, 201, 202, 204, 206]);
+
+        // Set custom message based on status
+        switch($datas['status']){
+            // 403 - Forbidden
+            case 403 : $message = 'Forbidden action.'; break;
+
+            // 404 - Not found
+            case 404 : $message = 'Data not found.'; break;
+
+            // 409 - Conflict
+            case 409 : $message = 'Conflicted request. Please try again.'; break;
+
+            // 422 - Unprocessable Content
+            case 422 : $message = 'Unprocessable request.'; break;
+
+            // 429 - Rate limit
+            case 429 : $message = 'You have reached request limit.'; break;
+
+            // Default
+            default: $message = 'Something unexpected happened. You can try again.';
+        }
+        
+        // Plain array response
+        $response = [
+            'success'   => $is_success,
+            'errors'    => isset($datas['errors']) ? $datas['errors'] : null,
+            'data'      => isset($datas['data']) ? $datas['data'] : null,
+            'message'   => (!isset($datas['message']) && ($is_success == false)) ? $message : Str::of(isset($datas['message']) ? $datas['message'] : 'Data is found.'),
+        ];
+
+        // Remove null values
+        $response = array_filter($response, function ($value){
+            return !is_null($value);
+        });
+
+        return response()->json($response, $datas['status']);
     }
 }

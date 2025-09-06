@@ -7,8 +7,8 @@ use App\Helpers\ErrorHelper;
 use App\Helpers\GeneralHelper;
 
 // Internal
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 // External
 use Yajra\DataTables\Facades\DataTables;

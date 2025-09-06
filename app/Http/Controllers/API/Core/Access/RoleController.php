@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Contracts\RoleRepositoryInterface;
 
 // Helper
-use App\Helpers\ErrorHelper;
+use App\Helpers\GeneralHelper;
 use App\Helpers\RoleHelper;
 
 // Model
@@ -40,7 +40,7 @@ class RoleController extends Controller{
 
             // Sort data
             $datas->sort([
-                'name' => 'asc',
+                'name' => 'ASC',
             ]);
 
             // Load column selection
@@ -49,7 +49,9 @@ class RoleController extends Controller{
             }
 
             // Load relation
-            $datas->withRelation($request->relation);
+            if(isset($request->relation)){
+                $datas->withRelation($request->relation);
+            }
 
             // Response
             if(($request->type == 'datatable')){
@@ -64,7 +66,10 @@ class RoleController extends Controller{
             return $datas;
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -76,10 +81,10 @@ class RoleController extends Controller{
 
             // Check validation and stop if failed
             if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
+                return GeneralHelper::jsonResponse([
+                    'status'    => 422,
                     'errors'    => $validator->errors(),
-                ], 422);
+                ]);
             }
 
             // Create role
@@ -88,14 +93,17 @@ class RoleController extends Controller{
             ]);
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 201,
                 'data'      => $datas,
-                'message'   => "Role created successfully.",
-            ], 201);
+                'message'   => 'Role created successfully.',
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -111,19 +119,24 @@ class RoleController extends Controller{
             }
 
             // Load relation
-            $datas->withRelation($request->relation);
+            if(isset($request->relation)){
+                $datas->withRelation($request->relation);
+            }
             
             // Continue variable
             $datas = $datas->find($request->id);
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'data'      => $datas,
-            ], 200);
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -135,24 +148,40 @@ class RoleController extends Controller{
 
             // Check validation and stop if failed
             if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
+                return GeneralHelper::jsonResponse([
+                    'status'    => 422,
                     'errors'    => $validator->errors(),
-                ], 422);
+                ]);
+            }
+
+            // Read and get role data
+            $roleData = self::read($request)->getData(true);
+
+            // Compare level
+            $sufficientLevel = RoleHelper::compareLevel($roleData['data'], auth()->user()->roles);
+
+            // If the level sufficient then abort
+            if($sufficientLevel == false){
+                return GeneralHelper::jsonResponse([
+                    'status'    => 403,
+                ]);
             }
 
             // Sync permission to role (id from role)
             $datas = $this->repositoryInterface->permission($request->permission)->syncToPermission($request->id);
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'data'      => $datas,
-                'message'   => "Role successfully synchronized with permission.",
-            ], 200);
+                'message'   => 'Role successfully synchronized with permission.',
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => $th,
+            ]);
         }
     }
 
@@ -164,24 +193,27 @@ class RoleController extends Controller{
 
             // Check validation and stop if failed
             if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
+                return GeneralHelper::jsonResponse([
+                    'status'    => 422,
                     'errors'    => $validator->errors(),
-                ], 422);
+                ]);
             }
 
             // Sync role to user (id from user)
             $datas = $this->repositoryInterface->withRelation('roles')->role($request->role)->syncToUser($request->id);
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'data'      => $datas,
-                'message'   => "Role successfully synchronized to user.",
-            ], 200);
+                'message'   => 'Role successfully synchronized to user.',
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 }

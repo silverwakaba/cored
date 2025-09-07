@@ -21,6 +21,7 @@
             // Load init function
             initDatatable();
             initUpsert();
+            initDelete();
         });
 
         // Init datatable
@@ -153,87 +154,6 @@
                     formAction(routeAction);
                 }
             });
-
-            // Init delete
-            $('body').on('click', '#btn-delete', function(){
-                // Get data id
-                let dataID = $(this).data('id');
-
-                // Show confirmation
-                Swal.fire({
-                    icon: 'warning',
-                    text: 'Are you sure? This action cannot be undone.',
-                    focusDeny: true,
-                    showConfirmButton: true,
-                    showDenyButton: true,
-                    denyButtonText: 'No',
-                    confirmButtonText: 'Yes',
-                    allowOutsideClick: () => {
-                        return false;
-                    },
-                }).then((result) => {
-                    if(result.isConfirmed){
-                        // Get route with id placeholder
-                        const routeBase = `{{ route('fe.apps.permission.delete', ['id' => '::ID::']) }}`;
-
-                        // Change id placeholder with the actual id
-                        routeAction = routeBase.replace('::ID::', dataID);
-
-                        // Handle ajax
-                        $.ajax({
-                            type: 'POST',
-                            url: routeAction,
-                            dataType: 'json',
-                            data: {
-                                '_token': '{{ csrf_token() }}',
-                            },
-                            success: function(response){
-                                // Handle success
-                                if(response.success){
-                                    // Success
-                                    Swal.fire({
-                                        icon: 'success',
-                                        text: response.message,
-                                        allowOutsideClick: () => {
-                                            return false;
-                                        },
-                                    }).then(() => {
-                                        // Reload datatable
-                                        $('#theTable').DataTable().ajax.reload(null, false);
-                                    });
-                                }
-                                else{
-                                    // API error
-                                    Swal.fire({
-                                        icon: 'error',
-                                        text: response.message || 'Something went wrong.',
-                                    }).then(() => {
-                                        // Reset form processing state
-                                        setProcessingState(false);
-                                    });
-                                }
-                            },
-                            error: function(response){
-                                // Refresh page if session/csrf_token expired
-                                if([200, 419].includes(response.status)){
-                                    Swal.fire({
-                                        icon: 'warning',
-                                        text: response.message || 'We encountered a fatal error. Please try reloading the page.',
-                                        allowOutsideClick: () => {
-                                            return false;
-                                        },
-                                    }).then(() => {
-                                        // Reload page
-                                        setTimeout(function(){
-                                            window.location.reload();
-                                        }, 0);
-                                    });
-                                }
-                            }
-                        });
-                    }
-                });
-            });
         }
 
         // Form action
@@ -341,6 +261,90 @@
                             
                             input.addClass('is-invalid');
                             errorElement.text(value[0]);
+                        });
+                    }
+                });
+            });
+        }
+
+        // Init delete
+        function initDelete(){
+            // Init delete
+            $('body').on('click', '#btn-delete', function(){
+                // Get data id
+                let dataID = $(this).data('id');
+
+                // Show confirmation
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Are you sure? This action cannot be undone.',
+                    focusDeny: true,
+                    showConfirmButton: true,
+                    showDenyButton: true,
+                    denyButtonText: 'No',
+                    confirmButtonText: 'Yes',
+                    allowOutsideClick: () => {
+                        return false;
+                    },
+                }).then((result) => {
+                    if(result.isConfirmed){
+                        // Get route with id placeholder
+                        const routeBase = `{{ route('fe.apps.permission.delete', ['id' => '::ID::']) }}`;
+
+                        // Change id placeholder with the actual id
+                        routeAction = routeBase.replace('::ID::', dataID);
+
+                        // Handle ajax
+                        $.ajax({
+                            type: 'POST',
+                            url: routeAction,
+                            dataType: 'json',
+                            data: {
+                                '_token': '{{ csrf_token() }}',
+                            },
+                            success: function(response){
+                                // Handle success
+                                if(response.success){
+                                    // Success
+                                    Swal.fire({
+                                        icon: 'success',
+                                        text: response.message,
+                                        allowOutsideClick: () => {
+                                            return false;
+                                        },
+                                    }).then(() => {
+                                        // Reload datatable
+                                        $('#theTable').DataTable().ajax.reload(null, false);
+                                    });
+                                }
+                                else{
+                                    // API error
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: response.message || 'Something went wrong.',
+                                    }).then(() => {
+                                        // Reset form processing state
+                                        setProcessingState(false);
+                                    });
+                                }
+                            },
+                            error: function(response){
+                                // Refresh page if session/csrf_token expired
+                                if([200, 419].includes(response.status)){
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        text: response.message || 'We encountered a fatal error. Please try reloading the page.',
+                                        allowOutsideClick: () => {
+                                            return false;
+                                        },
+                                    }).then(() => {
+                                        // Reload page
+                                        setTimeout(function(){
+                                            window.location.reload();
+                                        }, 0);
+                                    });
+                                }
+                            }
                         });
                     }
                 });

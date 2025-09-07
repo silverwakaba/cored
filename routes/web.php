@@ -53,11 +53,16 @@ Route::prefix('/')->name('fe.')->middleware([
     Route::prefix('apps')->name('apps.')->middleware([
         'jwt.fe',
     ])->group(function(){
-        // Page
+        // Page apps
         Route::name('page.')->controller(PageController::class)->group(function(){
             // Index
             Route::get('/', 'app')->name('index');
         });
+
+        // // RBAC
+        // Route::prefix('rbac')->name('rbac.')->group(function(){
+        //     // 
+        // });
 
         // Role
         Route::prefix('role')->name('role.')->controller(RoleController::class)->group(function(){
@@ -85,14 +90,17 @@ Route::prefix('/')->name('fe.')->middleware([
             // List
             Route::get('list', 'list')->name('list');
 
-            // // Create
-            // // Route::get('/', 'index')->name('index');
+            // Create
+            Route::post('create', 'create')->name('create');
 
-            // // Read
-            // Route::get('read/{id}', 'read')->name('read');
+            // Read
+            Route::get('read/{id}', 'read')->name('read');
 
-            // // Update
-            // Route::post('sync-to-permission/{id}', 'syncToPermission')->name('stp');
+            // Update
+            Route::post('update/{id}', 'update')->name('update');
+
+            // Delete
+            Route::post('delete/{id}', 'delete')->name('delete');
         });
     });
 });

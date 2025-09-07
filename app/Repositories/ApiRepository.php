@@ -14,20 +14,25 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 class ApiRepository implements ApiRepositoryInterface{
+    // Property
     protected bool $withToken = false;
     protected array $attachments = [];
 
-    // Preload token
+    // Preload JWT token
     public function withToken(bool $withToken = true) : self{
+        // Define 'withToken' property
         $this->withToken = $withToken;
         
+        // Chainable
         return $this;
     }
 
     // Preload attachment
     public function attach(array $files) : self{
+        // Define 'attach' property
         $this->attachments = $files;
         
+        // Chainable
         return $this;
     }
 
@@ -38,9 +43,7 @@ class ApiRepository implements ApiRepositoryInterface{
         );
         
         if($this->withToken){
-            $http->withToken(
-                CookiesHelper::jwtToken()
-            );
+            $http->withToken(CookiesHelper::jwtToken());
         }
         
         return $http;

@@ -63,7 +63,10 @@ class PermissionController extends Controller{
             return $datas;
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -75,10 +78,10 @@ class PermissionController extends Controller{
 
             // Check validation and stop if failed
             if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
+                return GeneralHelper::jsonResponse([
+                    'status'    => 422,
                     'errors'    => $validator->errors(),
-                ], 422);
+                ]);
             }
 
             // Create permission
@@ -87,14 +90,17 @@ class PermissionController extends Controller{
             ]);
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 201,
                 'data'      => $datas,
-                'message'   => "Permission created successfully.",
-            ], 201);
+                'message'   => 'Permission created successfully.',
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -102,37 +108,66 @@ class PermissionController extends Controller{
     public function read(Request $request){
         try{
             // Get permission data
-            $datas = $this->repositoryInterface->withRelation([
-                'roles'
-            ])->find($request->id);
+            $datas = $this->repositoryInterface;
+            
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
+
+            // Load relation
+            if(isset($request->relation)){
+                $datas->withRelation($request->relation);
+            }
+            
+            // Continue variable
+            $datas = $datas->find($request->id);
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'data'      => $datas,
-            ], 200);
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
     // Update
     public function update(Request $request){
         try{
+            // Validate input
+            $validator = Validator::make($request->all(), (new PermissionCreateRequest())->rules());
+
+            // Check validation and stop if failed
+            if($validator->fails()){
+                return GeneralHelper::jsonResponse([
+                    'status'    => 422,
+                    'errors'    => $validator->errors(),
+                ]);
+            }
+
             // Update permission data
             $datas = $this->repositoryInterface->update($request->id, [
                 'name' => $request->name,
             ]);
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 201,
                 'data'      => $datas,
-            ], 200);
+                'message'   => 'Permission updated successfully.',
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult($th);
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -143,14 +178,16 @@ class PermissionController extends Controller{
             $datas = $this->repositoryInterface->delete($request->id);
 
             // Return response
-            return response()->json([
-                'success'   => true,
-                'data'      => $datas,
-                'message'   => "Permission deleted successfully.",
-            ], 201);
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'message'   => 'Permission deleted successfully.',
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 }

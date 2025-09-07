@@ -112,6 +112,21 @@ abstract class BaseRepository{
         return $this;
     }
 
+    // Load trashed
+    public function loadTrashed(string $type){
+        // Load based on type
+        if($type == 'exclude'){
+            // Only trashed (Soft deleted without active data)
+            $this->query->onlyTrashed();
+        } else {
+            // Include trashed (Active data + Soft deleted)
+            $this->query->withTrashed();
+        }
+
+        // Chainable
+        return $this;
+    }
+
     // Load active data
     public function whereActive(bool $status = false){
         // Start the query
@@ -126,7 +141,7 @@ abstract class BaseRepository{
         // Init query
         $datas = $this->query;
 
-        // Start order by query
+        // Start "order by" query
         foreach($column as $col => $sort){
             $datas = $datas->orderBy($col, $sort);
         }
@@ -195,15 +210,42 @@ abstract class BaseRepository{
         });
     }
 
-    // Delete data
-    public function delete($id){
-        // Implementing db transaction
-        return DB::transaction(function() use($id){
-            // Start find query
-            $datas = $this->find($id);
+    // Delete data (multiple data available through $ids)
+    public function delete($id, string $type = null){
+        // Get data type and its data, then convert it as array
+        $ids = GeneralHelper::getType($id);
 
-            // Delete data
-            $datas->delete();
+        // Implementing db transaction
+        return DB::transaction(function() use($ids, $type){
+            // Start where in query
+            $datas = $this->query->select('id')->whereIn('id', $ids);
+
+            // Delete based on type
+            if($type == 'hard'){
+                // Hard delete
+                $datas->forceDelete();
+            } else {
+                // Soft delete
+                $datas->delete();
+            }
+
+            // Return response
+            return $datas;
+        });
+    }
+
+    // Restore data
+    public function restore($id){
+        // Get data type and its data, then convert it as array
+        $ids = GeneralHelper::getType($id);
+
+        // Implementing db transaction
+        return DB::transaction(function() use($ids){
+            // Start where in query
+            $datas = $this->query->withTrashed()->select('id')->whereIn('id', $ids);
+
+            // Restore data
+            $datas->restore();
 
             // Return response
             return $datas;

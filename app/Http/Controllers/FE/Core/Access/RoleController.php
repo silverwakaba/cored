@@ -23,7 +23,7 @@ class RoleController extends Controller{
 
     // Index
     public function index(){
-        return view('pages/app/role/index');
+        return view('pages/app/rbac/role/index');
     }
 
     // List

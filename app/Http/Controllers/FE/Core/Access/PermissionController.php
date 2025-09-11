@@ -43,12 +43,12 @@ class PermissionController extends Controller{
     // Create
     public function create(Request $request){
         // Create permission
-        $create = $this->apiRepository->withToken()->post('be.core.rbac.permission.create', [
+        $http = $this->apiRepository->withToken()->post('be.core.rbac.permission.create', [
             'name' => $request->name,
         ]);
         
         // Response for $create action
-        return response()->json($create->json(), $create->status());
+        return response()->json($http->json(), $http->status());
     }
 
     // Read
@@ -66,24 +66,24 @@ class PermissionController extends Controller{
     // Update
     public function update($id, Request $request){
         // Update permission
-        $update = $this->apiRepository->withToken()->post('be.core.rbac.permission.update', [
+        $http = $this->apiRepository->withToken()->post('be.core.rbac.permission.update', [
             'id'    => $id,
             'name'  => $request->name,
         ]);
         
         // Response for $update action
-        return response()->json($update->json(), $update->status());
+        return response()->json($http->json(), $http->status());
     }
 
     // Delete
     public function delete($id, Request $request){
         // Delete permission
-        $delete = $this->apiRepository->withToken()->post('be.core.rbac.permission.delete', [
+        $http = $this->apiRepository->withToken()->post('be.core.rbac.permission.delete', [
             'id'    => $id,
             'name'  => $request->name,
         ]);
         
         // Response for $delete action
-        return response()->json($delete->json(), $delete->status());
+        return response()->json($http->json(), $http->status());
     }
 }

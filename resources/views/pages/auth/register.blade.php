@@ -15,25 +15,12 @@
     <script>
         // Init jquery
         $(document).ready(function(){
-            // Handle form processing state
-            function setProcessingState(processing){
-                // Submit button
-                let submit = $('#submitButton');
-                let overlay = $('#overlay');
+            // Load init function
+            initSubmit();
+        });
 
-                // Set prop based on status
-                if(processing){
-                    submit.prop('disabled', true);
-
-                    overlay.addClass('overlay').removeClass('d-none');
-                }
-                else{
-                    submit.prop('disabled', false);
-
-                    overlay.addClass('d-none').removeClass('overlay');
-                }
-            }
-
+        // Init submit
+        function initSubmit(){
             // Handle form input while clearing previous action to avoid double submit
             $('#theForm').off('submit').on('submit', function(e){
                 // Stop any possible unexpected default action
@@ -49,9 +36,6 @@
                 // Populate form data into single variable
                 let formData = new FormData(this);
 
-                // Prepare url endpoint
-                let endpoint = `{{ route('fe.auth.register') }}`;
-
                 // Handle ajax
                 $.ajax({
                     type: 'POST',
@@ -59,7 +43,7 @@
                     dataType: 'json',
                     processData: false,
                     contentType: false,
-                    url: endpoint,
+                    url: `{{ route('fe.auth.register') }}`,
                     success: function(response){
                         // Handle success
                         if(response.success){
@@ -69,7 +53,7 @@
                                 icon: 'success',
                                 position: 'top-right',
                                 text: response.message,
-                                timer: 5000,
+                                timer: 1500,
                                 showConfirmButton: false,
                             }).then(() => {
                                 // Redirect
@@ -77,14 +61,37 @@
                             });
                         }
                         else{
-                            // unknown error
+                            // API error
+                            Swal.fire({
+                                icon: 'error',
+                                text: response.message || 'Something went wrong.',
+                            }).then(() => {
+                                // Reset form processing state
+                                setProcessingState(false);
+                            });
                         }
                     },
                     error: function(response){
+                        // Refresh page if session/csrf_token expired
+                        if([200, 419].includes(response.status)){
+                            Swal.fire({
+                                icon: 'warning',
+                                text: response.message || 'We encountered a fatal error. Please try reloading the page.',
+                                allowOutsideClick: () => {
+                                    return false;
+                                },
+                            }).then(() => {
+                                // Reload page
+                                setTimeout(function(){
+                                    window.location.reload();
+                                }, 0);
+                            });
+                        }
+
                         // If error, form processing state is set as false
                         setProcessingState(false);
 
-                        // Don't show message if status is 422
+                        // Don't show message if status is come from submit error
                         if(response.status != 422){
                             // Swal message
                             Swal.fire({
@@ -95,13 +102,6 @@
                                 timer: 3000,
                                 showConfirmButton: false,
                             });
-                        }
-
-                        // Refresh page if status is 419
-                        if(response.status == 419){
-                            setTimeout(function(){
-                                window.location.reload();
-                            }, 1500);
                         }
 
                         // Handle error message
@@ -117,6 +117,25 @@
                     }
                 });
             });
-        });
+        }
+
+        // Handle form processing state
+        function setProcessingState(processing){
+            // Submit button
+            let submit = $('#submitButton');
+            let overlay = $('#overlay-card');
+
+            // Set prop based on status
+            if(processing){
+                submit.prop('disabled', true);
+
+                overlay.addClass('overlay').removeClass('d-none');
+            }
+            else{
+                submit.prop('disabled', false);
+
+                overlay.addClass('d-none').removeClass('overlay');
+            }
+        }
     </script>
 @endpush

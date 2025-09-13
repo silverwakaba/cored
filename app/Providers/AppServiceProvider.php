@@ -11,10 +11,11 @@ class AppServiceProvider extends ServiceProvider{
     public function register() : void{
         // Register 'bindings' as array
         $bindings = [
-            \App\Contracts\ApiRepositoryInterface::class        => \App\Repositories\ApiRepository::class,
-            \App\Contracts\PermissionRepositoryInterface::class => \App\Repositories\EloquentPermissionRepository::class,
-            \App\Contracts\RoleRepositoryInterface::class       => \App\Repositories\EloquentRoleRepository::class,
-            \App\Contracts\UserRepositoryInterface::class       => \App\Repositories\EloquentUserRepository::class,
+            \App\Contracts\ApiRepositoryInterface::class            => \App\Repositories\ApiRepository::class,
+            \App\Contracts\PermissionRepositoryInterface::class     => \App\Repositories\EloquentPermissionRepository::class,
+            \App\Contracts\RoleRepositoryInterface::class           => \App\Repositories\EloquentRoleRepository::class,
+            \App\Contracts\UserRepositoryInterface::class           => \App\Repositories\EloquentUserRepository::class,
+            \App\Contracts\PersonalNotesRepositoryInterface::class  => \App\Repositories\EloquentPersonalNotesRepository::class,
         ];
         
         // Register the 'bindings' using foreach

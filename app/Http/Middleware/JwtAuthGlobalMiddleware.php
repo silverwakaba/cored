@@ -11,6 +11,7 @@ use App\Helpers\CookiesHelper;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 // This middleware is created ONLY to facilitate Blade's @auth and/or @guest authentication-related directives WITHOUT any restriction
+// Can also facilitate backend public route that need to load user data
 class JwtAuthGlobalMiddleware{
     /**
      * Handle an incoming request.
@@ -19,8 +20,15 @@ class JwtAuthGlobalMiddleware{
      */
     public function handle(Request $request, Closure $next) : Response{
         try{
-            // Set JWT token
-            JWTAuth::setToken(CookiesHelper::jwtToken())->authenticate();
+            // Nested try so that it won't return error message
+            try{
+                // Parse JWT token (mainly used on API)
+                JWTAuth::parseToken()->authenticate();
+            }
+            catch(\Throwable $th){
+                // Set JWT token (mainly used on WEB)
+                JWTAuth::setToken(CookiesHelper::jwtToken())->authenticate();
+            }
         }
         catch(\Throwable $th){
             // no restriction or error message

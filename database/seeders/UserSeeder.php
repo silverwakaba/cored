@@ -14,14 +14,14 @@ class UserSeeder extends Seeder{
     public function run() : void{
         // Root
         User::create([
-            'name'      => 'Root',
+            'name'      => 'Azhar',
             'email'     => 'a@a.a',
             'password'  => bcrypt('123456789'),
         ])->assignRole('Root');
 
         // Azhar
         User::create([
-            'name'      => 'Azhar',
+            'name'      => 'Fahrurazi',
             'email'     => 'b@a.a',
             'password'  => bcrypt('123456789'),
         ])->assignRole('Admin');

@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class PermissionCreateRequest extends FormRequest{
+class PersonalNoteCommentRequest extends FormRequest{
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -20,7 +19,9 @@ class PermissionCreateRequest extends FormRequest{
      */
     public function rules() : array{
         return [
-            'name' => ['required', 'string', Rule::unique('permissions')->ignore(request()->id ?? 0)],
+            'users_id'          => ['integer'],
+            'personal_notes_id' => ['integer'],
+            'comment'           => ['required', 'string'],
         ];
     }
 }

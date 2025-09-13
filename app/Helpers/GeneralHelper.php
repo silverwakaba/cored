@@ -116,4 +116,31 @@ class GeneralHelper{
 
         return response()->json($response, $datas['status']);
     }
+
+    // Check note visibility
+    public static function isNotesVisible($datas, $user){
+        try{
+            // If "is_public" is true, the notes automatically become visible
+            if($datas['is_public'] == true){
+                return true;
+            }
+
+            // If current user is the owner
+            if($datas['users_id'] == $user){
+                return true;
+            }
+            
+            // If current user is in the shared users list
+            if($datas->belongsToManyShares){
+                return in_array($user, collect($datas->belongsToManyShares)->pluck('id')->all());
+            }
+            
+            // If none of the conditions are met, the note is not visible
+            return false;
+        }
+        catch(\Throwable $th){
+            // Most likely invisible
+            return false;
+        }
+    }
 }

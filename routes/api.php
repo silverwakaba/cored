@@ -9,6 +9,9 @@ use App\Http\Controllers\API\Core\Access\PermissionController;
 use App\Http\Controllers\API\Core\Access\RoleController;
 use App\Http\Controllers\API\Core\Access\UserAccessController;
 
+// Test Raja Gadai
+use App\Http\Controllers\API\RG\PersonalNotesController;
+
 // API routing
 Route::prefix('/')->name('be.')->group(function(){
     // Core
@@ -104,6 +107,30 @@ Route::prefix('/')->name('be.')->group(function(){
                     Route::post('activation/{id}', 'activation')->name('activation')->middleware(['role:Root|Admin']);
                 });
             });
+        });
+    });
+
+    // Raja gadai
+    Route::prefix('rg')->name('rg.')->middleware(['jwt.be'])->group(function(){
+        // Notes
+        Route::prefix('notes')->name('notes.')->controller(PersonalNotesController::class)->group(function(){
+            // List
+            Route::get('list', 'list')->name('list');
+
+            // Create
+            Route::post('create', 'create')->name('create');
+
+            // Read
+            Route::get('read/{id}', 'read')->name('read')->withoutMiddleware(['jwt.be'])->middleware(['jwt.global']);
+
+            // Update
+            Route::post('update/{id}', 'update')->name('update');
+
+            // Delete
+            Route::post('delete/{id}', 'delete')->name('delete');
+
+            // Comment
+            Route::post('comment/{id}', 'comment')->name('comment');
         });
     });
 });

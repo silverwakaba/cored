@@ -94,4 +94,16 @@ class PersonalNotesController extends Controller{
         // Response for $delete action
         return response()->json($http->json(), $http->status());
     }
+
+    // Comment
+    public function comment($id, Request $request){
+        // Update permission
+        $http = $this->apiRepository->withToken()->post('be.rg.notes.comment', [
+            'id'        => $id,
+            'comment'   => $request->comment,
+        ]);
+        
+        // Response for $update action
+        return response()->json($http->json(), $http->status());
+    }
 }

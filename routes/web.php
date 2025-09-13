@@ -82,6 +82,9 @@ Route::prefix('/')->name('fe.')->middleware([
 
             // Delete
             Route::post('delete/{id}', 'delete')->name('delete');
+
+            // Comment
+            Route::post('comment/{id}', 'comment')->name('comment');
         });
 
         // // RBAC

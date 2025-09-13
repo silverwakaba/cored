@@ -66,10 +66,17 @@
                     {
                         title: 'Action', width: '10%', class: 'text-center',
                         render: function(data, type, row, meta){
+                            // Get route with id placeholder
+                            const readRouteBase = `{{ route('fe.page.notes.reader', ['id' => '::ID::']) }}`;
+
+                            // Change id placeholder with the actual id
+                            let readRoute = readRouteBase.replace('::ID::', row.id);
+
                             return `
                                 <div class="btn-group btn-block" role="group">
                                     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Action</button>
                                     <div class="dropdown-menu btn-block">
+                                        <a class="dropdown-item" href="${ readRoute }" target="_blank"><i class="fas fa-external-link mr-2"></i>View</a>
                                         <button id="btn-upsert" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-pen-to-square mr-2"></i>Edit</button>
                                         <button id="btn-delete" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-trash mr-2"></i>Delete</button>
                                     </div>

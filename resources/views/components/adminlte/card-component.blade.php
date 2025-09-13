@@ -2,7 +2,7 @@
     @if($title || $upsert)
         <div class="card-header">
             @if($title)
-                <h3 class="card-title">{{ $title }}</h3>
+                <h3 id="card-title" class="card-title">{{ $title }}</h3>
             @endif
             @if($upsert)
                 <div class="card-tools">

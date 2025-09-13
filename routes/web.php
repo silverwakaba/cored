@@ -5,11 +5,15 @@ use Illuminate\Support\Facades\Route;
 // Core Controller
 use App\Http\Controllers\FE\Core\Access\PermissionController;
 use App\Http\Controllers\FE\Core\Access\RoleController;
+use App\Http\Controllers\FE\Core\Access\UserAccessController;
 use App\Http\Controllers\FE\Core\Auth\GeneralAuthController;
 use App\Http\Controllers\FE\Core\Shared\BasedataController;
 
 // General Controller
 use App\Http\Controllers\FE\PageController;
+
+// Test Raja Gadai
+use App\Http\Controllers\FE\RG\PersonalNotesController;
 
 // FE routing
 Route::prefix('/')->name('fe.')->middleware([
@@ -22,12 +26,12 @@ Route::prefix('/')->name('fe.')->middleware([
     });
 
     // Page without any logic
-    Route::prefix('/')->name('page.')->controller(PageController::class)->group(function(){
+    Route::prefix('/')->name('page.')->group(function(){
         // Index
-        Route::get('/', 'index')->name('index');
+        Route::get('/', [PageController::class, 'index'])->name('index');
 
-        // Debug | Please comment if not needed
-        // Route::get('debug', 'debug')->name('menu');//->middleware(['jwt.fe']);
+        // Notes reader
+        Route::get('notes/{id}', [PersonalNotesController::class, 'reader'])->name('notes.reader');
     });
 
     // General Auth
@@ -57,6 +61,27 @@ Route::prefix('/')->name('fe.')->middleware([
         Route::name('page.')->controller(PageController::class)->group(function(){
             // Index
             Route::get('/', 'app')->name('index');
+        });
+
+        // Personal notes
+        Route::prefix('notes')->name('notes.')->controller(PersonalNotesController::class)->group(function(){
+            // Index
+            Route::get('/', 'index')->name('index');
+
+            // List
+            Route::get('list', 'list')->name('list');
+
+            // Create
+            Route::post('create', 'create')->name('create');
+
+            // Read
+            Route::get('read/{id}', 'read')->name('read')->withoutMiddleware(['jwt.fe'])->middleware(['jwt.global']);
+
+            // Update
+            Route::post('update/{id}', 'update')->name('update');
+
+            // Delete
+            Route::post('delete/{id}', 'delete')->name('delete');
         });
 
         // // RBAC
@@ -101,6 +126,12 @@ Route::prefix('/')->name('fe.')->middleware([
 
             // Delete
             Route::post('delete/{id}', 'delete')->name('delete');
+        });
+
+        // Permission
+        Route::prefix('uac')->name('uac.')->controller(UserAccessController::class)->group(function(){
+            // List
+            Route::get('list', 'list')->name('list');
         });
     });
 });

@@ -18,7 +18,6 @@ class MenuSeeder extends Seeder{
         $parentGeneral = Menu::create([
             'name'      => 'Home',
             'icon'      => 'fas fa-tachometer-alt',
-            'route'     => 'xxx',
             'type'      => 'parent',
             'parent_id' => $headerGeneral->id,
             'order'     => 1,
@@ -26,16 +25,16 @@ class MenuSeeder extends Seeder{
 
         // Create child | For general
         $childGeneral = Menu::create([
-            'name'      => 'Go Home',
+            'name'      => 'Personal Notes',
             'icon'      => 'far fa-circle',
-            'route'     => 'xxx',
+            'route'     => 'fe.apps.notes.index',
             'type'      => 'child',
             'parent_id' => $parentGeneral->id,
             'order'     => 1,
         ]);
 
         // Assign roles to menu items
-        // $headerGeneral->roles()->attach(1);
+        $headerGeneral->roles()->attach(1);
         // $parent->roles()->attach(1);
         // $child->roles()->attach(1);
     }

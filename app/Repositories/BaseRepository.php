@@ -150,6 +150,20 @@ abstract class BaseRepository{
         return $datas;
     }
 
+    // Filter data
+    public function where(array $column){
+        // Init query
+        $datas = $this->query;
+
+        // Start "where" query
+        foreach($column as $col => $sort){
+            $datas = $datas->where($col, $sort);
+        }
+
+        // Return response
+        return $datas;
+    }
+
     // All data
     public function all(){
         // Start get query

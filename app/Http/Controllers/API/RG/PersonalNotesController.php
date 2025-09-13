@@ -39,6 +39,11 @@ class PersonalNotesController extends Controller{
                 'updated_at' => 'DESC',
             ]);
 
+            // Filter data
+            $datas->where([
+                'users_id' => $this->uid,
+            ]);
+
             // Load column selection
             if(isset($request->select)){
                 $datas->onlySelect($request->select);
@@ -92,7 +97,7 @@ class PersonalNotesController extends Controller{
             ]);
 
             // User sync to sharing personal note
-            $this->repositoryInterface->toUser($request->user_sync)->syncToUserShares($request->id);
+            $this->repositoryInterface->toUser($request->user_sync)->syncToUserShares($datas->id);
 
             // Return response
             return GeneralHelper::jsonResponse([

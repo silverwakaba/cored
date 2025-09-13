@@ -9,7 +9,7 @@
                                 <i class="fas fa-step-backward"></i>
                             </a>
                         @endif
-                        <span>{{ $title }}</span>
+                        <span id="contentTitle">{{ $title }}</span>
                     </h1>
                 </div>
                 @if($breadcrumb)

@@ -1,7 +1,7 @@
 @extends('layouts.adminlte')
 @section('title', 'Role')
 @section('content')
-    <x-Adminlte.ContentWrapperComponent>
+    <x-Adminlte.ContentWrapperComponent breadcrumb="apps.rbac.role">
         <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Role">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>

@@ -1,7 +1,7 @@
 @extends('layouts.adminlte')
 @section('title', 'Permission')
 @section('content')
-    <x-Adminlte.ContentWrapperComponent>
+    <x-Adminlte.ContentWrapperComponent breadcrumb="apps.rbac.permission">
         <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Permission">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>

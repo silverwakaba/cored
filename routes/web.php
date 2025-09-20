@@ -51,13 +51,13 @@ Route::prefix('/')->name('fe.')->middleware([
         'jwt.fe',
     ])->group(function(){
         // Page apps
-        Route::name('page.')->controller(PageController::class)->group(function(){
-            // Index
-            Route::get('/', 'app')->name('index');
-        });
+        Route::get('/', [PageController::class, 'app'])->name('index');
 
         // Role-Based Access Control
         Route::prefix('rbac')->name('rbac.')->group(function(){
+            // Index
+            Route::get('/', [PageController::class, 'appRBAC'])->name('index');
+
             // Role
             Route::prefix('role')->name('role.')->controller(RoleController::class)->group(function(){
                 // Index

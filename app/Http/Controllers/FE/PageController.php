@@ -28,8 +28,17 @@ class PageController extends Controller{
         return view('pages/app/index');
     }
 
-    // Debug
-    public function debug(){
-        // 
+    // Index app/rbac
+    public function appRBAC(){
+        // Data option
+        $datas = [
+            'breadcrumb'    => 'apps.rbac',
+            'title'         => 'RBAC',
+        ];
+
+        // View
+        return view('pages/app/index-standardized', [
+            'datas' => $datas,
+        ]);
     }
 }

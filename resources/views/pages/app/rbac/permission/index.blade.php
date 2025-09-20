@@ -38,7 +38,7 @@
                         // Pass parameter
                         d.type = 'datatable';
                     },
-                    url: `{{ route('fe.apps.permission.list') }}`,
+                    url: `{{ route('fe.apps.rbac.permission.list') }}`,
                     error: function(response){
                         // API error
                         Swal.fire({
@@ -116,7 +116,7 @@
                     $('#theModalLabel').text('Add Permission');
 
                     // Set route action
-                    routeAction = `{{ route('fe.apps.permission.create') }}`;
+                    routeAction = `{{ route('fe.apps.rbac.permission.create') }}`;
 
                     // Init form action
                     formAction(routeAction);
@@ -128,7 +128,7 @@
                     $('#theModalLabel').text('Edit Permission');
 
                     // Get route with id placeholder
-                    const readRouteBase = `{{ route('fe.apps.permission.read', ['id' => '::ID::']) }}`;
+                    const readRouteBase = `{{ route('fe.apps.rbac.permission.read', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     let readRoute = readRouteBase.replace('::ID::', dataID);
@@ -145,7 +145,7 @@
                     });
 
                     // Get route with id placeholder
-                    const routeBase = `{{ route('fe.apps.permission.update', ['id' => '::ID::']) }}`;
+                    const routeBase = `{{ route('fe.apps.rbac.permission.update', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     routeAction = routeBase.replace('::ID::', dataID);
@@ -289,7 +289,7 @@
                 }).then((result) => {
                     if(result.isConfirmed){
                         // Get route with id placeholder
-                        const routeBase = `{{ route('fe.apps.permission.delete', ['id' => '::ID::']) }}`;
+                        const routeBase = `{{ route('fe.apps.rbac.permission.delete', ['id' => '::ID::']) }}`;
 
                         // Change id placeholder with the actual id
                         routeAction = routeBase.replace('::ID::', dataID);

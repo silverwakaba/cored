@@ -21,13 +21,10 @@ Route::prefix('/')->name('fe.')->middleware([
         Route::get('menu', 'menu')->name('menu');
     });
 
-    // Page without any logic
-    Route::prefix('/')->name('page.')->controller(PageController::class)->group(function(){
+    // Page without any logic | Separate controller for flexibility
+    Route::prefix('/')->name('page.')->group(function(){
         // Index
-        Route::get('/', 'index')->name('index');
-
-        // Debug | Please comment if not needed
-        // Route::get('debug', 'debug')->name('menu');//->middleware(['jwt.fe']);
+        Route::get('/', [PageController::class, 'index'])->name('index');
     });
 
     // General Auth
@@ -59,48 +56,46 @@ Route::prefix('/')->name('fe.')->middleware([
             Route::get('/', 'app')->name('index');
         });
 
-        // // RBAC
-        // Route::prefix('rbac')->name('rbac.')->group(function(){
-        //     // 
-        // });
+        // Role-Based Access Control
+        Route::prefix('rbac')->name('rbac.')->group(function(){
+            // Role
+            Route::prefix('role')->name('role.')->controller(RoleController::class)->group(function(){
+                // Index
+                Route::get('/', 'index')->name('index');
 
-        // Role
-        Route::prefix('role')->name('role.')->controller(RoleController::class)->group(function(){
-            // Index
-            Route::get('/', 'index')->name('index');
+                // Index
+                Route::get('list', 'list')->name('list');
 
-            // Index
-            Route::get('list', 'list')->name('list');
+                // Create
+                Route::post('create', 'create')->name('create');
 
-            // Create
-            Route::post('create', 'create')->name('create');
+                // Read
+                Route::get('read/{id}', 'read')->name('read');
 
-            // Read
-            Route::get('read/{id}', 'read')->name('read');
+                // Sync role to Permission
+                Route::post('sync-to-permission/{id}', 'syncToPermission')->name('stp');
+            });
 
-            // Sync role to Permission
-            Route::post('sync-to-permission/{id}', 'syncToPermission')->name('stp');
-        });
+            // Permission
+            Route::prefix('permission')->name('permission.')->controller(PermissionController::class)->group(function(){
+                // Index
+                Route::get('/', 'index')->name('index');
 
-        // Permission
-        Route::prefix('permission')->name('permission.')->controller(PermissionController::class)->group(function(){
-            // Index
-            Route::get('/', 'index')->name('index');
+                // List
+                Route::get('list', 'list')->name('list');
 
-            // List
-            Route::get('list', 'list')->name('list');
+                // Create
+                Route::post('create', 'create')->name('create');
 
-            // Create
-            Route::post('create', 'create')->name('create');
+                // Read
+                Route::get('read/{id}', 'read')->name('read');
 
-            // Read
-            Route::get('read/{id}', 'read')->name('read');
+                // Update
+                Route::post('update/{id}', 'update')->name('update');
 
-            // Update
-            Route::post('update/{id}', 'update')->name('update');
-
-            // Delete
-            Route::post('delete/{id}', 'delete')->name('delete');
+                // Delete
+                Route::post('delete/{id}', 'delete')->name('delete');
+            });
         });
     });
 });

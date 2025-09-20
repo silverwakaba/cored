@@ -38,7 +38,7 @@
                         // Pass parameter
                         d.type = 'datatable';
                     },
-                    url: `{{ route('fe.apps.role.list') }}`,
+                    url: `{{ route('fe.apps.rbac.role.list') }}`,
                     error: function(response){
                         // API error
                         Swal.fire({
@@ -121,7 +121,7 @@
                     $('#theModalLabel').text('Add Role');
 
                     // Set route action
-                    routeAction = `{{ route('fe.apps.role.create') }}`;
+                    routeAction = `{{ route('fe.apps.rbac.role.create') }}`;
 
                     // Init form action
                     formAction(routeAction);
@@ -133,7 +133,7 @@
                     $('#theModalLabel').text('Sync Role to Permission');
 
                     // Get route with id placeholder
-                    const readRouteBase = `{{ route('fe.apps.role.read', ['id' => '::ID::']) }}`;
+                    const readRouteBase = `{{ route('fe.apps.rbac.role.read', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     let readRoute = readRouteBase.replace('::ID::', dataID);
@@ -159,7 +159,7 @@
                     });
 
                     // Get route with id placeholder
-                    const routeBase = `{{ route('fe.apps.role.stp', ['id' => '::ID::']) }}`;
+                    const routeBase = `{{ route('fe.apps.rbac.role.stp', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     routeAction = routeBase.replace('::ID::', dataID);
@@ -179,7 +179,7 @@
             $.ajax({
                 type: 'GET',
                 dataType: 'json',
-                url: `{{ route('fe.apps.permission.list') }}`,
+                url: `{{ route('fe.apps.rbac.permission.list') }}`,
                 success: function(response){
                     // Select input
                     const select = $('[name="permission[]"');

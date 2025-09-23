@@ -55,7 +55,7 @@
                                 showConfirmButton: false,
                             }).then(() => {
                                 // Redirect
-                                window.location.href = "{{ route('fe.apps.page.index') }}";
+                                window.location.href = "{{ route('fe.apps.index') }}";
                             });
                         }
                         else{

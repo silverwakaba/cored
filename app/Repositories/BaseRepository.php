@@ -169,11 +169,6 @@ abstract class BaseRepository{
         // Start find query
         $datas = $this->query->find($id);
 
-        // Return 404
-        if(!$datas){
-            return ErrorHelper::apiError404Result();
-        }
-
         // Return response
         return $datas;
     }

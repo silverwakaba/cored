@@ -8,8 +8,8 @@ use App\Contracts\UserRepositoryInterface;
 
 // Helper
 use App\Helpers\AuthHelper;
-use App\Helpers\ErrorHelper;
 use App\Helpers\GeneralHelper;
+use App\Helpers\RoleHelper;
 
 // Request
 use App\Http\Requests\UserActivationRequest;
@@ -32,24 +32,41 @@ class UserAccessController extends Controller{
     // List
     public function list(Request $request){
         try{
-            // Get data
+            // Get data while sorting
             $datas = $this->repositoryInterface;
+
+            // Sort data
+            $datas->sort([
+                'name' => 'ASC',
+            ]);
+
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
 
             // Load relation
             if(isset($request->relation)){
                 $datas->withRelation($request->relation);
             }
 
-            // Return response as datatable
-            if(isset($request->type) && ($request->type == 'datatable')){
-                return $datas->useDatatable()->all();
+            // Response
+            if(($request->type == 'datatable')){
+                // Return response as datatable
+                $datas = $datas->useDatatable()->all();
+            } else {
+                // Return response as plain query
+                $datas = $datas->all();
             }
 
             // Return response
-            return $datas->all();
+            return $datas;
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -67,6 +84,8 @@ class UserAccessController extends Controller{
                 ], 422);
             }
 
+            return $request->role;
+
             // Create registered user
             $datas = $this->repositoryInterface->prepare([
                 'name'      => $request->name,
@@ -82,7 +101,10 @@ class UserAccessController extends Controller{
             ], 201);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -97,21 +119,20 @@ class UserAccessController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
-            $newDatas = $datas->find($request->id);
-
-            // Return 404
-            if(!$newDatas){
-                return ErrorHelper::apiError404Result();
-            }
+            // Continue variable
+            $datas = $datas->find($request->id);
 
             // Return created data
             return response()->json([
                 'success'   => true,
-                'data'      => $newDatas,
+                'data'      => $datas,
             ], 200);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -163,7 +184,10 @@ class UserAccessController extends Controller{
             ], 200);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -218,7 +242,10 @@ class UserAccessController extends Controller{
             ], 200);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 }

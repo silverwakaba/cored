@@ -7,9 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Contracts\UserRepositoryInterface;
 
 // Helper
-use App\Helpers\AuthHelper;
 use App\Helpers\GeneralHelper;
-use App\Helpers\RoleHelper;
+use App\Helpers\RBACHelper;
 
 // Request
 use App\Http\Requests\UserActivationRequest;
@@ -84,8 +83,6 @@ class UserAccessController extends Controller{
                 ], 422);
             }
 
-            return $request->role;
-
             // Create registered user
             $datas = $this->repositoryInterface->prepare([
                 'name'      => $request->name,
@@ -137,7 +134,7 @@ class UserAccessController extends Controller{
     }
 
     // Update
-    public function update(Request $request){
+    public function update($id, Request $request){
         try{
             // Validate input
             $validator = Validator::make($request->all(), (new UserUpdateRequest())->rules());
@@ -150,28 +147,8 @@ class UserAccessController extends Controller{
                 ], 422);
             }
 
-            // Init id
-            $id = null;
-            
-            // Edit specific user
-            if(
-                // User within role level 1 can edit specific user
-                (AuthHelper::roleLevel('1') == true) && (in_array($request->id, AuthHelper::roleUser(['Root'])))
-
-                xor
-
-                // User within role level 3 can edit specific user, but they can't edit user with 'Root' role
-                (AuthHelper::roleLevel('3') == true) && (!in_array($request->id, AuthHelper::roleUser(['Root'])))
-            ){
-                // specific user id
-                $id = $request->id;
-            } else{
-                // User outside role level 1 and 3 can only edit their own
-                $id = AuthHelper::authID();
-            }
-
-            // Update data
-            $datas = $this->repositoryInterface->update($id, [
+            // Update registered user
+            $datas = $this->repositoryInterface->modify($id, [
                 'name'  => $request->name,
                 'email' => $request->email,
             ]);

@@ -3,8 +3,8 @@
 namespace App\Repositories;
 
 // Helper
-use App\Helpers\AuthHelper;
 use App\Helpers\GeneralHelper;
+use App\Helpers\RBACHelper;
 
 // Model
 use App\Models\User;
@@ -41,8 +41,10 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         // Get data type and its data
         $roles = GeneralHelper::getType($role);
 
-        // Set role data
-        $this->roleToAssign = collect(Role::select('name')->whereIn('name', $roles)->get())->pluck('name');
+        // This one is crucial so this is implemented inside the repo
+        // Can only assign role up to user highest role to prevent privilege escalation
+        // eg. User with role "Moderator" can't assign role higher than "Moderator" - TLDR; Moderator can't add their own version of Root
+        $this->roleToAssign = array_diff(collect(Role::select('name')->whereIn('name', $roles)->get())->pluck('name')->toArray(), RBACHelper::roleLevel(auth()->user()->roles, 'excluded'));
         
         // Chainable
         return $this;
@@ -63,5 +65,20 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
             // Return response
             return $datas;
         });
+    }
+
+    // Modify (Equal to update but bundled with RBAC)
+    public function modify($id, array $data){
+        // Check role level
+        $rbacCheck = RBACHelper::roleLevelCompare(parent::withRelation(['roles'])->find($id)->roles, auth()->user()->roles);
+
+        // Do something if true
+        if($rbacCheck == true){
+            // Update the data
+            return parent::update($id, $data);
+        } else {
+            // Return null response
+            return null;
+        }
     }
 }

@@ -98,7 +98,7 @@ Route::prefix('/')->name('be.')->group(function(){
                     Route::get('read/{id}', 'read')->name('read');
 
                     // Update
-                    Route::post('update', 'update')->name('update');
+                    Route::post('update/{id}', 'update')->name('update');
 
                     // Activation
                     Route::post('activation/{id}', 'activation')->name('activation')->middleware(['role:Root|Admin']);

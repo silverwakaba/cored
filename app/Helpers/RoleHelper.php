@@ -2,9 +2,6 @@
 
 namespace App\Helpers;
 
-// Helper
-use App\Helpers\GeneralHelper;
-
 class RoleHelper{
     // Get role level
     public static function level($data){

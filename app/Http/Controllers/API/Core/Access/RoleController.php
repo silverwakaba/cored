@@ -8,7 +8,6 @@ use App\Contracts\RoleRepositoryInterface;
 
 // Helper
 use App\Helpers\GeneralHelper;
-use App\Helpers\RoleHelper;
 
 // Model
 use App\Models\User;
@@ -154,19 +153,6 @@ class RoleController extends Controller{
                 ]);
             }
 
-            // Read and get role data
-            $roleData = self::read($request)->getData(true);
-
-            // Compare level
-            $sufficientLevel = RoleHelper::compareLevel($roleData['data'], auth()->user()->roles);
-
-            // If the level sufficient then abort
-            if($sufficientLevel == false){
-                return GeneralHelper::jsonResponse([
-                    'status'    => 403,
-                ]);
-            }
-
             // Sync permission to role (id from role)
             $datas = $this->repositoryInterface->permission($request->permission)->syncToPermission($request->id);
 
@@ -180,7 +166,7 @@ class RoleController extends Controller{
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([
                 'status'    => 409,
-                'message'   => $th,
+                'message'   => null,
             ]);
         }
     }

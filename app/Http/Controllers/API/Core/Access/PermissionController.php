@@ -8,7 +8,6 @@ use App\Contracts\PermissionRepositoryInterface;
 
 // Helper
 use App\Helpers\GeneralHelper;
-use App\Helpers\RoleHelper;
 
 // Model
 use Spatie\Permission\Models\Permission;

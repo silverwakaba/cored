@@ -5,12 +5,40 @@ namespace App\Helpers;
 // Helper
 use App\Helpers\GeneralHelper;
 
+// Model
+use App\Models\User;
+
 // Internal
 use Illuminate\Support\Str;
 
 class RBACHelper{
-    // Current user prop
-    public static function userProp($prop = null){
+    // User prop
+    public static function userProp($id, $prop = null){
+        $data = User::with([
+            'roles', 'permissions'
+        ])->find($id);
+
+        // Switch prop
+        switch($prop){
+            // ID
+            case 'id': $datas = $data->id; break;
+
+            // Role
+            case 'role': $datas = $data->roles; break;
+
+            // Permission
+            case 'permission': $datas = $data->permissions; break;
+            
+            // Default
+            default: $datas = $data; break;
+        }
+
+        // Return prop
+        return $datas;
+    }
+
+    // Profile prop
+    public static function profileProp($prop = null){
         // Switch prop
         switch($prop){
             // ID

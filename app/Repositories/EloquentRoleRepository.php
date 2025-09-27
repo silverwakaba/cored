@@ -3,9 +3,8 @@
 namespace App\Repositories;
 
 // Helper
-use App\Helpers\ErrorHelper;
 use App\Helpers\GeneralHelper;
-use App\Helpers\RoleHelper;
+use App\Helpers\RBACHelper;
 
 // Model
 use App\Models\User;
@@ -46,14 +45,16 @@ class EloquentRoleRepository extends BaseRepository implements RoleRepositoryInt
         // Get data type and its data
         $roles = GeneralHelper::getType($role);
 
-        // Set role data
-        $this->roleToSync = collect(Role::select('name')->whereIn('name', $roles)->get())->pluck('name');
+        // This one is crucial so this is implemented inside the repo
+        // Can only assign role up to user highest role to prevent privilege escalation
+        // eg. User with role "Moderator" can't assign role higher than "Moderator" - TLDR; Moderator can't add their own version of Root
+        $this->roleToSync = array_diff(collect(Role::select('name')->whereIn('name', $roles)->get())->pluck('name')->toArray(), RBACHelper::roleLevel(auth()->user()->roles, 'excluded'));
         
         // Chainable
         return $this;
     }
 
-    // Sync role with permission
+    // Sync role with permission | To be RBAC-ed
     public function syncToPermission($id){
         return DB::transaction(function() use($id){
             // Find role
@@ -74,8 +75,13 @@ class EloquentRoleRepository extends BaseRepository implements RoleRepositoryInt
             // Find user
             $datas = User::find($id);
 
-            // Sync role to user
-            $datas->syncRoles($this->roleToSync);
+            // Check role level
+            $rbacCheck = RBACHelper::roleLevelCompare($datas->roles, auth()->user()->roles);
+
+            // Assign role
+            if(isset($this->roleToSync) && ($rbacCheck == true)){
+                $datas->syncRoles($this->roleToSync);
+            }
 
             // Return response
             return $datas;

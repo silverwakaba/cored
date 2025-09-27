@@ -2,9 +2,9 @@
 
 Azhar's starter pack for creating Laravel applications; And it is (sort of) using monorepo approach.
 
-Please create new branch for new feature / new-new branch for the new feature features / and so on.
+There's not yet plan for advanced implementation such as SSO, microservice, etc. Just a tiny starter pack.
 
-We will talk about it later.
+Note for myself: Please create new branch for new feature / new-new branch for the new feature features / and so on. As I will think and read about it later.
 
 ## Running This Project
 

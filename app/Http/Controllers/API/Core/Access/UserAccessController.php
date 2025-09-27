@@ -8,7 +8,6 @@ use App\Contracts\UserRepositoryInterface;
 
 // Helper
 use App\Helpers\GeneralHelper;
-use App\Helpers\RBACHelper;
 
 // Request
 use App\Http\Requests\UserActivationRequest;

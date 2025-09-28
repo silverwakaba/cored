@@ -60,8 +60,13 @@ class EloquentRoleRepository extends BaseRepository implements RoleRepositoryInt
             // Find role
             $datas = parent::find($id);
 
+            // Check role level
+            $rbacCheck = RBACHelper::roleLevelCompare([$datas], auth()->user()->roles);
+
             // Sync role to permission
-            $datas->syncPermissions($this->permissionToSync);
+            if($rbacCheck == true){
+                $datas->syncPermissions($this->permissionToSync);
+            }
 
             // Return response
             return $datas;

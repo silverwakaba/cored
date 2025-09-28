@@ -93,7 +93,7 @@ class UserAccessController extends Controller{
             return response()->json([
                 'success'   => true,
                 'data'      => $datas,
-                'message'   => "User created successfully.",
+                'message'   => 'User created successfully.',
             ], 201);
         }
         catch(\Throwable $th){
@@ -156,7 +156,7 @@ class UserAccessController extends Controller{
             return response()->json([
                 'success'   => true,
                 'data'      => $datas,
-                'message'   => "User updated successfully.",
+                'message'   => 'User updated successfully.',
             ], 200);
         }
         catch(\Throwable $th){
@@ -200,7 +200,7 @@ class UserAccessController extends Controller{
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([
                 'status'    => 409,
-                'message'   => $th,
+                'message'   => null,
             ]);
         }
     }

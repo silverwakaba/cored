@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 class RBACHelper{
     // User prop
     public static function userProp($id, $prop = null){
+        // Load user data
         $data = User::with([
             'roles', 'permissions'
         ])->find($id);

@@ -2,7 +2,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-{{ $col }}">
+                <div class="col-sm-{{ $col }}">
                     <h1 class="m-0">
                         @if($previous)
                             <a href="{{ $previous }}" class="btn btn-light">
@@ -13,7 +13,7 @@
                     </h1>
                 </div>
                 @if($breadcrumb)
-                    <div class="col-6">
+                    <div class="col-sm-6">
                         {{ Breadcrumbs::render($breadcrumb) }}
                     </div>
                 @endif

@@ -75,7 +75,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         // Do something if true
         if($rbacCheck == true){
             // Update the data from the parents function
-            return parent::activation($id, $data);
+            return parent::update($id, $data);
         }
 
         // Otherwise return null response

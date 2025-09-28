@@ -89,7 +89,7 @@ class JwtController extends Controller{
 
             // Attempt auth
             if(!$token = auth()->guard('api')->setTTL($tokenTTL)->attempt(
-                array_merge($credentials, ['active' => true])
+                array_merge($credentials, ['is_active' => true])
             )){
                 // Error message
                 return response()->json([

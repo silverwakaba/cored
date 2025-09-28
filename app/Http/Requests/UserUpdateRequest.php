@@ -23,7 +23,7 @@ class UserUpdateRequest extends FormRequest{
     public function rules() : array{
         return [
             'name'  => ['required', 'string'],
-            'email' => ['required', 'email', Rule::unique('users')->ignore(AuthHelper::authID())],
+            // 'email' => ['required', 'email', Rule::unique('users')->ignore(AuthHelper::authID())],
         ];
     }
 }

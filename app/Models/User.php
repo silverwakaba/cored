@@ -27,7 +27,7 @@ class User extends Authenticatable implements JWTSubject{
         'password',
         'token',
         'token_expire_at',
-        'active',
+        'is_active',
     ];
 
     /**
@@ -36,10 +36,10 @@ class User extends Authenticatable implements JWTSubject{
      * @var list<string>
      */
     protected $hidden = [
+        'email_verified_at',
         'password',
         'token',
         'token_expire_at',
-        'active',
     ];
 
     /**

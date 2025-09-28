@@ -65,3 +65,9 @@ Breadcrumbs::for('apps.rbac.role', function (BreadcrumbTrail $trail){
     $trail->parent('apps.rbac');
     $trail->push('Role', route('fe.apps.rbac.role.index'));
 });
+
+// Apps-RBAC-UAC
+Breadcrumbs::for('apps.rbac.uac', function (BreadcrumbTrail $trail){
+    $trail->parent('apps.rbac');
+    $trail->push('User Access Control', route('fe.apps.rbac.uac.index'));
+});

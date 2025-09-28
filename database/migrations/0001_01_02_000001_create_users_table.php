@@ -17,7 +17,7 @@ return new class extends Migration{
             $table->string('password');
             $table->mediumText('token')->nullable();
             $table->dateTime('token_expire_at')->nullable();
-            $table->boolean('active')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
 

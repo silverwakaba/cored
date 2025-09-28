@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 // Core Controller
 use App\Http\Controllers\FE\Core\Access\PermissionController;
 use App\Http\Controllers\FE\Core\Access\RoleController;
+use App\Http\Controllers\FE\Core\Access\UserAccessController;
 use App\Http\Controllers\FE\Core\Auth\GeneralAuthController;
 use App\Http\Controllers\FE\Core\Shared\BasedataController;
 
@@ -95,6 +96,24 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
 
                 // Delete
                 Route::post('delete/{id}', 'delete')->name('delete');
+            });
+
+            // User Access Control
+            Route::prefix('uac')->name('uac.')->controller(UserAccessController::class)->group(function(){
+                // List
+                Route::get('/', 'index')->name('index');
+
+                // List
+                Route::get('list', 'list')->name('list');
+
+                // Create
+                Route::post('create', 'create')->name('create');
+
+                // Read
+                Route::get('read/{id}', 'read')->name('read');
+
+                // Update
+                Route::post('update/{id}', 'update')->name('update');
             });
         });
     });

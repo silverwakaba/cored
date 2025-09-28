@@ -162,7 +162,7 @@ class UserAccessController extends Controller{
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([
                 'status'    => 409,
-                'message'   => null,
+                'message'   => $th,
             ]);
         }
     }

@@ -1,7 +1,7 @@
 @extends('layouts.adminlte')
 @section('title', 'Login')
 @section('content')
-    <x-Adminlte.ContentWrapperComponent>
+    <x-Adminlte.ContentWrapperComponent breadcrumb="auth.login">
         <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="false" button="Login">
             <x-Form.InputForm name="email" type="email" text="Email" :required="true" />
             <x-Form.InputForm name="password" type="password" text="Password" :required="true" />

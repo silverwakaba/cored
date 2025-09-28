@@ -25,6 +25,9 @@ Route::prefix('/')->name('fe.')->middleware([
     Route::prefix('/')->name('page.')->group(function(){
         // Index
         Route::get('/', [PageController::class, 'index'])->name('index');
+
+        // Index auth
+        Route::get('auth', [PageController::class, 'auth'])->name('auth');
     });
 
     // General Auth

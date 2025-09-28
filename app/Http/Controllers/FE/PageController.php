@@ -23,6 +23,20 @@ class PageController extends Controller{
         return view('pages/blank');
     }
 
+    // Index auth
+    public function auth(){
+        // Data option
+        $datas = [
+            'breadcrumb'    => 'auth',
+            'title'         => 'Auth',
+        ];
+
+        // View
+        return view('pages/app/index-standardized', [
+            'datas' => $datas,
+        ]);
+    }
+
     // Index app
     public function app(){
         return view('pages/app/index');

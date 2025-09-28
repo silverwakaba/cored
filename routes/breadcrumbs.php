@@ -13,6 +13,28 @@ Breadcrumbs::for('index', function (BreadcrumbTrail $trail){
 });
 
 /**
+ * Auth
+*/
+
+// Auth
+Breadcrumbs::for('auth', function (BreadcrumbTrail $trail){
+    $trail->parent('index');
+    $trail->push('Auth', route('fe.page.auth'));
+});
+
+// Auth-Register
+Breadcrumbs::for('auth.register', function (BreadcrumbTrail $trail){
+    $trail->parent('auth');
+    $trail->push('Register', route('fe.auth.register'));
+});
+
+// Auth-Login
+Breadcrumbs::for('auth.login', function (BreadcrumbTrail $trail){
+    $trail->parent('auth');
+    $trail->push('Login', route('fe.auth.login'));
+});
+
+/**
  * Apps
 */
 

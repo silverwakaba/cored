@@ -35,9 +35,6 @@ Route::prefix('/')->name('be.')->group(function(){
                     Route::post('create', 'createToken')->name('create');
                 });
             });
-
-            // OAuth2
-            // TBA
         });
 
         // Menu

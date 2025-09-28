@@ -74,11 +74,26 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
 
         // Do something if true
         if($rbacCheck == true){
-            // Update the data
-            return parent::update($id, $data);
-        } else {
-            // Return null response
-            return null;
+            // Update the data from the parents function
+            return parent::activation($id, $data);
         }
+
+        // Otherwise return null response
+        return null;
+    }
+
+    // Activate (Equal to activation but bundled with RBAC)
+    public function activate($id, $data){
+        // Check role level
+        $rbacCheck = RBACHelper::roleLevelCompare(parent::withRelation(['roles'])->find($id)->roles, auth()->user()->roles);
+
+        // Do something if true
+        if($rbacCheck == true){
+            // Update the data from the parents function
+            return parent::activation($id, $data);
+        }
+
+        // Otherwise return null response
+        return null;
     }
 }

@@ -168,7 +168,7 @@ class UserAccessController extends Controller{
     }
 
     // Activation
-    public function activation(Request $request){
+    public function activation($id, Request $request){
         try{
             // Validate input
             $validator = Validator::make($request->all(), (new UserActivationRequest())->rules());
@@ -181,31 +181,11 @@ class UserAccessController extends Controller{
                 ], 422);
             }
 
-            // Init id
-            $id = null;
-            
-            // De/Activating specific user
-            if(
-                // User within role level 1 can de/activating specific user
-                (AuthHelper::roleLevel('1') == true) && (in_array($request->id, AuthHelper::roleUser(['Root'])))
-
-                xor
-
-                // User within role level 3 can de/activating specific user, but they can't de/activating user with 'Root' role
-                (AuthHelper::roleLevel('3') == true) && (!in_array($request->id, AuthHelper::roleUser(['Root'])))
-            ){
-                // Specific user id
-                $id = $request->id;
-            } else{
-                // User outside role level 1 and 3 can only de/activating their own
-                $id = AuthHelper::authID();
-            }
-
             // Init activation
-            $activation = (bool) $request->activation;
+            return $activation = (bool) $request->activation;
 
             // Read user account
-            $datas = $this->repositoryInterface->activation($id, $activation);
+            $datas = $this->repositoryInterface->activate($id, $activation);
 
             // State message
             $state = ($activation == true) ? 'activated' : 'deactivated';
@@ -220,7 +200,7 @@ class UserAccessController extends Controller{
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([
                 'status'    => 409,
-                'message'   => null,
+                'message'   => $th,
             ]);
         }
     }

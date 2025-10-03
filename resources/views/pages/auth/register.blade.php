@@ -52,7 +52,7 @@
                                 toast: true,
                                 icon: 'success',
                                 position: 'top-right',
-                                text: response.message,
+                                text: response.responseJSON.message,
                                 timer: 1500,
                                 showConfirmButton: false,
                             }).then(() => {
@@ -64,7 +64,7 @@
                             // API error
                             Swal.fire({
                                 icon: 'error',
-                                text: response.message || 'Something went wrong.',
+                                text: response.responseJSON.message || 'Something went wrong.',
                             }).then(() => {
                                 // Reset form processing state
                                 setProcessingState(false);
@@ -76,7 +76,7 @@
                         if([200, 419].includes(response.status)){
                             Swal.fire({
                                 icon: 'warning',
-                                text: response.message || 'We encountered a fatal error. Please try reloading the page.',
+                                text: response.responseJSON.message || 'We encountered a fatal error. Please try reloading the page.',
                                 allowOutsideClick: () => {
                                     return false;
                                 },

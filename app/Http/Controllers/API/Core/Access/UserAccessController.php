@@ -89,12 +89,12 @@ class UserAccessController extends Controller{
                 'password'  => bcrypt(GeneralHelper::randomPassword()),
             ])->role($request->role)->register();
 
-            // Return created data
-            return response()->json([
-                'success'   => true,
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 201,
                 'data'      => $datas,
                 'message'   => 'User created successfully.',
-            ], 201);
+            ]);
         }
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([
@@ -152,17 +152,17 @@ class UserAccessController extends Controller{
                 'email' => $request->email,
             ]);
 
-            // Return updated data
-            return response()->json([
-                'success'   => true,
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'data'      => $datas,
                 'message'   => 'User updated successfully.',
-            ], 200);
+            ]);
         }
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([
                 'status'    => 409,
-                'message'   => $th,
+                'message'   => null,
             ]);
         }
     }
@@ -182,7 +182,7 @@ class UserAccessController extends Controller{
             }
 
             // Init activation
-            return $activation = (bool) $request->activation;
+            $activation = (bool) $request->activation;
 
             // Read user account
             $datas = $this->repositoryInterface->activate($id, $activation);
@@ -190,12 +190,12 @@ class UserAccessController extends Controller{
             // State message
             $state = ($activation == true) ? 'activated' : 'deactivated';
 
-            // Return created data
-            return response()->json([
-                'success'   => true,
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'data'      => $datas,
                 'message'   => "User $state successfully.",
-            ], 200);
+            ]);
         }
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([

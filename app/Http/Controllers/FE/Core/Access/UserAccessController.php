@@ -8,6 +8,7 @@ use App\Contracts\ApiRepositoryInterface;
 
 // Helper
 use App\Helpers\ErrorHelper;
+use App\Helpers\RBACHelper;
 
 // Internal
 use Illuminate\Http\Request;
@@ -86,7 +87,7 @@ class UserAccessController extends Controller{
         ]);
 
         // Sync role to user if update is success
-        if(($update->status() == 200) && ($request->role)){
+        if(isset($update) && isset($request->role) && ($update->status() == 200) && (RBACHelper::roleLevelCompare(RBACHelper::userProp($id, 'role'), auth()->user()->roles) == true)){
             // Sync role
             $sync = $this->apiRepository->withToken()->post('be.core.rbac.role.stu', [
                 'id'    => $update['data']['id'],

@@ -50,7 +50,7 @@
                                 toast: true,
                                 icon: 'success',
                                 position: 'top-right',
-                                text: response.responseJSON.message,
+                                text: response.message || response.responseJSON.message || 'Something went wrong.',
                                 timer: 1500,
                                 showConfirmButton: false,
                             }).then(() => {
@@ -62,7 +62,7 @@
                             // API error
                             Swal.fire({
                                 icon: 'error',
-                                text: response.responseJSON.message || 'Something went wrong.',
+                                text: response.message || response.responseJSON.message || 'Something went wrong.',
                             }).then(() => {
                                 // Reset form processing state
                                 setProcessingState(false);
@@ -74,7 +74,7 @@
                         if([200, 419].includes(response.status)){
                             Swal.fire({
                                 icon: 'warning',
-                                text: response.responseJSON.message || 'We encountered a fatal error. Please try reloading the page.',
+                                text: response.message || response.responseJSON.message || 'Something went wrong.',
                                 allowOutsideClick: () => {
                                     return false;
                                 },
@@ -96,7 +96,7 @@
                                 toast: true,
                                 icon: 'error',
                                 position: 'top-right',
-                                text: response.responseJSON.message,
+                                text: response.message || response.responseJSON.message || 'Something went wrong.',
                                 timer: 3000,
                                 showConfirmButton: false,
                             });

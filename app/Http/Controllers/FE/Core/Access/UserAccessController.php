@@ -101,4 +101,25 @@ class UserAccessController extends Controller{
         // Response for $update action
         return response()->json($update->json(), $update->status());
     }
+
+    // Activation
+    public function activation($id, Request $request){
+        // Activation
+        if($request->is_active == true){
+            // If activated then deactivate
+            $is_active = false;
+        } else{
+            // If deactivated then activate
+            $is_active = true;
+        }
+
+        // Make http call
+        $http = $this->apiRepository->withToken()->post('be.core.rbac.uac.activation', [
+            'id'            => $id,
+            'activation'    => $is_active,
+        ]);
+
+        // Response
+        return response()->json($http->json(), $http->status());
+    }
 }

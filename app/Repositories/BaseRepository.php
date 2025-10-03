@@ -255,8 +255,9 @@ abstract class BaseRepository{
             $datas = $this->find($id);
 
             // Update status
+            // Boolean column is identified with "is_" prefixes
             $datas->update([
-                'active' => $status,
+                'is_active' => $status,
             ]);
 
             // Return response

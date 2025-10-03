@@ -23,7 +23,7 @@
             // Load init function
             initDatatable();
             initUpsert();
-            initDelete();
+            initActivation();
         });
 
         // Init datatable
@@ -45,7 +45,7 @@
                         // API error
                         Swal.fire({
                             icon: 'warning',
-                            text: response.responseJSON.message,
+                            text: response.message || response.responseJSON.message || 'Something went wrong.',
                             allowOutsideClick: () => {
                                 return false;
                             },
@@ -91,7 +91,7 @@
                                     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Action</button>
                                     <div class="dropdown-menu btn-block">
                                         <button id="btn-upsert" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-pen-to-square mr-2"></i>Edit</button>
-                                        <button id="btn-delete" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-trash mr-2"></i>Delete</button>
+                                        <button id="btn-activation" class="dropdown-item" data-id="${ row.id }" data-isactive="${ row.is_active }"><i class="fas fa-history mr-2"></i>De/activate</button>
                                     </div>
                                 </div>
                             `;
@@ -256,7 +256,7 @@
                             // Success
                             Swal.fire({
                                 icon: 'success',
-                                text: response.responseJSON.message,
+                                text: response.message || response.responseJSON.message || 'Something went wrong.',
                                 allowOutsideClick: () => {
                                     return false;
                                 },
@@ -278,7 +278,7 @@
                             // API error
                             Swal.fire({
                                 icon: 'error',
-                                text: response.responseJSON.message || 'Something went wrong.',
+                                text: response.message || response.responseJSON.message || 'Something went wrong.',
                             }).then(() => {
                                 // Reset form processing state
                                 setProcessingState(false);
@@ -290,7 +290,7 @@
                         if([200, 419].includes(response.status)){
                             Swal.fire({
                                 icon: 'warning',
-                                text: response.responseJSON.message || 'We encountered a fatal error. Please try reloading the page.',
+                                text: response.message || response.responseJSON.message || 'Something went wrong.',
                                 allowOutsideClick: () => {
                                     return false;
                                 },
@@ -312,7 +312,7 @@
                                 toast: true,
                                 icon: 'error',
                                 position: 'top-right',
-                                text: response.responseJSON.message,
+                                text: response.message || response.responseJSON.message || 'Something went wrong.',
                                 timer: 3000,
                                 showConfirmButton: false,
                             });
@@ -333,17 +333,20 @@
             });
         }
 
-        // Init delete
-        function initDelete(){
+        // Init activation
+        function initActivation(){
             // Init delete
-            $('body').on('click', '#btn-delete', function(){
+            $('body').on('click', '#btn-activation', function(){
                 // Get data id
                 let dataID = $(this).data('id');
+
+                // Get data prop
+                let dataIsActive = $(this).data('isactive');
 
                 // Show confirmation
                 Swal.fire({
                     icon: 'warning',
-                    text: 'Are you sure? This action cannot be undone.',
+                    text: 'Are you sure?',
                     focusDeny: true,
                     showConfirmButton: true,
                     showDenyButton: true,
@@ -355,7 +358,7 @@
                 }).then((result) => {
                     if(result.isConfirmed){
                         // Get route with id placeholder
-                        const routeBase = `{{ route('fe.apps.rbac.permission.delete', ['id' => '::ID::']) }}`;
+                        const routeBase = `{{ route('fe.apps.rbac.uac.activation', ['id' => '::ID::']) }}`;
 
                         // Change id placeholder with the actual id
                         routeAction = routeBase.replace('::ID::', dataID);
@@ -366,6 +369,7 @@
                             url: routeAction,
                             dataType: 'json',
                             data: {
+                                'is_active': dataIsActive,
                                 '_token': '{{ csrf_token() }}',
                             },
                             success: function(response){
@@ -374,7 +378,7 @@
                                     // Success
                                     Swal.fire({
                                         icon: 'success',
-                                        text: response.responseJSON.message,
+                                        text: response.message || response.responseJSON.message || 'Something went wrong.',
                                         allowOutsideClick: () => {
                                             return false;
                                         },
@@ -387,7 +391,7 @@
                                     // API error
                                     Swal.fire({
                                         icon: 'error',
-                                        text: response.responseJSON.message || 'Something went wrong.',
+                                        text: response.message || response.responseJSON.message || 'Something went wrong.',
                                     }).then(() => {
                                         // Reset form processing state
                                         setProcessingState(false);
@@ -399,7 +403,7 @@
                                 if([200, 419].includes(response.status)){
                                     Swal.fire({
                                         icon: 'warning',
-                                        text: response.responseJSON.message || 'We encountered a fatal error. Please try reloading the page.',
+                                        text: response.message || response.responseJSON.message || 'Something went wrong.',
                                         allowOutsideClick: () => {
                                             return false;
                                         },

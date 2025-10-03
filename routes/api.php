@@ -98,7 +98,7 @@ Route::prefix('/')->name('be.')->group(function(){
                     Route::post('update/{id}', 'update')->name('update');
 
                     // Activation
-                    // Route::post('activation/{id}', 'activation')->name('activation')->middleware(['role:Root|Admin']);
+                    Route::post('activation/{id}', 'activation')->name('activation')->middleware(['role:Root|Admin']);
                 });
             });
         });

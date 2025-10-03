@@ -114,6 +114,9 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
 
                 // Update
                 Route::post('update/{id}', 'update')->name('update');
+
+                // Activation
+                Route::post('activation/{id}', 'activation')->name('activation');
             });
         });
     });

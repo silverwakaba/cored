@@ -10,7 +10,7 @@ class MenuSeeder extends Seeder{
         // Create header | Fixed
         $headerGeneral = Menu::create([
             'name'  => 'Main Menu',
-            'type'  => 'header',
+            'type'  => 'h',
             'order' => 1,
         ]);
 
@@ -18,8 +18,7 @@ class MenuSeeder extends Seeder{
         $parentGeneral = Menu::create([
             'name'      => 'Home',
             'icon'      => 'fas fa-tachometer-alt',
-            'route'     => 'xxx',
-            'type'      => 'parent',
+            'type'      => 'p',
             'parent_id' => $headerGeneral->id,
             'order'     => 1,
         ]);
@@ -29,7 +28,7 @@ class MenuSeeder extends Seeder{
             'name'      => 'Go Home',
             'icon'      => 'far fa-circle',
             'route'     => 'xxx',
-            'type'      => 'child',
+            'type'      => 'c',
             'parent_id' => $parentGeneral->id,
             'order'     => 1,
         ]);

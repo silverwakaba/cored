@@ -8,13 +8,12 @@ return new class extends Migration{
     public function up() : void{
         Schema::create('menus', function (Blueprint $table){
             $table->id();
+            $table->foreignId('parent_id')->nullable()->constrained('menus')->onDelete('cascade');
             $table->string('name');
             $table->string('icon')->nullable();
             $table->string('route')->nullable();
-            $table->string('type'); // header, parent, child
-            $table->foreignId('parent_id')->nullable()->constrained('menus')->onDelete('cascade');
-            $table->integer('order')->default(0);
-            $table->timestamps();
+            $table->string('type')->comment('h = header. p = parent. c = Child.');
+            $table->integer('order')->default(1);
         });
 
         // Pivot table for menu-role relationship
@@ -26,7 +25,7 @@ return new class extends Migration{
     }
 
     public function down() : void{
-        Schema::dropIfExists('menu_role');
         Schema::dropIfExists('menus');
+        Schema::dropIfExists('menu_role');
     }
 };

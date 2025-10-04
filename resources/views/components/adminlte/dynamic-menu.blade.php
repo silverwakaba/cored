@@ -19,7 +19,7 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     @foreach($menuItems as $item)
         @if(empty($item['parent_id']))
-            @if($item['type'] === 'header')
+            @if($item['type'] == 'h')
                 <li class="nav-header">{{ $item['name'] }}</li>
             @endif
             @if(!empty($item['children']))

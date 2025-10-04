@@ -7,8 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Models\Role;
 
 class Menu extends Model{
+    protected $table = 'menus';
+    protected $primaryKey = 'id';
+    public $timestamps = false;
+
     protected $fillable = [
-        'name', 'icon', 'route', 'type', 'parent_id', 'order'
+        'name',
+        'icon',
+        'route',
+        'type',
+        'parent_id',
+        'order'
     ];
 
     public function parent(){
@@ -48,9 +57,4 @@ class Menu extends Model{
             return $child->hasAccess($user);
         });
     }
-
-    // public function getUrlAttribute(){
-    //     return $this->route ? 'A' : '#';
-    //     // return $this->route ? route($this->route) : '#';
-    // }
 }

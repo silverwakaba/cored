@@ -40,9 +40,7 @@ class MenuController extends Controller{
         return response()->json($filteredMenus);
     }
 
-    /**
-     * Apply both role-based and authentication filtering to query
-     */
+    // Apply both role-based and authentication filtering to query
     private function applyQueryFilters($query, $user, $isAuthenticated){
         $query->where(function($q) use($user, $isAuthenticated){
             // Apply authentication filtering
@@ -82,7 +80,7 @@ class MenuController extends Controller{
             if($menu->children->isNotEmpty()){
                 $menu->children = $this->filterByHierarchicalAuthentication($menu->children, $isAuthenticated);
                 
-                // If after filtering, this menu has no children and it's a header/parent type, hide it
+                // If after filtering, this menu has no children and it's a header/parent type, then hide it
                 if($menu->children->isEmpty() && in_array($menu->type, ['h', 'p'])){
                     return false;
                 }

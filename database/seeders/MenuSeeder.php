@@ -7,35 +7,84 @@ use Illuminate\Database\Seeder;
 
 class MenuSeeder extends Seeder{
     public function run() : void{
-        // Create header | Fixed
+        /**
+         * General
+        */
+
+        // Create header
         $headerGeneral = Menu::create([
             'name'  => 'Main Menu',
             'type'  => 'h',
             'order' => 1,
         ]);
 
-        // Create parent | For general
+        // Create parent
         $parentGeneral = Menu::create([
-            'name'      => 'Home',
-            'icon'      => 'fas fa-tachometer-alt',
+            'name'      => 'Main Menu',
+            'icon'      => 'fas fa-gauge',
             'type'      => 'p',
             'parent_id' => $headerGeneral->id,
             'order'     => 1,
         ]);
 
-        // Create child | For general
+        // Create child
         $childGeneral = Menu::create([
-            'name'      => 'Go Home',
-            'icon'      => 'far fa-circle',
-            'route'     => 'xxx',
+            'name'      => 'Home',
+            'route'     => 'fe.page.index',
             'type'      => 'c',
             'parent_id' => $parentGeneral->id,
             'order'     => 1,
         ]);
 
+        /**
+         * Apps
+        */
+
+        // Create header
+        $headerApps = Menu::create([
+            'name'              => 'Apps',
+            'type'              => 'h',
+            'order'             => $headerGeneral->order + 1,
+            'is_authenticate'   => true,
+        ]);
+
+        // Create parent - RBAC
+        $parentAppsRBAC = Menu::create([
+            'name'      => 'RBAC',
+            'icon'      => 'fas fa-sitemap',
+            'type'      => 'p',
+            'parent_id' => $headerApps->id,
+            'order'     => 999999,
+        ]);
+
+        // Create child - RBAC - Role
+        $childAppsRBACRole = Menu::create([
+            'name'      => 'Role',
+            'route'     => 'fe.apps.rbac.role.index',
+            'type'      => 'c',
+            'parent_id' => $parentAppsRBAC->id,
+            'order'     => 1,
+        ]);
+
+        // Create child - RBAC - Permission
+        $childAppsRBACPermission = Menu::create([
+            'name'      => 'Permission',
+            'route'     => 'fe.apps.rbac.permission.index',
+            'type'      => 'c',
+            'parent_id' => $parentAppsRBAC->id,
+            'order'     => $childAppsRBACRole->order + 1,
+        ]);
+
+        // Create child - RBAC - UAC
+        $childAppsRBACUAC = Menu::create([
+            'name'      => 'UAC',
+            'route'     => 'fe.apps.rbac.uac.index',
+            'type'      => 'c',
+            'parent_id' => $parentAppsRBAC->id,
+            'order'     => $childAppsRBACPermission->order + 1,
+        ]);
+
         // Assign roles to menu items
-        // $headerGeneral->roles()->attach(1);
-        // $parent->roles()->attach(1);
-        // $child->roles()->attach(1);
+        $parentAppsRBAC->roles()->attach([1,2,3]);
     }
 }

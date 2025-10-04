@@ -6,9 +6,7 @@
 
 <li @class(["nav-item", "menu-open" => $hasChildren && isChildRouteActive($item['children'])])>
     <a href="{{ $hasChildren ? '#' : (Route::has($item['route']) ? route($item['route']) : '#') }}" @class(["nav-link", "active" => (isChildRouteActive($item['children']) || Route::currentRouteName() == $item['route'])])>
-        @if(!empty($item['icon']))
-            <i class="nav-icon {{ $item['icon'] }}"></i>
-        @endif
+        <i class="nav-icon {{ $item['icon'] ? $item['icon'] : 'far fa-circle' }}"></i>
         <p>
             {{ $item['name'] }}
             @if($hasChildren)

@@ -55,7 +55,7 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
         Route::get('/', [PageController::class, 'app'])->name('index');
 
         // Role-Based Access Control
-        Route::prefix('rbac')->name('rbac.')->group(function(){
+        Route::prefix('rbac')->name('rbac.')->middleware(['role:Root|Admin|Moderator'])->group(function(){
             // Index
             Route::get('/', [PageController::class, 'appRBAC'])->name('index');
 

@@ -12,12 +12,13 @@ class Menu extends Model{
     public $timestamps = false;
 
     protected $fillable = [
+        'parent_id',
         'name',
         'icon',
         'route',
         'type',
-        'parent_id',
-        'order'
+        'order',
+        'is_authenticate',
     ];
 
     public function parent(){

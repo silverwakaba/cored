@@ -6,14 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration{
     public function up() : void{
+        // Table for menu
         Schema::create('menus', function (Blueprint $table){
             $table->id();
             $table->foreignId('parent_id')->nullable()->constrained('menus')->onDelete('cascade');
             $table->string('name');
             $table->string('icon')->nullable();
             $table->string('route')->nullable();
-            $table->string('type')->comment('h = header. p = parent. c = Child.');
+            $table->string('type')->comment('h = header | p = parent | c = Child.');
             $table->integer('order')->default(1);
+            $table->boolean('is_authenticate')->nullable();
         });
 
         // Pivot table for menu-role relationship

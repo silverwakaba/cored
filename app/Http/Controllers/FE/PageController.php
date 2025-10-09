@@ -29,6 +29,23 @@ class PageController extends Controller{
         $datas = [
             'breadcrumb'    => 'auth',
             'title'         => 'Auth',
+            'navigation'    => [
+                // Register
+                [
+                    'icon'      => 'fas fa-user',
+                    'title'     => 'Register',
+                    'content'   => 'Register new account.',
+                    'link'      => route('fe.auth.register'),
+                ],
+
+                // Login
+                [
+                    'icon'      => 'fas fa-user-secret',
+                    'title'     => 'Login',
+                    'content'   => 'Login with existing account.',
+                    'link'      => route('fe.auth.login'),
+                ],
+            ],
         ];
 
         // View
@@ -48,6 +65,28 @@ class PageController extends Controller{
         $datas = [
             'breadcrumb'    => 'apps.rbac',
             'title'         => 'RBAC',
+            'navigation'    => [
+                // Role
+                [
+                    'icon'      => 'fas fa-crown',
+                    'title'     => 'Role',
+                    'link'      => route('fe.apps.rbac.role.index'),
+                ],
+
+                // Permission
+                [
+                    'icon'      => 'fas fa-tags',
+                    'title'     => 'Permission',
+                    'link'      => route('fe.apps.rbac.permission.index'),
+                ],
+
+                // UAC
+                [
+                    'icon'      => 'fas fa-users',
+                    'title'     => 'UAC',
+                    'link'      => route('fe.apps.rbac.uac.index'),
+                ],
+            ],
         ];
 
         // View

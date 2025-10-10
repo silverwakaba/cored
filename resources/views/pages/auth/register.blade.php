@@ -2,7 +2,7 @@
 @section('title', 'Register')
 @section('content')
     <x-Adminlte.ContentWrapperComponent breadcrumb="auth.register">
-        <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="true" button="Register">
+        <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="false" button="Register">
             <x-Form.InputForm name="name" type="text" text="Name" :required="true" />
             <x-Form.InputForm name="email" type="email" text="Email" :required="true" />
             <x-Form.InputForm name="password" type="password" text="Password" :required="true" />

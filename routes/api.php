@@ -41,6 +41,9 @@ Route::prefix('/')->name('be.')->group(function(){
         Route::prefix('menu')->name('menu.')->controller(MenuController::class)->group(function(){
             // Index
             Route::get('/', 'index')->name('index');
+
+            // Test
+            Route::post('test', 'test')->name('test');
         });
 
         // Role-based access control

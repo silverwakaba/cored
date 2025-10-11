@@ -8,6 +8,7 @@ use App\Helpers\RBACHelper;
 
 // Model
 use App\Models\User;
+use App\Models\UserRequest;
 use Spatie\Permission\Models\Role;
 
 // Interface
@@ -16,10 +17,14 @@ use App\Contracts\UserRepositoryInterface;
 // Internal
 use Illuminate\Support\Facades\DB;
 
+// External
+use Carbon\Carbon;
+
 class EloquentUserRepository extends BaseRepository implements UserRepositoryInterface{
     // Property
     protected $pendingUser;
     protected $roleToAssign;
+    protected $rolePublic;
 
     // Constructor
     public function __construct(User $model){
@@ -43,9 +48,18 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
 
         // This one is crucial so this is implemented inside the repo
         // Can only assign role up to user highest role to prevent privilege escalation
-        // eg. User with role "Moderator" can't assign role higher than "Moderator" - TLDR; Moderator can't add their own version of Root
+        // eg. User with role "Moderator" can't assign role higher than "Moderator" - TLDR; Moderator can't add their own version of Root, or it seems.
         $this->roleToAssign = array_diff(collect(Role::select('name')->whereIn('name', $roles)->get())->pluck('name')->toArray(), RBACHelper::roleLevel(auth()->user()->roles, 'excluded'));
         
+        // Chainable
+        return $this;
+    }
+
+    // Role for public
+    public function rolePublic(){
+        // Static public role
+        $this->rolePublic = collect(Role::select('name')->whereIn('name', ['User'])->get())->pluck('name')->toArray();
+
         // Chainable
         return $this;
     }
@@ -60,6 +74,11 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
             // Assign role
             if(isset($this->roleToAssign)){
                 $datas->syncRoles($this->roleToAssign);
+            }
+
+            // Assign role for public
+            if(isset($this->rolePublic)){
+                $datas->syncRoles($this->rolePublic);
             }
 
             // Return response
@@ -95,5 +114,38 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
 
         // Otherwise return null response
         return null;
+    }
+
+    // Verify account
+    public function verifyAccount($id){
+        // Implementing db transaction
+        return DB::transaction(function() use($id){
+            // Datas
+            $datas = UserRequest::with([
+                'belongsToUser',
+            ])->select(['id', 'users_id', 'token'])->where([
+                ['base_requests_id', '=', 1],
+                'token' => $id,
+            ])->first();
+
+            // Request data
+            $request = $datas;
+
+            // Invalidate token
+            $request->update([
+                'token' => null,
+            ]);
+
+            // User data
+            $user = $datas->belongsToUser;
+
+            // Update verification date
+            $user->update([
+                'email_verified_at' => Carbon::now()->toDateTimeString(),
+            ]);
+
+            // Return response
+            return $datas;
+        });
     }
 }

@@ -124,4 +124,26 @@ class GeneralAuthController extends Controller{
             return ErrorHelper::apiErrorResult();
         }
     }
+
+    // Verify account
+    public function verifyAccount(Request $request){
+        try{
+            // Make http call
+            $http = $this->apiRepository->post('be.core.auth.jwt.verify-account', [
+                'id' => $request->id,
+            ]);
+
+            // If success
+            if(($http->status() == 200)){
+                // Redirect to login page
+                return redirect()->route('fe.auth.login')->with('class', 'success')->with('message', $http['message']);
+            }
+
+            // Redirect to login page
+            return redirect()->route('fe.auth.login')->with('class', 'danger')->with('message', $http['message']);
+        }
+        catch(\Throwable $th){
+            return ErrorHelper::apiErrorResult();
+        }
+    }
 }

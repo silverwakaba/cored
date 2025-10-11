@@ -26,6 +26,9 @@ Route::prefix('/')->name('be.')->group(function(){
                 // Logout
                 Route::post('logout', 'logout')->name('logout')->middleware(['jwt.be']);
 
+                // Verify account
+                Route::post('verify-account', 'verifyAccount')->name('verify-account');
+
                 // JWT Token
                 Route::prefix('token')->name('token.')->middleware(['jwt.be'])->group(function(){
                     // Validate

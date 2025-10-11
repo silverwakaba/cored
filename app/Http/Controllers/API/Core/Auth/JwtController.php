@@ -9,6 +9,9 @@ use App\Contracts\UserRepositoryInterface;
 // Helper
 use App\Helpers\ErrorHelper;
 
+// Mail
+use App\Mail\UserVerifyEmail;
+
 // Request
 use App\Http\Requests\UserAuthLoginRequest;
 use App\Http\Requests\UserAuthLostPasswordRequest;
@@ -17,8 +20,10 @@ use App\Http\Requests\UserAuthResetPasswordRequest;
 
 // Internal
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 // External
@@ -53,13 +58,21 @@ class JwtController extends Controller{
                 'name'      => $request->name,
                 'email'     => $request->email,
                 'password'  => bcrypt($request->password),
-            ])->role('User')->register();
+            ])->rolePublic()->register();
+
+            // Send email
+            try{
+                Mail::to($datas['email'])->send(new UserVerifyEmail($datas['id']));
+            }
+            catch(\Throwable $th){
+                // skip error
+            }
 
             // Return created user
             return response()->json([
                 'success'   => true,
                 'data'      => $datas,
-                'message'   => "Registration successful.",
+                'message'   => 'Registration successful.',
             ], 201);
         }
         catch(\Throwable $th){
@@ -95,9 +108,9 @@ class JwtController extends Controller{
                 return response()->json([
                     'success'   => false,
                     'errors'    => [
-                        'password' => "Password is not recognized.",
+                        'password' => 'Password is not recognized.',
                     ],
-                    'message'   => "Authentication failed.",
+                    'message'   => 'Authentication failed.',
                 ], 401);
             }
 
@@ -107,7 +120,8 @@ class JwtController extends Controller{
             // Get unix timestamp
             $timestamp = Carbon::now()->addMinutes($tokenTTL)->toIso8601String();
 
-            // Store token inside databasse if user want the session to be remembered
+            // Store token inside database if user want the session to be remembered
+            // It will then be renewed periodically in the background via cron
             if(($request->remember == true)){
                 // Update token
                 $this->userRepository->update($user->id, [
@@ -122,7 +136,7 @@ class JwtController extends Controller{
                 'data'      => $user,
                 'token'     => $token,
                 'token_ttl' => $timestamp,
-                'message'   => "Session started successfully.",
+                'message'   => 'Session started successfully.',
             ], 200);
         }
         catch(\Throwable $th){
@@ -139,7 +153,7 @@ class JwtController extends Controller{
             // Return response
             return response()->json([
                 'success'   => true,
-                'message'   => "Authorized token.",
+                'message'   => 'Authorized token.',
             ], 200);
         }
         catch(\Throwable $th){
@@ -167,7 +181,7 @@ class JwtController extends Controller{
                 'success'   => true,
                 'token'     => $newToken,
                 'token_ttl' => $timestamp,
-                'message'   => "Token refreshed successfully."
+                'message'   => 'Token refreshed successfully.',
             ], 200);
         }
         catch(\Throwable $th){
@@ -187,7 +201,25 @@ class JwtController extends Controller{
             // Return response
             return response()->json([
                 'success'   => true,
-                'message'   => "Authentication revoked successfully.",
+                'message'   => 'Authentication revoked successfully.',
+            ], 200);
+        }
+        catch(\Throwable $th){
+            return ErrorHelper::apiErrorResult();
+        }
+    }
+
+    // Verify account
+    public function verifyAccount(Request $request){
+        try{
+            // Verify account
+            $datas = $this->userRepository->verifyAccount($request->id);
+
+            // Return response
+            return response()->json([
+                'success'   => true,
+                'data'      => $datas,
+                'message'   => 'Account verification successful.',
             ], 200);
         }
         catch(\Throwable $th){

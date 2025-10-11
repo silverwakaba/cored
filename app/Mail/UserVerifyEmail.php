@@ -12,7 +12,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Queue\SerializesModels;
 
-class UserVerifyEmail extends Mailable{
+class UserVerifyEmail extends Mailable implements ShouldQueue{
     use Queueable, SerializesModels;
 
     public $mailID;
@@ -43,7 +43,7 @@ class UserVerifyEmail extends Mailable{
             view: 'mailer.verify',
             with: [
                 'routeTo' => URL::temporarySignedRoute(
-                    'fe.auth.verify', now()->addMinutes(60), ['id' => $datas->token]
+                    'fe.auth.verify-account', now()->addMinutes(60), ['id' => $datas->token]
                 ),
             ],
         );

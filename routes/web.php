@@ -45,6 +45,9 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
         // Logout
         Route::post('logout', 'logout')->name('logout')->middleware(['jwt.fe'])->withoutMiddleware(['jwt.guest']);
 
+        // Verify account
+        Route::get('verify-account', 'verifyAccount')->name('verify-account');
+
         // Validate Token
         Route::get('validate-token', 'validate')->name('validate');
     });

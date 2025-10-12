@@ -37,8 +37,13 @@ class UserVerifyEmail extends Mailable implements ShouldQueue{
      * Get the message content definition.
      */
     public function content() : Content{
+        // Force app url
+        config(['app.url' => config('app.url')]);
+
+        // Get request
         $datas = UserRequest::select('token')->where('id', '=', $this->mailID)->first();
 
+        // Response
         return new Content(
             view: 'mailer.verify',
             with: [

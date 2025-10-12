@@ -5,6 +5,9 @@
         </li>
         @guest
             <li class="nav-item">
+                <a class="nav-link" href="{{ route('fe.page.auth') }}">Auth</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('fe.auth.register') }}">Register</a>
             </li>
             <li class="nav-item">

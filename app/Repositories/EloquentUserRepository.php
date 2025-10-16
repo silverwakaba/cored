@@ -16,6 +16,8 @@ use App\Contracts\UserRepositoryInterface;
 
 // Internal
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 // External
 use Carbon\Carbon;
@@ -116,6 +118,41 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         return null;
     }
 
+    // Search account
+    public function search($data){
+        // Start query
+        $datas = User::query();
+
+        // If $data variable is provided
+        if($data){
+            // Filter the id
+            if(isset($data['id'])){
+                $datas->where('id', '=', $data['id']);
+            }
+
+            // Filter the email
+            if(isset($data['email'])){
+                $datas->where('email', '=', $data['email']);
+            }
+
+            // Filter null $data
+            if(collect($data)->every(fn($value) => is_null($value))){
+                // If $data variable is provided but null
+                $datas->where('id', '=', 0);
+            }
+
+        } else {
+            // If no $data variable is provided
+            $datas->where('id', '=', 0);
+        }
+        
+        // End query
+        $datas = $datas->first();
+
+        // Return response
+        return $datas;
+    }
+
     // Verify account
     public function verifyAccount($id){
         // Implementing db transaction
@@ -125,27 +162,63 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
                 'belongsToUser',
             ])->select(['id', 'users_id', 'token'])->where([
                 ['base_requests_id', '=', 1],
-                'token' => $id,
-            ])->first();
+                ['token', '=', $id],
+            ])->whereNotNull('token')->first();
 
-            // Request data
-            $request = $datas;
+            // Run if there's result
+            if($datas){
+                // Request data
+                $request = $datas;
 
-            // Invalidate token
-            $request->update([
-                'token' => null,
-            ]);
+                // Invalidate token
+                $request->update([
+                    'token' => null,
+                ]);
 
-            // User data
-            $user = $datas->belongsToUser;
+                // User data
+                $user = $datas->belongsToUser;
 
-            // Update verification date
-            $user->update([
-                'email_verified_at' => Carbon::now()->toDateTimeString(),
-            ]);
+                // Update verification date
+                $user->update([
+                    'email_verified_at' => Carbon::now()->toDateTimeString(),
+                ]);
+            }
 
             // Return response
             return $datas;
         });
+    }
+
+    // Verify check eligibility
+    public function verifyEligibility($id){
+        // Search user
+        $user = User::select(['*'])->where([
+            ['id', '=', $id],
+            ['is_active', '=', true],
+        ])->whereNull('email_verified_at')->first();
+
+        // Determine wether user is exist or not
+        if($user){
+            // Search request
+            $request = $user->hasOneUserRequest->where([
+                ['base_requests_id', '=', 1],
+                ['users_id', '=', $id],
+                ['updated_at', '<=', Carbon::now()->subHour()],
+            ])->latest()->first();
+
+            // Return response
+            if(isset($user) && isset($request)){
+                // Update the timestamp
+                $user->hasOneUserRequest()->touch();
+
+                // User is eligible for verify
+                return true;
+            } else {
+                // User is not eligible for verify
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

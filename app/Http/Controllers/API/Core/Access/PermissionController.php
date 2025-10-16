@@ -157,7 +157,7 @@ class PermissionController extends Controller{
 
             // Return response
             return GeneralHelper::jsonResponse([
-                'status'    => 201,
+                'status'    => 200,
                 'data'      => $datas,
                 'message'   => 'Permission updated successfully.',
             ]);

@@ -8,6 +8,7 @@ use App\Contracts\UserRepositoryInterface;
 
 // Helper
 use App\Helpers\ErrorHelper;
+use App\Helpers\GeneralHelper;
 
 // Mail
 use App\Mail\UserVerifyEmail;
@@ -65,18 +66,21 @@ class JwtController extends Controller{
                 Mail::to($datas['email'])->send(new UserVerifyEmail($datas['id']));
             }
             catch(\Throwable $th){
-                // skip error
+                // skip invoking the error
             }
 
-            // Return created user
-            return response()->json([
-                'success'   => true,
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 201,
                 'data'      => $datas,
                 'message'   => 'Registration successful.',
-            ], 201);
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -140,7 +144,10 @@ class JwtController extends Controller{
             ], 200);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -151,13 +158,16 @@ class JwtController extends Controller{
             $token = JWTAuth::getToken();
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'message'   => 'Authorized token.',
-            ], 200);
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => $th,
+            ]);
         }
     }
 
@@ -185,7 +195,10 @@ class JwtController extends Controller{
             ], 200);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -199,13 +212,16 @@ class JwtController extends Controller{
             $invalidateToken = JWTAuth::invalidate($token);
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'message'   => 'Authentication revoked successfully.',
-            ], 200);
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -216,14 +232,61 @@ class JwtController extends Controller{
             $datas = $this->userRepository->verifyAccount($request->id);
 
             // Return response
-            return response()->json([
-                'success'   => true,
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'data'      => $datas,
                 'message'   => 'Account verification successful.',
-            ], 200);
+            ]);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
+        }
+    }
+
+    // Reverify account
+    public function reverifyAccount(Request $request){
+        try{
+            // Search account
+            $search = $this->userRepository->search([
+                'id'    => $request->id,
+                'email' => $request->email,
+            ]);
+
+            // Check eligibility
+            $eligibility = $this->userRepository->verifyEligibility((isset($search['id']) ? $search['id'] : null));
+
+            // If account is not found and/or not eligible
+            if($eligibility == false){
+                // Return response
+                return GeneralHelper::jsonResponse([
+                    'status'    => 404,
+                    'message'   => 'This account is not eligible for verification. Please try again later.',
+                ]);
+            } else {
+                // Send email
+                try{
+                    Mail::to($search['email'])->send(new UserVerifyEmail($search['id']));
+                }
+                catch(\Throwable $th){
+                    // skip invoking the error
+                }
+            }
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $search,
+                'message'   => 'Account found. Please check your email.',
+            ]);
+        }
+        catch(\Throwable $th){
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => $th,
+            ]);
         }
     }
 }

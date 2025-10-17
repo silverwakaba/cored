@@ -29,8 +29,8 @@ Route::prefix('/')->name('be.')->group(function(){
                 // Verify account
                 Route::post('verify-account', 'verifyAccount')->name('verify-account');
 
-                // Reverify account
-                Route::post('reverify-account', 'reverifyAccount')->name('reverify-account');
+                // Verify account via token
+                Route::post('verify-account/{token}', 'verifyAccountTokenized')->name('verify-account-tokenized');
 
                 // JWT Token
                 Route::prefix('token')->name('token.')->middleware(['jwt.be'])->group(function(){

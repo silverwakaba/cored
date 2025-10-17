@@ -34,6 +34,12 @@ Breadcrumbs::for('auth.login', function (BreadcrumbTrail $trail){
     $trail->push('Login', route('fe.auth.login'));
 });
 
+// Auth-Verify Account
+Breadcrumbs::for('auth.verify-account', function (BreadcrumbTrail $trail){
+    $trail->parent('auth');
+    $trail->push('Verify Account', route('fe.auth.verify-account'));
+});
+
 /**
  * Apps
 */

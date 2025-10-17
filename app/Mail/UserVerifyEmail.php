@@ -48,7 +48,7 @@ class UserVerifyEmail extends Mailable implements ShouldQueue{
             view: 'mailer.verify',
             with: [
                 'routeTo' => URL::temporarySignedRoute(
-                    'fe.auth.verify-account', now()->addMinutes(60), ['id' => $datas->token]
+                    'fe.auth.verify-account-tokenized', now()->addMinutes(60), ['token' => $datas->token]
                 ),
             ],
         );

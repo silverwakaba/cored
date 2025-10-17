@@ -127,10 +127,31 @@ class GeneralAuthController extends Controller{
 
     // Verify account
     public function verifyAccount(Request $request){
+        return view('pages/auth/verify');
+    }
+
+    public function verifyAccountPost(Request $request){
         try{
             // Make http call
             $http = $this->apiRepository->post('be.core.auth.jwt.verify-account', [
-                'id' => $request->id,
+                'email'     => $request->email,
+                'agreement' => $request->agreement,
+            ]);
+
+            // Response
+            return response()->json($http->json(), $http->status());
+        }
+        catch(\Throwable $th){
+            return ErrorHelper::apiErrorResult();
+        }
+    }
+
+    // Verify account via token
+    public function verifyAccountTokenized($token){
+        try{
+            // Make http call
+            $http = $this->apiRepository->post('be.core.auth.jwt.verify-account-tokenized', [
+                'token' => $token,
             ]);
 
             // If success

@@ -18,6 +18,7 @@ use App\Http\Requests\UserAuthLoginRequest;
 use App\Http\Requests\UserAuthLostPasswordRequest;
 use App\Http\Requests\UserAuthRegisterRequest;
 use App\Http\Requests\UserAuthResetPasswordRequest;
+use App\Http\Requests\UserAuthVerifyRequest;
 
 // Internal
 use Illuminate\Http\Request;
@@ -228,27 +229,17 @@ class JwtController extends Controller{
     // Verify account
     public function verifyAccount(Request $request){
         try{
-            // Verify account
-            $datas = $this->userRepository->verifyAccount($request->id);
+            // Validate input
+            $validator = Validator::make($request->all(), (new UserAuthVerifyRequest())->rules());
 
-            // Return response
-            return GeneralHelper::jsonResponse([
-                'status'    => 200,
-                'data'      => $datas,
-                'message'   => 'Account verification successful.',
-            ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
-    }
+            // Check validation and stop if failed
+            if($validator->fails()){
+                return response()->json([
+                    'success'   => false,
+                    'errors'    => $validator->errors(),
+                ], 422);
+            }
 
-    // Reverify account
-    public function reverifyAccount(Request $request){
-        try{
             // Search user and it's eligibility
             $eligibility = $this->userRepository->search([
                 'id'    => $request->id,
@@ -276,6 +267,27 @@ class JwtController extends Controller{
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
                 'message'   => 'The account is found to be eligible for this action. Please check your email for more information.',
+            ]);
+        }
+        catch(\Throwable $th){
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
+        }
+    }
+
+    // Verify account via token
+    public function verifyAccountTokenized($token){
+        try{
+            // Verify account
+            $datas = $this->userRepository->verifyAccount($token);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas,
+                'message'   => 'Account verification successful.',
             ]);
         }
         catch(\Throwable $th){

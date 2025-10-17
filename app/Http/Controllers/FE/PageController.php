@@ -45,6 +45,14 @@ class PageController extends Controller{
                     'content'   => 'Login with existing account.',
                     'link'      => route('fe.auth.login'),
                 ],
+
+                // Verify account
+                [
+                    'icon'      => 'fas fa-check',
+                    'title'     => 'Verify Account',
+                    'content'   => 'Request a new verification email.',
+                    'link'      => route('fe.auth.verify-account'),
+                ],
             ],
         ];
 

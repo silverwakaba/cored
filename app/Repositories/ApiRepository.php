@@ -86,7 +86,8 @@ class ApiRepository implements ApiRepositoryInterface{
     // Post method | Add more possible id variable here
     public function post(string $route, array $data = []){
         return $this->baseRequest()->post(route($route, [
-            'id' => isset($data['id']) ? $data['id'] : null,
+            'id'    => isset($data['id']) ? $data['id'] : null,
+            'token' => isset($data['token']) ? $data['token'] : null,
         ]), $data);
     }
 

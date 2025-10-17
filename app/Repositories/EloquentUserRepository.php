@@ -208,27 +208,30 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
             $datas = $datas->first();
         }
 
-        // Include the request to the logic
-        $requests = $datas->hasOneUserRequest()->where([
-            ['base_requests_id', '=', $request],
-            ['users_id', '=', $datas['id']],
-            ['updated_at', '<=', Carbon::now()->subHour()], // Time interval is > 1 hour compared to the updated_at
-        ]);
-        
-        // Get request
-        $getRequests = $requests->latest()->first();
-
-        // Determine whether the user and request is exist or not
-        if($getRequests){
-            // Update timestamp
-            $requests->touch();
-
-            // User is eligible
-            return GeneralHelper::jsonResponse([
-                'status'    => 200,
-                'data'      => $datas, // this should be present as response // If returning this function please use ->getData(true)
-                'message'   => 'Account found and eligible for this action. Please check your email for more information.',
+        // If the user exist
+        if($datas){
+            // Include the request to the logic
+            $requests = $datas->hasOneUserRequest()->where([
+                ['base_requests_id', '=', $request],
+                ['users_id', '=', $datas['id']],
+                ['updated_at', '<=', Carbon::now()->subHour()], // Time interval is > 1 hour compared to the updated_at
             ]);
+            
+            // Get request
+            $getRequests = $requests->latest()->first();
+
+            // Determine whether the user and request is exist or not
+            if($getRequests){
+                // Update timestamp
+                $requests->touch();
+
+                // User is eligible
+                return GeneralHelper::jsonResponse([
+                    'status'    => 200,
+                    'data'      => $datas, // this should be present as response // If returning this function please use ->getData(true)
+                    'message'   => 'Account found and eligible for this action. Please check your email for more information.',
+                ]);
+            }
         }
 
         // User is not eligible

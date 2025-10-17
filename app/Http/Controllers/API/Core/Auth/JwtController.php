@@ -253,10 +253,10 @@ class JwtController extends Controller{
             $eligibility = $this->userRepository->search([
                 'id'    => $request->id,
                 'email' => $request->email,
-            ])->requestEligibility(1);
+            ])->requestEligibility(1)->getData(true); // get data as array
 
             // If account is not found and/or not eligible
-            if($eligibility == false){
+            if($eligibility['success'] == false){
                 // Return response
                 return GeneralHelper::jsonResponse([
                     'status'    => 404,
@@ -265,8 +265,7 @@ class JwtController extends Controller{
             } else {
                 // Send email
                 try{
-                    // Catatan: Gak kekirim karena responsenya cuma true or false
-                    Mail::to($eligibility['email'])->send(new UserVerifyEmail($eligibility['id']));
+                    Mail::to($eligibility['data']['email'])->send(new UserVerifyEmail($eligibility['data']['id']));
                 }
                 catch(\Throwable $th){
                     // skip invoking the error
@@ -276,13 +275,13 @@ class JwtController extends Controller{
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'message'   => 'Account found and eligible for this action. Please check your email for more information.',
+                'message'   => 'The account is found to be eligible for this action. Please check your email for more information.',
             ]);
         }
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([
                 'status'    => 409,
-                'message'   => $th,
+                'message'   => null,
             ]);
         }
     }

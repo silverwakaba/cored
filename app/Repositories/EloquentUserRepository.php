@@ -202,16 +202,16 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         if($request == 1){
             // $request 1 = Email Verification
             // Column "email_verified_at" must be null
-            $users = $datas->whereNull('email_verified_at')->first();
+            $datas = $datas->whereNull('email_verified_at')->first();
         } else {
             // Only get the user
-            $users = $datas->first();
+            $datas = $datas->first();
         }
 
         // Include the request to the logic
-        $requests = $users->hasOneUserRequest()->where([
+        $requests = $datas->hasOneUserRequest()->where([
             ['base_requests_id', '=', $request],
-            ['users_id', '=', $users['id']],
+            ['users_id', '=', $datas['id']],
             ['updated_at', '<=', Carbon::now()->subHour()], // Time interval is > 1 hour compared to the updated_at
         ]);
         
@@ -224,10 +224,16 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
             $requests->touch();
 
             // User is eligible
-            return true;
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas, // this should be present as response // If returning this function please use ->getData(true)
+                'message'   => 'Account found and eligible for this action. Please check your email for more information.',
+            ]);
         }
 
         // User is not eligible
-        return false;
+        return GeneralHelper::jsonResponse([
+            'status' => 401,
+        ]);
     }
 }

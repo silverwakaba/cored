@@ -25,6 +25,7 @@ use Carbon\Carbon;
 class EloquentUserRepository extends BaseRepository implements UserRepositoryInterface{
     // Property
     protected $pendingUser;
+    protected $searchUser;
     protected $roleToAssign;
     protected $rolePublic;
 
@@ -118,41 +119,6 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         return null;
     }
 
-    // Search account
-    public function search($data){
-        // Start query
-        $datas = User::query();
-
-        // If $data variable is provided
-        if($data){
-            // Filter the id
-            if(isset($data['id'])){
-                $datas->where('id', '=', $data['id']);
-            }
-
-            // Filter the email
-            if(isset($data['email'])){
-                $datas->where('email', '=', $data['email']);
-            }
-
-            // Filter null $data
-            if(collect($data)->every(fn($value) => is_null($value))){
-                // If $data variable is provided but null
-                $datas->where('id', '=', 0);
-            }
-
-        } else {
-            // If no $data variable is provided
-            $datas->where('id', '=', 0);
-        }
-        
-        // End query
-        $datas = $datas->first();
-
-        // Return response
-        return $datas;
-    }
-
     // Verify account
     public function verifyAccount($id){
         // Implementing db transaction
@@ -189,36 +155,79 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         });
     }
 
-    // Verify check eligibility
-    public function verifyEligibility($id){
-        // Search user
-        $user = User::select(['*'])->where([
-            ['id', '=', $id],
-            ['is_active', '=', true],
-        ])->whereNull('email_verified_at')->first();
+    // Search account
+    public function search($data){
+        // Start query
+        $datas = User::query();
 
-        // Determine wether user is exist or not
-        if($user){
-            // Search request
-            $request = $user->hasOneUserRequest->where([
-                ['base_requests_id', '=', 1],
-                ['users_id', '=', $id],
-                ['updated_at', '<=', Carbon::now()->subHour()],
-            ])->latest()->first();
-
-            // Return response
-            if(isset($user) && isset($request)){
-                // Update the timestamp
-                $user->hasOneUserRequest()->touch();
-
-                // User is eligible for verify
-                return true;
-            } else {
-                // User is not eligible for verify
-                return false;
+        // If $data variable is provided
+        if($data){
+            // Filter the id
+            if(isset($data['id'])){
+                $datas->where('id', '=', $data['id']);
             }
+
+            // Filter the email
+            if(isset($data['email'])){
+                $datas->where('email', '=', $data['email']);
+            }
+
+            // Filter null $data
+            if(collect($data)->every(fn($value) => is_null($value))){
+                // If $data variable is provided but null
+                $datas->where('id', '=', 0);
+            }
+
         } else {
-            return false;
+            // If no $data variable is provided
+            $datas->where('id', '=', 0);
         }
+
+        // End query
+        $this->searchUser = $datas;
+
+        // Return response
+        return $this;
+    }
+
+    // Check eligibility for specific request
+    public function requestEligibility($request){
+        // Complete the search query
+        // Only active user is eligible for every eligibility check
+        $datas = $this->searchUser->where([
+            ['is_active', '=', true],
+        ]);
+
+        // Do eligibility check based on $request type
+        if($request == 1){
+            // $request 1 = Email Verification
+            // Column "email_verified_at" must be null
+            $users = $datas->whereNull('email_verified_at')->first();
+        } else {
+            // Only get the user
+            $users = $datas->first();
+        }
+
+        // Include the request to the logic
+        $requests = $users->hasOneUserRequest()->where([
+            ['base_requests_id', '=', $request],
+            ['users_id', '=', $users['id']],
+            ['updated_at', '<=', Carbon::now()->subHour()], // Time interval is > 1 hour compared to the updated_at
+        ]);
+        
+        // Get request
+        $getRequests = $requests->latest()->first();
+
+        // Determine whether the user and request is exist or not
+        if($getRequests){
+            // Update timestamp
+            $requests->touch();
+
+            // User is eligible
+            return true;
+        }
+
+        // User is not eligible
+        return false;
     }
 }

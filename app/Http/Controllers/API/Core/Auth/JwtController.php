@@ -249,26 +249,24 @@ class JwtController extends Controller{
     // Reverify account
     public function reverifyAccount(Request $request){
         try{
-            // Search account
-            $search = $this->userRepository->search([
+            // Search user and it's eligibility
+            $eligibility = $this->userRepository->search([
                 'id'    => $request->id,
                 'email' => $request->email,
-            ]);
-
-            // Check eligibility
-            $eligibility = $this->userRepository->verifyEligibility((isset($search['id']) ? $search['id'] : null));
+            ])->requestEligibility(1);
 
             // If account is not found and/or not eligible
             if($eligibility == false){
                 // Return response
                 return GeneralHelper::jsonResponse([
                     'status'    => 404,
-                    'message'   => 'This account is not eligible for verification. Please try again later.',
+                    'message'   => 'This account is not eligible for this action. Please try again later.',
                 ]);
             } else {
                 // Send email
                 try{
-                    Mail::to($search['email'])->send(new UserVerifyEmail($search['id']));
+                    // Catatan: Gak kekirim karena responsenya cuma true or false
+                    Mail::to($eligibility['email'])->send(new UserVerifyEmail($eligibility['id']));
                 }
                 catch(\Throwable $th){
                     // skip invoking the error
@@ -278,8 +276,7 @@ class JwtController extends Controller{
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'data'      => $search,
-                'message'   => 'Account found. Please check your email.',
+                'message'   => 'Account found and eligible for this action. Please check your email for more information.',
             ]);
         }
         catch(\Throwable $th){

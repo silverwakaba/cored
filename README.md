@@ -55,3 +55,46 @@ npm run build
 ```
 
 8 - Laravel `php artisan serve` might be broken as everything relied on API usage (CURL timeout, etc) -- Idk why tho.
+
+## Roadmap
+
+1. ~~RBAC => Done~~
+- ~~Role~~
+- ~~Permission~~
+- ~~UAC~~
+
+2. Access => 50%
+- Dynamic Menu (Backend logic is done; No GUI / Form yet)
+
+3. ~~Auth (Mailable via queue) => Done~~
+- ~~Register~~
+- ~~Login~~
+- ~~Verify~~
+- ~~Reset Password~~
+- SSO (Need to learn)
+
+4. Websocket  => 0%
+- Pusher
+- Soketi
+
+5. Payment Gateway => 0%
+- Midtrans
+- Tripay
+
+6. Caching => 0%
+- Redis
+
+95. CI/CD
+
+96. Database replication => 0%
+- Need to learn.
+
+97. High availability => 0%
+- Need to learn.
+
+98. Split the frontend & backend
+- Rn still monolith.
+- Idk perhaps learn about microservice?
+
+99. Unit Test => 0%
+- Well, well..?

@@ -28,9 +28,11 @@ Route::prefix('/')->name('be.')->group(function(){
 
                 // Verify account
                 Route::post('verify-account', 'verifyAccount')->name('verify-account');
-
-                // Verify account via token
                 Route::post('verify-account/{token}', 'verifyAccountTokenized')->name('verify-account-tokenized');
+
+                // Reset password
+                Route::post('reset-password', 'resetPassword')->name('reset-password');
+                Route::post('reset-password/{token}', 'resetPasswordTokenized')->name('reset-password-tokenized');
 
                 // JWT Token
                 Route::prefix('token')->name('token.')->middleware(['jwt.be'])->group(function(){

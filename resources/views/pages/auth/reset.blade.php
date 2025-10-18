@@ -1,9 +1,9 @@
 @extends('layouts.adminlte')
-@section('title', 'Verify Account')
+@section('title', 'Reset Password')
 @section('content')
-    <x-Adminlte.ContentWrapperComponent breadcrumb="auth.verify-account">
+    <x-Adminlte.ContentWrapperComponent breadcrumb="auth.reset-password">
         <div class="callout callout-info">
-            <p>Here you can request a fresh token to verify your account.</p>
+            <p>Here you can request a fresh token to reset your password.</p>
             <p>There is a cooldown of approximately one hour for each request.</p>
         </div>
         <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="true" button="Check">
@@ -44,7 +44,7 @@
                     dataType: 'json',
                     processData: false,
                     contentType: false,
-                    url: `{{ route('fe.auth.verify-account') }}`,
+                    url: `{{ route('fe.auth.reset-password') }}`,
                     success: function(response){
                         // Handle success
                         if(response.success){

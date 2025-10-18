@@ -11,6 +11,7 @@ use App\Helpers\ErrorHelper;
 use App\Helpers\GeneralHelper;
 
 // Mail
+use App\Mail\UserResetPassword;
 use App\Mail\UserVerifyEmail;
 
 // Request
@@ -256,7 +257,7 @@ class JwtController extends Controller{
             } else {
                 // Send email
                 try{
-                    Mail::to($eligibility['data']['email'])->send(new UserVerifyEmail($eligibility['data']['id']));
+                    Mail::to($request->email)->send(new UserVerifyEmail($eligibility['data']['id']));
                 }
                 catch(\Throwable $th){
                     // skip invoking the error
@@ -288,6 +289,91 @@ class JwtController extends Controller{
                 'status'    => 200,
                 'data'      => $datas,
                 'message'   => 'Account verification successful.',
+            ]);
+        }
+        catch(\Throwable $th){
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
+        }
+    }
+
+    // Reset password
+    public function resetPassword(Request $request){
+        try{
+            // Validate input (this have same request rules as verification)
+            $validator = Validator::make($request->all(), (new UserAuthVerifyRequest())->rules());
+
+            // Check validation and stop if failed
+            if($validator->fails()){
+                return response()->json([
+                    'success'   => false,
+                    'errors'    => $validator->errors(),
+                ], 422);
+            }
+
+            // Search user and it's eligibility
+            $eligibility = $this->userRepository->search([
+                'id'    => $request->id,
+                'email' => $request->email,
+            ])->requestEligibility(3)->getData(true); // get data as array
+
+            // If account is not found and/or not eligible
+            if($eligibility['success'] == false){
+                // Return response
+                return GeneralHelper::jsonResponse([
+                    'status'    => 404,
+                    'message'   => 'This account is not eligible for this action. Please try again later.',
+                ]);
+            } else {
+                // Send email
+                try{
+                    Mail::to($request->email)->send(new UserResetPassword($eligibility['data']['id']));
+                }
+                catch(\Throwable $th){
+                    // skip invoking the error
+                }
+            }
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'message'   => 'The account is found to be eligible for this action. Please check your email for more information.',
+            ]);
+        }
+        catch(\Throwable $th){
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => $th,
+            ]);
+        }
+    }
+
+    // Reset password
+    public function resetPasswordTokenized($token, Request $request){
+        try{
+            // Validate input (this have same request rules as verification)
+            $validator = Validator::make($request->all(), (new UserAuthResetPasswordRequest())->rules());
+
+            // Check validation and stop if failed
+            if($validator->fails()){
+                return response()->json([
+                    'success'   => false,
+                    'errors'    => $validator->errors(),
+                ], 422);
+            }
+
+            // Search user and it's eligibility
+            $datas = $this->userRepository->resetPassword([
+                'token'         => $token,
+                'new_password'  => $request->new_password,
+            ]);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'message'   => 'Password has been successfully reset',
             ]);
         }
         catch(\Throwable $th){

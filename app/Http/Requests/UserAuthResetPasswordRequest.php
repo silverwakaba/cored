@@ -21,6 +21,7 @@ class UserAuthResetPasswordRequest extends FormRequest{
         return [
             'new_password'              => ['required', 'string', 'min:8', 'confirmed'],
             'new_password_confirmation' => ['required', 'string', 'same:new_password'],
+            'agreement'                 => ['accepted', 'boolean'],
         ];
     }
 }

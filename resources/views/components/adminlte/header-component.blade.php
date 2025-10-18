@@ -7,12 +7,6 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('fe.page.auth') }}">Auth</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('fe.auth.register') }}">Register</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('fe.auth.login') }}">Login</a>
-            </li>
         @endguest
     </ul>
     <ul class="navbar-nav ml-auto">

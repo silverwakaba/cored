@@ -45,12 +45,18 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
         // Logout
         Route::post('logout', 'logout')->name('logout')->middleware(['jwt.fe'])->withoutMiddleware(['jwt.guest']);
 
-        // Re/send email for account verification
-        Route::get('verify-account', 'verifyAccount')->name('verify-account')->withoutMiddleware(['jwt.guest']);
+        // Account verification
+        Route::get('verify-account', 'verifyAccount')->name('verify-account');
         Route::post('verify-account', 'verifyAccountPost');
-
-        // Verify account via token
         Route::get('verify-account/{token}', 'verifyAccountTokenized')->name('verify-account-tokenized')->middleware(['signed']);
+
+        // Reset Password
+        Route::get('reset-password', 'resetPassword')->name('reset-password');
+        Route::post('reset-password', 'resetPasswordPost');
+        
+        // Reset Password via token
+        Route::get('reset-password/{token}', 'resetPasswordTokenized')->name('reset-password-tokenized')->middleware(['signed']);
+        Route::post('reset-password/{token}', 'resetPasswordTokenizedPost');
 
         // Validate Token
         Route::get('validate-token', 'validate')->name('validate');

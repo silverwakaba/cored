@@ -7,4 +7,5 @@ interface UserRepositoryInterface{
     public function modify($id, array $data);
     public function verifyAccount($id);
     public function search($data);
+    public function resetPassword($data);
 }

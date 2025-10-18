@@ -53,6 +53,14 @@ class PageController extends Controller{
                     'content'   => 'Request a new verification email.',
                     'link'      => route('fe.auth.verify-account'),
                 ],
+
+                // Verify account
+                [
+                    'icon'      => 'fas fa-lock',
+                    'title'     => 'Reset Password',
+                    'content'   => 'Reset the lost password.',
+                    'link'      => route('fe.auth.reset-password'),
+                ],
             ],
         ];
 

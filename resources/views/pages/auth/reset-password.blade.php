@@ -1,13 +1,14 @@
 @extends('layouts.adminlte')
-@section('title', 'Verify Account')
+@section('title', 'Reset the Password')
 @section('content')
-    <x-Adminlte.ContentWrapperComponent breadcrumb="auth.verify-account">
+    <x-Adminlte.ContentWrapperComponent breadcrumb="auth.reset-password-tokenized">
         <div class="callout callout-info">
-            <p>Here you can request a fresh token to verify your account.</p>
-            <p>There is a cooldown of approximately one hour for each request.</p>
+            <p>Please set a new password for your account here.</p>
+            <p>This page can only be accessed for one hour as stated in the email.</p>
         </div>
-        <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="true" button="Check">
-            <x-Form.InputForm name="email" type="email" text="Email" :required="true" />
+        <x-Adminlte.CardComponent id="theForm" :asForm="true" :withCaptcha="true" button="Change">
+            <x-Form.InputForm name="new_password" type="password" text="New Password" :required="true" />
+            <x-Form.InputForm name="new_password_confirmation" type="password" text="New Password Confirmation" :required="true" />
             <x-Form.CheckboxForm name="agreement" :value="true" :required="true">I agree</x-Form.CheckboxForm>
         </x-Adminlte.CardComponent>
     </x-Adminlte.ContentWrapperComponent>
@@ -44,7 +45,7 @@
                     dataType: 'json',
                     processData: false,
                     contentType: false,
-                    url: `{{ route('fe.auth.verify-account') }}`,
+                    url: `{{ route('fe.auth.reset-password-tokenized', ['token' => $token]) }}`,
                     success: function(response){
                         // Handle success
                         if(response.success){

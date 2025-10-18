@@ -9,6 +9,7 @@ use App\Contracts\ApiRepositoryInterface;
 // Helper
 use App\Helpers\CookiesHelper;
 use App\Helpers\ErrorHelper;
+use App\Helpers\GeneralHelper;
 
 // Internal
 use Illuminate\Http\Request;
@@ -43,7 +44,10 @@ class GeneralAuthController extends Controller{
             return response()->json($http->json(), $http->status());
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -82,7 +86,10 @@ class GeneralAuthController extends Controller{
             return response()->json($http->json(), $http->status());
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -96,7 +103,10 @@ class GeneralAuthController extends Controller{
             return response()->json($http->json(), $http->status());
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -121,7 +131,10 @@ class GeneralAuthController extends Controller{
             return redirect()->route('fe.auth.login')->with('class', 'info')->with('message', "Session ended safely.");
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 
@@ -142,11 +155,14 @@ class GeneralAuthController extends Controller{
             return response()->json($http->json(), $http->status());
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
-
-    // Verify account via token
+    
+    // Verify account vie token
     public function verifyAccountTokenized($token){
         try{
             // Make http call
@@ -154,17 +170,66 @@ class GeneralAuthController extends Controller{
                 'token' => $token,
             ]);
 
-            // If success
-            if(($http->status() == 200)){
-                // Redirect to login page
-                return redirect()->route('fe.auth.login')->with('class', 'success')->with('message', $http['message']);
-            }
-
             // Redirect to login page
             return redirect()->route('fe.auth.login')->with('class', 'danger')->with('message', $http['message']);
         }
         catch(\Throwable $th){
-            return ErrorHelper::apiErrorResult();
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
+        }
+    }
+
+    // Reset password
+    public function resetPassword(){
+        return view('pages/auth/reset');
+    }
+
+    public function resetPasswordPost(Request $request){
+        try{
+            // Make http call
+            $http = $this->apiRepository->post('be.core.auth.jwt.reset-password', [
+                'email'     => $request->email,
+                'agreement' => $request->agreement,
+            ]);
+
+            // Response
+            return response()->json($http->json(), $http->status());
+        }
+        catch(\Throwable $th){
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
+        }
+    }
+
+    // Reset password vie token
+    public function resetPasswordTokenized($token){
+        return view('pages/auth/reset-password', [
+            'token' => $token,
+        ]);
+    }
+
+    public function resetPasswordTokenizedPost($token, Request $request){
+        try{
+            // Make http call
+            $http = $this->apiRepository->post('be.core.auth.jwt.reset-password-tokenized', [
+                'token'                     => $token,
+                'new_password'              => $request->new_password,
+                'new_password_confirmation' => $request->new_password_confirmation,
+                'agreement'                 => $request->agreement,
+            ]);
+
+            // Response
+            return response()->json($http->json(), $http->status());
+        }
+        catch(\Throwable $th){
+            return GeneralHelper::jsonResponse([
+                'status'    => 409,
+                'message'   => null,
+            ]);
         }
     }
 }

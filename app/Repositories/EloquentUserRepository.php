@@ -123,7 +123,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
     public function verifyAccount($id){
         // Implementing db transaction
         return DB::transaction(function() use($id){
-            // Datas
+            // Search the token
             $datas = UserRequest::with([
                 'belongsToUser',
             ])->select(['id', 'users_id', 'token'])->where([
@@ -214,21 +214,43 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
             $requests = $datas->hasOneUserRequest()->where([
                 ['base_requests_id', '=', $request],
                 ['users_id', '=', $datas['id']],
-                ['updated_at', '<=', Carbon::now()->subHour()], // Time interval is > 1 hour compared to the updated_at
-            ]);
+            ])->whereNotNull('token');
             
-            // Get request
+            // Get the latest request
             $getRequests = $requests->latest()->first();
 
-            // Determine whether the user and request is exist or not
-            if($getRequests){
+            // If the request doesn't exist then create new
+            if(!$getRequests){
+                $newRequests = $requests->create([
+                    'base_requests_id'  => $request,
+                    'users_id'          => $datas['id'],
+                    'token'             => GeneralHelper::randomToken(),
+                ]);
+            }
+
+            // Default state
+            $getRequestsCondition = false;
+            $newRequestsCondition = false;
+
+            // Check $getRequests if it exists
+            if(isset($getRequests)){
+                $getRequestsCondition = (Carbon::parse($getRequests->updated_at) <= Carbon::now()->subHours()) || ($getRequests->created_at == $getRequests->updated_at);
+            }
+
+            // Check $newRequests if it exists  
+            if(isset($newRequests)){
+                $newRequestsCondition = (Carbon::parse($newRequests->updated_at) <= Carbon::now()->subHours()) || ($newRequests->created_at == $newRequests->updated_at);
+            }
+
+            // Check the condition
+            if($getRequestsCondition || $newRequestsCondition){
                 // Update timestamp
                 $requests->touch();
 
                 // User is eligible
                 return GeneralHelper::jsonResponse([
                     'status'    => 200,
-                    'data'      => $datas, // this should be present as response // If returning this function please use ->getData(true)
+                    'data'      => (isset($getRequests) ? $getRequests : $newRequests),
                     'message'   => 'Account found and eligible for this action. Please check your email for more information.',
                 ]);
             }
@@ -236,7 +258,44 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
 
         // User is not eligible
         return GeneralHelper::jsonResponse([
-            'status' => 401,
+            'status'    => 401,
+            'message'   => 'This account is not eligible for this action. Please try again later.',
         ]);
+    }
+
+    // Reset password
+    public function resetPassword($data){
+        // Implementing db transaction
+        return DB::transaction(function() use($data){
+            // Search the token
+            $datas = UserRequest::with([
+                'belongsToUser',
+            ])->select(['id', 'users_id', 'token'])->where([
+                ['base_requests_id', '=', 3],
+                ['token', '=', $data['token']],
+            ])->whereNotNull('token')->first();
+
+            // Run if there's result
+            if($datas){
+                // Request data
+                $request = $datas;
+
+                // Invalidate token
+                $request->update([
+                    'token' => null,
+                ]);
+
+                // User data
+                $user = $datas->belongsToUser;
+
+                // Update password date
+                $user->update([
+                    'password' => bcrypt($data['new_password']),
+                ]);
+            }
+
+            // Return response
+            return $datas;
+        });
     }
 }

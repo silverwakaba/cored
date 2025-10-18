@@ -105,6 +105,7 @@ class GeneralHelper{
         $response = [
             'success'   => $is_success,
             'errors'    => isset($datas['errors']) ? $datas['errors'] : null,
+            'eligible'  => isset($datas['eligible']) ? $datas['eligible'] : null,
             'data'      => isset($datas['data']) ? $datas['data'] : null,
             'message'   => (!isset($datas['message']) && ($is_success == false)) ? $message : (isset($datas['message']) ? Str::of($datas['message']) : null),
         ];

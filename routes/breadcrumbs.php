@@ -40,6 +40,18 @@ Breadcrumbs::for('auth.verify-account', function (BreadcrumbTrail $trail){
     $trail->push('Verify Account', route('fe.auth.verify-account'));
 });
 
+// Auth-Reset password
+Breadcrumbs::for('auth.reset-password', function (BreadcrumbTrail $trail){
+    $trail->parent('auth');
+    $trail->push('Reset Password', route('fe.auth.reset-password'));
+});
+
+// Auth-Reset password tokenized
+Breadcrumbs::for('auth.reset-password-tokenized', function (BreadcrumbTrail $trail){
+    $trail->parent('auth.reset-password');
+    $trail->push(request()->token, route('fe.auth.reset-password-tokenized', ['token' => request()->token]));
+});
+
 /**
  * Apps
 */

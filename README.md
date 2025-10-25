@@ -84,6 +84,14 @@ npm run build
 6. Caching => 0%
 - Redis
 
+93. Infra
+- n8n
+- Docker
+- FrankenPHP
+
+94. Email fallback
+- Multiple provider
+
 95. CI/CD
 
 96. Database replication => 0%

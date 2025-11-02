@@ -22,6 +22,14 @@
             initDatatable();
             initUpsert();
             initDelete();
+
+            // Websocket channel
+            let websocket = Echo.channel('generalChannel');
+            
+            // Listen to websocket
+            websocket.listen('.generalEvent', function(data){
+                $('#theTable').DataTable().ajax.reload(null, false);
+            });
         });
 
         // Init datatable
@@ -201,9 +209,6 @@
                                 // Hide modal
                                 $('#theModalModal').modal('hide');
 
-                                // Reload datatable
-                                $('#theTable').DataTable().ajax.reload(null, false);
-
                                 // Then reset form processing state
                                 setProcessingState(false);
                             });
@@ -312,9 +317,6 @@
                                         allowOutsideClick: () => {
                                             return false;
                                         },
-                                    }).then(() => {
-                                        // Reload datatable
-                                        $('#theTable').DataTable().ajax.reload(null, false);
                                     });
                                 }
                                 else{

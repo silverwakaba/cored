@@ -12,6 +12,7 @@
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "3.0",
         "php-open-source-saver/jwt-auth": "^2.3",
+        "pusher/pusher-php-server": "^7.2",
         "scyllaly/hcaptcha": "^4.4",
         "spatie/laravel-permission": "^6.15",
         "yajra/laravel-datatables-fractal": "^12.0",

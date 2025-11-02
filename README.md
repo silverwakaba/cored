@@ -8,15 +8,15 @@ Note for myself: Please create new branch for new feature / new-new branch for t
 
 ## Running This Project
 
-0 - Clone the repo if available.
+1. Clone the repo if available.
 
-1 - Install composer dependency.
+2. Install composer dependency.
 
 ```
 composer install
 ```
 
-2 - Copy the env.
+3. Copy the env.
 
 ```
 cp .env.example .env
@@ -24,37 +24,47 @@ cp .env.example .env
 
 And change the database config too.
 
-3 - Generate Laravel key.
+4. Generate Laravel key.
 
 ```
 php artisan key:generate
 ```
 
-4 - Generate JWT secret.
+5. Generate JWT secret.
 
 ```
 php artisan jwt:secret
 ```
 
-5 - Run the seeder.
+6. Run the seeder.
 
 ```
 php artisan migrate:fresh --seed
 ```
 
-6 - Install npm dependency.
+7. Install npm dependency.
 
 ```
 npm ci
 ```
 
-7 - Build asset.
+8. Build asset.
 
 ```
-npm run build
+php artisan view:clear && npm run build && php artisan view:clear
 ```
 
-8 - Laravel `php artisan serve` might be broken as everything relied on API usage (CURL timeout, etc) -- Idk why tho.
+9. Laravel `php artisan serve` might be broken as everything relied on API usage (CURL timeout, etc) -- Idk why tho. So try this boilerplate using something that supports a virtual host, such as Laragon, etc.
+
+## Estras
+
+1. Some features (email, websocket, etc) rely on a queue. Make sure the queue is working in the background.
+
+```
+php artisan queue:work
+```
+
+The queue in the background can be managed using third-party tools, such as [Supervisor](https://supervisord.org/) or [PM2](https://pm2.keymetrics.io/).
 
 ## Roadmap
 
@@ -73,9 +83,9 @@ npm run build
 - ~~Reset Password~~
 - SSO (Need to learn)
 
-4. Websocket  => 0%
-- Pusher
-- Soketi
+4. ~~Websocket  => 100% => Done~~ => Example @ \app\Http\Controllers\API\Core\Access\PermissionController.php
+- ~~Pusher~~
+- ~~Soketi~~
 
 5. Payment Gateway => 0%
 - Midtrans

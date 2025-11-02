@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 // Repository interface
 use App\Contracts\PermissionRepositoryInterface;
 
+// Event
+use App\Events\GeneralEventHandler;
+
 // Helper
 use App\Helpers\GeneralHelper;
 
@@ -88,6 +91,9 @@ class PermissionController extends Controller{
                 'name' => $request->name,
             ]);
 
+            // Dispatch event
+            GeneralEventHandler::dispatch($datas);
+
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 201,
@@ -155,6 +161,9 @@ class PermissionController extends Controller{
                 'name' => $request->name,
             ]);
 
+            // Dispatch event
+            GeneralEventHandler::dispatch($datas);
+
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
@@ -175,6 +184,9 @@ class PermissionController extends Controller{
         try{
             // Delete permission data
             $datas = $this->repositoryInterface->delete($request->id);
+
+            // Dispatch event
+            GeneralEventHandler::dispatch($datas);
 
             // Return response
             return GeneralHelper::jsonResponse([

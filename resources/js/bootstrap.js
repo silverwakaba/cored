@@ -16,8 +16,10 @@ $(function () {
     });
 });
 
-// Trivia
-console.log('As it is, as it is, without change', 'そのまんま そのまんま そのまま');
-console.log('Its always been the same, so lets go back to sleep', 'ずっとそのまま 寝ていてね');
-console.log('Have a good night, have a good night, have a good night', 'おやすみよ おやすみよ おやすみよ');
-console.log('Ah, at last, its finally gone', 'ああ やっと終わるんだ');
+/**
+ * Echo exposes an expressive API for subscribing to channels and listening
+ * for events that are broadcast by Laravel. Echo and event broadcasting
+ * allow your team to quickly build robust real-time web applications.
+ */
+
+// import './echo';

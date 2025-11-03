@@ -16,12 +16,39 @@ use Yajra\DataTables\Facades\DataTables;
 abstract class BaseRepository{
     // Property
     protected $model;
+    protected $broadcastClass = null;
+    protected $broadcastAction = null;
     protected $shouldUseDatatable = false;
 
     // Constructor
     public function __construct(Model $model){
         $this->model = $model;
         $this->query = $model->query();
+    }
+
+    // Setting broadcaster
+    public function broadcaster($broadcast = null, $action = null){
+        $this->broadcastClass = $broadcast;
+        $this->broadcastAction = $action;
+        
+        // Chainable
+        return $this;
+    }
+
+    // Execute broadcaster
+    private function broadcasterExecute($data = null){
+        // Handle broadcast if available
+        if(isset($this->broadcastClass) && class_exists($this->broadcastClass)){
+            try{
+                $this->broadcastClass::dispatch($data, $this->broadcastAction);
+            } catch(\Throwable $th) {
+                // Handle error silently
+            } finally {
+                // Reset broadcast properties after use
+                $this->broadcastClass = null;
+                $this->broadcastAction = null;
+            }
+        }
     }
 
     // Using datatable
@@ -180,6 +207,11 @@ abstract class BaseRepository{
             // Start create query
             $datas = $this->query->create($data);
 
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($datas);
+            }
+
             // Return response
             return $datas;
         });
@@ -198,7 +230,12 @@ abstract class BaseRepository{
             }
 
             // Save updated data
-            $datas->save();
+            $datas = $datas->save();
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($datas);
+            }
 
             // Return response
             return $datas;
@@ -224,6 +261,11 @@ abstract class BaseRepository{
                 $datas->delete();
             }
 
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute(null); // null data
+            }
+
             // Return response
             return $datas;
         });
@@ -240,7 +282,12 @@ abstract class BaseRepository{
             $datas = $this->query->withTrashed()->select('id')->whereIn('id', $ids);
 
             // Restore data
-            $datas->restore();
+            $datas = $datas->restore();
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($datas);
+            }
 
             // Return response
             return $datas;
@@ -256,9 +303,14 @@ abstract class BaseRepository{
 
             // Update status
             // Boolean column is identified with "is_" prefixes
-            $datas->update([
+            $datas = $datas->update([
                 'is_active' => $status,
             ]);
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($datas);
+            }
 
             // Return response
             return $datas;

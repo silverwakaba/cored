@@ -87,12 +87,9 @@ class PermissionController extends Controller{
             }
 
             // Create permission
-            $datas = $this->repositoryInterface->create([
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
                 'name' => $request->name,
             ]);
-
-            // Dispatch event
-            GeneralEventHandler::dispatch($datas);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -157,12 +154,9 @@ class PermissionController extends Controller{
             }
 
             // Update permission data
-            $datas = $this->repositoryInterface->update($request->id, [
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($request->id, [
                 'name' => $request->name,
             ]);
-
-            // Dispatch event
-            GeneralEventHandler::dispatch($datas);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -183,10 +177,7 @@ class PermissionController extends Controller{
     public function delete(Request $request){
         try{
             // Delete permission data
-            $datas = $this->repositoryInterface->delete($request->id);
-
-            // Dispatch event
-            GeneralEventHandler::dispatch($datas);
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->delete($request->id);
 
             // Return response
             return GeneralHelper::jsonResponse([

@@ -22,14 +22,7 @@
             initDatatable();
             initUpsert();
             initDelete();
-
-            // Websocket channel
-            let websocket = Echo.channel('generalChannel');
-            
-            // Listen to websocket
-            websocket.listen('.generalEvent', function(data){
-                $('#theTable').DataTable().ajax.reload(null, false);
-            });
+            initWebsocket();
         });
 
         // Init datatable
@@ -350,6 +343,17 @@
                         });
                     }
                 });
+            });
+        }
+
+        // Init delete
+        function initWebsocket(){
+            // Websocket channel
+            let websocket = Echo.channel('generalChannel');
+            
+            // Listen to websocket
+            websocket.listen('.generalEvent', function(data){
+                $('#theTable').DataTable().ajax.reload(null, false);
             });
         }
 

@@ -25,8 +25,8 @@
         <div class="card-footer text-right p-2">
             <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly>
             <div class="button-group" role="group" aria-label="Button Group">
-                <button id="resetButton" type="reset" class="btn btn-outline-danger d-none">Reset</button>
-                <button id="submitButton" @class(["btn btn-outline-success", "h-captcha" => $withCaptcha ]) {{ $attributes->merge(['data-callback' => 'onSubmitVerify', ...($withCaptcha ? ['data-sitekey' => $sitekeyCaptcha] : [] )]) }}>{{ $button }}</button>
+                <button id="buttonResetCard" type="reset" class="btn btn-outline-danger d-none">Reset</button>
+                <button id="buttonSubmitCard" @class(["btn btn-outline-success", "h-captcha" => $withCaptcha ]) {{ $attributes->merge(['data-callback' => 'onSubmitVerify', ...($withCaptcha ? ['data-sitekey' => $sitekeyCaptcha] : [] )]) }}>{{ $button }}</button>
             </div>
         </div>
     @endif

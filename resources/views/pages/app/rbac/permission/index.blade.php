@@ -5,7 +5,7 @@
         <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Permission">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
-        <x-Adminlte.ModalComponent id="theModal" :asForm="true" title="Manage Permission">
+        <x-Adminlte.ModalComponent id="theModal" :asForm="true" :withCaptcha="true" title="Manage Permission">
             <x-Form.InputForm name="name" type="text" text="Name" :required="true" />
         </x-Adminlte.ModalComponent>
     </x-Adminlte.ContentWrapperComponent>
@@ -202,7 +202,7 @@
                                 // Hide modal
                                 $('#theModalModal').modal('hide');
 
-                                // Then reset form processing state
+                                // Then reset the form processing state afterward
                                 setProcessingState(false);
                             });
                         }
@@ -233,12 +233,9 @@
                                 }, 0);
                             });
                         }
-
-                        // If error, form processing state is set as false
-                        setProcessingState(false);
-
-                        // Don't show message if status is come from submit error
-                        if(response.status != 422){
+                        
+                        // Show error message via Swal
+                        else if(![422].includes(response.status)){
                             // Swal message
                             Swal.fire({
                                 toast: true,
@@ -249,17 +246,23 @@
                                 showConfirmButton: false,
                             });
                         }
+                        
+                        // Show error message via form feedback
+                        else{
+                            // If error, form processing state is set as false
+                            setProcessingState(false);
 
-                        // Handle error message
-                        let errors = response.responseJSON.errors;
+                            // Handle error message
+                            let errors = response.responseJSON.errors;
                             
-                        $.each(errors, function(key, value){
-                            let input = $('[name="' + key + '"]');
-                            let errorElement = $('#' + key + '-error');
-                            
-                            input.addClass('is-invalid');
-                            errorElement.text(value[0]);
-                        });
+                            $.each(errors, function(key, value){
+                                let input = $('[name="' + key + '"]');
+                                let errorElement = $('#' + key + '-error');
+                                
+                                input.addClass('is-invalid');
+                                errorElement.text(value[0]);
+                            });
+                        }
                     }
                 });
             });
@@ -324,21 +327,18 @@
                                 }
                             },
                             error: function(response){
-                                // Refresh page if session/csrf_token expired
-                                if([200, 419].includes(response.status)){
-                                    Swal.fire({
-                                        icon: 'warning',
-                                        text: response.message || response.responseJSON.message || 'Something went wrong.',
-                                        allowOutsideClick: () => {
-                                            return false;
-                                        },
-                                    }).then(() => {
-                                        // Reload page
-                                        setTimeout(function(){
-                                            window.location.reload();
-                                        }, 0);
-                                    });
-                                }
+                                Swal.fire({
+                                    icon: 'warning',
+                                    text: response.message || response.responseJSON.message || 'Something went wrong.',
+                                    allowOutsideClick: () => {
+                                        return false;
+                                    },
+                                }).then(() => {
+                                    // Reload page
+                                    setTimeout(function(){
+                                        window.location.reload();
+                                    }, 0);
+                                });
                             }
                         });
                     }
@@ -346,7 +346,7 @@
             });
         }
 
-        // Init delete
+        // Init websocket
         function initWebsocket(){
             // Websocket channel
             let websocket = Echo.channel('generalChannel');
@@ -359,18 +359,19 @@
 
         // Handle overlay class for form processing state
         function setProcessingState(processing){
+            // Const
             const reset = $('#buttonResetModal');
             const submit = $('#buttonSubmitModal');
             const overlay = $('#overlay-modal');
 
+            // Process
             if(processing){
                 reset.prop('disabled', true);
 
                 submit.prop('disabled', true);
 
                 overlay.addClass('overlay').removeClass('d-none');
-            }
-            else{
+            } else {
                 reset.prop('disabled', false);
 
                 submit.prop('disabled', false);

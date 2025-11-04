@@ -19,9 +19,21 @@
                 <div class="modal-footer">
                     <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly>
                     <button id="buttonResetModal" type="reset" class="btn btn-danger d-none">Reset</button>
-                    <button id="buttonSubmitModal" type="submit" class="btn btn-success">{{ $button }}</button>
+                    <button id="buttonSubmitModal" type="submit" @class(["btn btn-success", "h-captcha" => $withCaptcha ]) {{ $attributes->merge(['data-callback' => 'onSubmitVerify', ...($withCaptcha ? ['data-sitekey' => $sitekeyCaptcha] : [] )]) }}>{{ $button }}</button>
                 </div>
             @endif
         </div>
+        <script>
+            // Verify and append the response
+            function onSubmitVerify(token){
+                // Add token as response to the form if the captcha is enabled
+                @if($withCaptcha)
+                    $('#{{ $id }}Modal').append(`<input type="hidden" name="h-captcha-response" value="${ token }">`);
+                @endif
+                
+                // Trigger form submission
+                $('#{{ $id }}').submit();
+            }
+        </script>
     </{{ $tag }}>
 </div>

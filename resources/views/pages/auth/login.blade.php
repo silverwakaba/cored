@@ -120,16 +120,21 @@
         // Handle form processing state
         function setProcessingState(processing){
             // Submit button
-            let submit = $('#submitButton');
+            let reset = $('#buttonResetCard');
+            let submit = $('#buttonSubmitCard');
             let overlay = $('#overlay-card');
 
             // Set prop based on status
             if(processing){
+                reset.prop('disabled', true);
+
                 submit.prop('disabled', true);
 
                 overlay.addClass('overlay').removeClass('d-none');
             }
             else{
+                reset.prop('disabled', false);
+
                 submit.prop('disabled', false);
 
                 overlay.addClass('d-none').removeClass('overlay');

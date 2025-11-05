@@ -5,7 +5,7 @@
         <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Permission">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
-        <x-Adminlte.ModalComponent id="theModal" :asForm="true" :withCaptcha="true" title="Manage Permission">
+        <x-Adminlte.ModalComponent id="theModal" :asForm="true" :withCaptcha="false" title="Manage Permission">
             <x-Form.InputForm name="name" type="text" text="Name" :required="true" />
         </x-Adminlte.ModalComponent>
     </x-Adminlte.ContentWrapperComponent>
@@ -27,68 +27,23 @@
 
         // Init datatable
         function initDatatable(){
-            // Server-side Datatable from API Endpoint
-            $('#theTable').DataTable({
-                ordering: false,
-                processing: true,
-                serverSide: true,
-                searchDelay: 1500,
-                ajax: {
-                    type: 'GET',
-                    data: function(d){
-                        // Pass parameter
-                        d.type = 'datatable';
-                    },
-                    url: `{{ route('fe.apps.rbac.permission.list') }}`,
-                    error: function(response){
-                        // API error
-                        Swal.fire({
-                            icon: 'warning',
-                            text: response.message || response.responseJSON.message || 'Something went wrong.',
-                            allowOutsideClick: () => {
-                                return false;
-                            },
-                        });
-                    }
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')">
+                {
+                    title: 'Name', data: 'name',
                 },
-                columns: [
-                    {
-                        title: 'No.', width: '5%', class: 'text-center',
-                        render: function(data, type, row, meta){
-                            return `${ meta.row + meta.settings._iDisplayStart + 1 }`;
-                        },
-                    },
-                    {
-                        title: 'Name', data: 'name',
-                    },
-                    {
-                        title: 'Roles', data: 'roles',
-                        render: function(data, type, row, meta){
-                            if(Array.isArray(row.roles) && row.roles.length > 0){
-                                return row.roles.map(function(data){
-                                    return `<span class="badge badge-pill badge-secondary">${ data.name }</span>`;
-                                }).join(' ');
-                            }
+                {
+                    title: 'Roles', data: 'roles',
+                    render: function(data, type, row, meta){
+                        if(Array.isArray(row.roles) && row.roles.length > 0){
+                            return row.roles.map(function(data){
+                                return `<span class="badge badge-pill badge-secondary">${ data.name }</span>`;
+                            }).join(' ');
+                        }
 
-                            return '-';
-                        },
+                        return '-';
                     },
-                    {
-                        title: 'Action', width: '10%', class: 'text-center',
-                        render: function(data, type, row, meta){
-                            return `
-                                <div class="btn-group btn-block" role="group">
-                                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Action</button>
-                                    <div class="dropdown-menu btn-block">
-                                        <button id="btn-upsert" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-pen-to-square mr-2"></i>Edit</button>
-                                        <button id="btn-delete" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-trash mr-2"></i>Delete</button>
-                                    </div>
-                                </div>
-                            `;
-                        },
-                    },
-                ],
-            });
+                },
+            </x-Adminlte.DatatableComponent>
         }
 
         // Init upsert

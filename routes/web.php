@@ -13,7 +13,10 @@ use App\Http\Controllers\FE\Core\Shared\BasedataController;
 use App\Http\Controllers\FE\PageController;
 
 // FE routing
-Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->group(function(){
+Route::prefix('/')->name('fe.')->middleware([
+    'jwt.global',
+    'minify.blade'
+])->group(function(){
     // Base-related-thing
     Route::prefix('base')->name('base.')->controller(BasedataController::class)->group(function(){
         // Menu

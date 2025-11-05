@@ -21,13 +21,12 @@
             // Load init function
             initDatatable();
             initUpsert();
-            initDelete();
             initWebsocket();
         });
 
         // Init datatable
         function initDatatable(){
-            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')">
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')" :deleteUrl="route('fe.apps.rbac.permission.delete', ['id' => '::ID::'])" method="GET">
                 {
                     title: 'Name', data: 'name',
                 },
@@ -46,7 +45,7 @@
             </x-Adminlte.DatatableComponent>
         }
 
-        // Init upsert
+        // Init upsert => Gak bisa dibuat jadi component
         function initUpsert(){
             // Init upsert (Update or Insert)
             $('body').on('click', '#btn-upsert', function(){
@@ -223,84 +222,6 @@
             });
         }
 
-        // Init delete
-        function initDelete(){
-            // Init delete
-            $('body').on('click', '#btn-delete', function(){
-                // Get data id
-                let dataID = $(this).data('id');
-
-                // Show confirmation
-                Swal.fire({
-                    icon: 'warning',
-                    text: 'Are you sure? This action cannot be undone.',
-                    focusDeny: true,
-                    showConfirmButton: true,
-                    showDenyButton: true,
-                    denyButtonText: 'No',
-                    confirmButtonText: 'Yes',
-                    allowOutsideClick: () => {
-                        return false;
-                    },
-                }).then((result) => {
-                    if(result.isConfirmed){
-                        // Get route with id placeholder
-                        const routeBase = `{{ route('fe.apps.rbac.permission.delete', ['id' => '::ID::']) }}`;
-
-                        // Change id placeholder with the actual id
-                        routeAction = routeBase.replace('::ID::', dataID);
-
-                        // Handle ajax
-                        $.ajax({
-                            type: 'POST',
-                            url: routeAction,
-                            dataType: 'json',
-                            data: {
-                                '_token': '{{ csrf_token() }}',
-                            },
-                            success: function(response){
-                                // Handle success
-                                if(response.success){
-                                    // Success
-                                    Swal.fire({
-                                        icon: 'success',
-                                        text: response.message || response.responseJSON.message || 'Something went wrong.',
-                                        allowOutsideClick: () => {
-                                            return false;
-                                        },
-                                    });
-                                }
-                                else{
-                                    // API error
-                                    Swal.fire({
-                                        icon: 'error',
-                                        text: response.message || response.responseJSON.message || 'Something went wrong.',
-                                    }).then(() => {
-                                        // Reset form processing state
-                                        setProcessingState(false);
-                                    });
-                                }
-                            },
-                            error: function(response){
-                                Swal.fire({
-                                    icon: 'warning',
-                                    text: response.message || response.responseJSON.message || 'Something went wrong.',
-                                    allowOutsideClick: () => {
-                                        return false;
-                                    },
-                                }).then(() => {
-                                    // Reload page
-                                    setTimeout(function(){
-                                        window.location.reload();
-                                    }, 0);
-                                });
-                            }
-                        });
-                    }
-                });
-            });
-        }
-
         // Init websocket
         function initWebsocket(){
             // Websocket channel
@@ -314,10 +235,10 @@
 
         // Handle overlay class for form processing state
         function setProcessingState(processing){
-            // Const
-            const reset = $('#buttonResetModal');
-            const submit = $('#buttonSubmitModal');
-            const overlay = $('#overlay-modal');
+            // Prop
+            let reset = $('#buttonResetModal');
+            let submit = $('#buttonSubmitModal');
+            let overlay = $('#overlay-modal');
 
             // Process
             if(processing){

@@ -111,10 +111,10 @@
             });
         }
 
-        // Form action
+        // Form action => Bisa jadi component asal masuk didalem function "initUpsert"
         function formAction(route){
             // Handle form input while clearing previous action to avoid double submit
-            $('#theModal').off('submit').on('submit', function(e){
+            $('#theModal').off('submit').on('submit', function(e){ // => id form
                 // Stop any possible unexpected default action
                 e.preventDefault();
 
@@ -135,7 +135,7 @@
                     processData: false,
                     contentType: false,
                     dataType: 'json',
-                    url: route,
+                    url: route, // => yg jadi inti dari componentnya
                     success: function(response){
                         // Handle success
                         if(response.success){
@@ -149,7 +149,7 @@
                                 allowOutsideClick: () => {
                                     return false;
                                 },
-                            }).then(() => {
+                            }).then(() => { // => action kalau berhasil (biasanya = modal: reset/hide | form: redirect)
                                 // Trigger reset button
                                 $('#buttonResetModal').trigger('click');
                                 
@@ -159,13 +159,12 @@
                                 // Then reset the form processing state afterward
                                 setProcessingState(false);
                             });
-                        }
-                        else{
+                        } else {
                             // API error
                             Swal.fire({
                                 icon: 'error',
                                 text: response.message || response.responseJSON.message || 'Something went wrong.',
-                            }).then(() => {
+                            }).then(() => { // => kalo error sama
                                 // Reset form processing state
                                 setProcessingState(false);
                             });
@@ -234,26 +233,6 @@
         }
 
         // Handle overlay class for form processing state
-        function setProcessingState(processing){
-            // Prop
-            let reset = $('#buttonResetModal');
-            let submit = $('#buttonSubmitModal');
-            let overlay = $('#overlay-modal');
-
-            // Process
-            if(processing){
-                reset.prop('disabled', true);
-
-                submit.prop('disabled', true);
-
-                overlay.addClass('overlay').removeClass('d-none');
-            } else {
-                reset.prop('disabled', false);
-
-                submit.prop('disabled', false);
-
-                overlay.addClass('d-none').removeClass('overlay');
-            }
-        }
+        <x-Adminlte.ProcessingStateComponent type="modal" />
     </script>
 @endpush

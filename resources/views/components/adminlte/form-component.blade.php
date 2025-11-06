@@ -1,5 +1,5 @@
 // Handle form input while clearing previous action to avoid double submit
-$('#{{ $id }}').off('submit').on('submit', function(e){ // => id form
+$('#{{ $id }}').off('submit').on('submit', function(e){
     // Stop any possible unexpected default action
     e.preventDefault();
 
@@ -20,7 +20,7 @@ $('#{{ $id }}').off('submit').on('submit', function(e){ // => id form
         processData: false,
         contentType: false,
         dataType: 'json',
-        url: routeAction, // => yg jadi inti dari componentnya
+        url: routeAction,
         success: function(response){
             // Handle success
             if(response.success){
@@ -34,22 +34,31 @@ $('#{{ $id }}').off('submit').on('submit', function(e){ // => id form
                     allowOutsideClick: () => {
                         return false;
                     },
-                }).then(() => { // => action kalau berhasil (biasanya = modal: reset/hide | form: redirect)
-                    // Trigger reset button
-                    $('#buttonResetModal').trigger('click');
-                    
-                    // Hide modal
-                    $('#{{ $id }}Modal').modal('hide');
+                }).then(() => {
+                    @if($asModal)
+                        // Trigger reset button
+                        $('#buttonResetModal').trigger('click');
+                        
+                        // Hide modal
+                        $('#{{ $id }}Modal').modal('hide');
+                    @endif
 
-                    // Then reset the form processing state afterward
-                    setProcessingState(false);
+                    @if($redirect)
+                        // Redirect
+                        window.location.href = "{{ $redirect }}";
+                    @endif
+
+                    @if($isReset)
+                        // Reset the form processing state after all cleanup
+                        setProcessingState(false);
+                    @endif
                 });
             } else {
                 // API error
                 Swal.fire({
                     icon: 'error',
                     text: response.message || response.responseJSON.message || 'Something went wrong.',
-                }).then(() => { // => kalo error sama
+                }).then(() => {
                     // Reset form processing state
                     setProcessingState(false);
                 });
@@ -57,10 +66,10 @@ $('#{{ $id }}').off('submit').on('submit', function(e){ // => id form
         },
         error: function(response){
             // Refresh page if session/csrf_token expired
-            if([200, 419].includes(response.status)){
+            if([200, 302, 419].includes(response.status)){
                 Swal.fire({
-                    icon: 'warning',
-                    text: response.message || response.responseJSON.message || 'Something went wrong.',
+                    icon: 'error',
+                    text: 'Fatal error.',
                     allowOutsideClick: () => {
                         return false;
                     },
@@ -73,7 +82,7 @@ $('#{{ $id }}').off('submit').on('submit', function(e){ // => id form
             }
             
             // Show error message via Swal
-            else if(![422].includes(response.status)){
+            else{
                 // Swal message
                 Swal.fire({
                     toast: true,
@@ -83,12 +92,6 @@ $('#{{ $id }}').off('submit').on('submit', function(e){ // => id form
                     timer: 3000,
                     showConfirmButton: false,
                 });
-            }
-            
-            // Show error message via form feedback
-            else{
-                // If error, form processing state is set as false
-                setProcessingState(false);
 
                 // Handle error message
                 let errors = response.responseJSON.errors;
@@ -98,8 +101,11 @@ $('#{{ $id }}').off('submit').on('submit', function(e){ // => id form
                     let errorElement = $('#' + key + '-error');
                     
                     input.addClass('is-invalid');
-                    errorElement.text(value[0]);
+                    errorElement.text(value);
                 });
+
+                // If error, form processing state is set as false
+                setProcessingState(false);
             }
         }
     });

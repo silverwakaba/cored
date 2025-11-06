@@ -24,6 +24,17 @@
             initWebsocket();
         });
 
+        // Init websocket
+        function initWebsocket(){
+            // Websocket channel
+            let websocket = Echo.channel('generalChannel');
+            
+            // Listen to websocket
+            websocket.listen('.generalEvent', function(data){
+                $('#theTable').DataTable().ajax.reload(null, false);
+            });
+        }
+
         // Handle overlay class for form processing state
         <x-Adminlte.ProcessingStateComponent type="modal" />
 
@@ -77,7 +88,7 @@
                     routeAction = `{{ route('fe.apps.rbac.permission.create') }}`;
 
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" />
+                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
                 }
 
                 // Handle update
@@ -109,19 +120,8 @@
                     routeAction = routeBase.replace('::ID::', dataID);
 
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" />
+                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
                 }
-            });
-        }
-
-        // Init websocket
-        function initWebsocket(){
-            // Websocket channel
-            let websocket = Echo.channel('generalChannel');
-            
-            // Listen to websocket
-            websocket.listen('.generalEvent', function(data){
-                $('#theTable').DataTable().ajax.reload(null, false);
             });
         }
     </script>

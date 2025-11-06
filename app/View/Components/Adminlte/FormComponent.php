@@ -7,13 +7,19 @@ use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
 class FormComponent extends Component{
-    public string $id;
+    public $id;
+    public $asModal;
+    public $isReset;
+    public $redirect;
 
     /**
      * Create a new component instance.
      */
-    public function __construct($id){
+    public function __construct($id, $asModal = false, $isReset = true, $redirect = null){
         $this->id = $id;
+        $this->asModal = $asModal;
+        $this->isReset = $isReset;
+        $this->redirect = $redirect;
     }
 
     /**

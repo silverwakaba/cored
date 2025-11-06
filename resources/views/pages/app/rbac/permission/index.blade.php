@@ -24,6 +24,9 @@
             initWebsocket();
         });
 
+        // Handle overlay class for form processing state
+        <x-Adminlte.ProcessingStateComponent type="modal" />
+
         // Init datatable
         function initDatatable(){
             <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')" :deleteUrl="route('fe.apps.rbac.permission.delete', ['id' => '::ID::'])" method="GET">
@@ -231,8 +234,5 @@
                 $('#theTable').DataTable().ajax.reload(null, false);
             });
         }
-
-        // Handle overlay class for form processing state
-        <x-Adminlte.ProcessingStateComponent type="modal" />
     </script>
 @endpush

@@ -70,7 +70,7 @@ $('#{{ $id }}').DataTable({
         }).then((result) => {
             if(result.isConfirmed){
                 // Get route with id placeholder
-                const deleteRouteBase = '{{ $deleteUrl }}';
+                let deleteRouteBase = '{{ $deleteUrl }}';
 
                 // Change id placeholder with the actual id
                 routeDelete = deleteRouteBase.replace('::ID::', dataID);

@@ -171,7 +171,7 @@ class GeneralAuthController extends Controller{
             ]);
 
             // Redirect to login page
-            return redirect()->route('fe.auth.login')->with('class', 'danger')->with('message', $http['message']);
+            return redirect()->route('fe.auth.login')->with('class', 'success')->with('message', $http['message']);
         }
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([

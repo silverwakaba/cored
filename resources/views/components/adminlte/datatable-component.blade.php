@@ -109,7 +109,7 @@ $('#{{ $id }}').DataTable({
                     error: function(response){
                         Swal.fire({
                             icon: 'warning',
-                            text: response.message || response.responseJSON.message || 'Something went wrong.',
+                            text: 'Something went wrong.',
                             allowOutsideClick: () => {
                                 return false;
                             },

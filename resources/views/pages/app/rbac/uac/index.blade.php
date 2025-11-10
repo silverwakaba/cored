@@ -1,3 +1,4 @@
+
 @extends('layouts.adminlte')
 @section('title', 'User Access Control')
 @section('content')
@@ -26,79 +27,38 @@
             initActivation();
         });
 
+        // Handle overlay class for form processing state
+        <x-Adminlte.ProcessingStateComponent type="modal" />
+
         // Init datatable
         function initDatatable(){
             // Server-side Datatable from API Endpoint
-            $('#theTable').DataTable({
-                ordering: false,
-                processing: true,
-                serverSide: true,
-                searchDelay: 1500,
-                ajax: {
-                    type: 'GET',
-                    data: function(d){
-                        // Pass parameter
-                        d.type = 'datatable';
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.uac.list')" method="GET">
+                {
+                    title: 'Active', width: '5%', class: 'text-center', data: 'is_active',
+                    render: function(data, type, row, meta){
+                        return `<i class="fas fa-circle ${ row.is_active == true ? 'text-success' : 'text-danger' }"></i>`;
                     },
-                    url: `{{ route('fe.apps.rbac.uac.list') }}`,
-                    error: function(response){
-                        // API error
-                        Swal.fire({
-                            icon: 'warning',
-                            text: response.message || response.responseJSON.message || 'Something went wrong.',
-                            allowOutsideClick: () => {
-                                return false;
-                            },
-                        });
-                    }
                 },
-                columns: [
-                    {
-                        title: 'No.', width: '5%', class: 'text-center',
-                        render: function(data, type, row, meta){
-                            return `${ meta.row + meta.settings._iDisplayStart + 1 }`;
-                        },
-                    },
-                    {
-                        title: 'Active', width: '5%', class: 'text-center', data: 'is_active',
-                        render: function(data, type, row, meta){
-                            return `<i class="fas fa-circle ${ row.is_active == true ? 'text-success' : 'text-danger' }"></i>`;
-                        },
-                    },
-                    {
-                        title: 'Name', data: 'name',
-                    },
-                    {
-                        title: 'Email', data: 'email',
-                    },
-                    {
-                        title: 'Roles', data: 'roles',
-                        render: function(data, type, row, meta){
-                            if(Array.isArray(row.roles) && row.roles.length > 0){
-                                return row.roles.map(function(data){
-                                    return `<span class="badge badge-pill badge-secondary">${ data.name }</span>`;
-                                }).join(' ');
-                            }
+                {
+                    title: 'Name', data: 'name',
+                },
+                {
+                    title: 'Email', data: 'email',
+                },
+                {
+                    title: 'Roles', data: 'roles',
+                    render: function(data, type, row, meta){
+                        if(Array.isArray(row.roles) && row.roles.length > 0){
+                            return row.roles.map(function(data){
+                                return `<span class="badge badge-pill badge-secondary">${ data.name }</span>`;
+                            }).join(' ');
+                        }
 
-                            return '-';
-                        },
+                        return '-';
                     },
-                    {
-                        title: 'Action', width: '10%', class: 'text-center',
-                        render: function(data, type, row, meta){
-                            return `
-                                <div class="btn-group btn-block" role="group">
-                                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Action</button>
-                                    <div class="dropdown-menu btn-block">
-                                        <button id="btn-upsert" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-pen-to-square mr-2"></i>Edit</button>
-                                        <button id="btn-activation" class="dropdown-item" data-id="${ row.id }" data-isactive="${ row.is_active }"><i class="fas fa-history mr-2"></i>De/activate</button>
-                                    </div>
-                                </div>
-                            `;
-                        },
-                    },
-                ],
-            });
+                },
+            </x-Adminlte.DatatableComponent>
         }
 
         // Init upsert
@@ -136,7 +96,7 @@
                     routeAction = `{{ route('fe.apps.rbac.uac.create') }}`;
 
                     // Init form action
-                    formAction(routeAction);
+                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
                 }
 
                 // Handle update
@@ -178,7 +138,7 @@
                     routeAction = routeBase.replace('::ID::', dataID);
 
                     // Init form action
-                    formAction(routeAction);
+                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
                 }
             });
         }
@@ -219,117 +179,6 @@
                 error: function(){
                     $('#role').html('<option value="">Error loading data...</option>');
                 },
-            });
-        }
-
-        // Form action
-        function formAction(route){
-            // Handle form input while clearing previous action to avoid double submit
-            $('#theModal').off('submit').on('submit', function(e){
-                // Stop any possible unexpected default action
-                e.preventDefault();
-
-                // Clear previous errors
-                $('.is-invalid').removeClass('is-invalid');
-                $('.invalid-feedback').text('');
-
-                // By default when submitting the form, the state of form processing is set as true
-                setProcessingState(true);
-
-                // Populate form data into single variable
-                let formData = new FormData(this);
-
-                // Handle ajax
-                $.ajax({
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    dataType: 'json',
-                    url: route,
-                    success: function(response){
-                        // Handle success
-                        if(response.success){
-                            // If success, form processing state is set as true to avoid duplication
-                            setProcessingState(true);
-
-                            // Success
-                            Swal.fire({
-                                icon: 'success',
-                                text: response.message || response.responseJSON.message || 'Something went wrong.',
-                                allowOutsideClick: () => {
-                                    return false;
-                                },
-                            }).then(() => {
-                                // Trigger reset button
-                                $('#buttonResetModal').trigger('click');
-                                
-                                // Hide modal
-                                $('#theModalModal').modal('hide');
-
-                                // Reload datatable
-                                $('#theTable').DataTable().ajax.reload(null, false);
-
-                                // Then reset form processing state
-                                setProcessingState(false);
-                            });
-                        }
-                        else{
-                            // API error
-                            Swal.fire({
-                                icon: 'error',
-                                text: response.message || response.responseJSON.message || 'Something went wrong.',
-                            }).then(() => {
-                                // Reset form processing state
-                                setProcessingState(false);
-                            });
-                        }
-                    },
-                    error: function(response){
-                        // Refresh page if session/csrf_token expired
-                        if([200, 419].includes(response.status)){
-                            Swal.fire({
-                                icon: 'warning',
-                                text: response.message || response.responseJSON.message || 'Something went wrong.',
-                                allowOutsideClick: () => {
-                                    return false;
-                                },
-                            }).then(() => {
-                                // Reload page
-                                setTimeout(function(){
-                                    window.location.reload();
-                                }, 0);
-                            });
-                        }
-
-                        // If error, form processing state is set as false
-                        setProcessingState(false);
-
-                        // Don't show message if status is come from submit error
-                        if(response.status != 422){
-                            // Swal message
-                            Swal.fire({
-                                toast: true,
-                                icon: 'error',
-                                position: 'top-right',
-                                text: response.message || response.responseJSON.message || 'Something went wrong.',
-                                timer: 3000,
-                                showConfirmButton: false,
-                            });
-                        }
-
-                        // Handle error message
-                        let errors = response.responseJSON.errors;
-                            
-                        $.each(errors, function(key, value){
-                            let input = $('[name="' + key + '"]');
-                            let errorElement = $('#' + key + '-error');
-                            
-                            input.addClass('is-invalid');
-                            errorElement.text(value[0]);
-                        });
-                    }
-                });
             });
         }
 
@@ -419,28 +268,6 @@
                     }
                 });
             });
-        }
-
-        // Handle overlay class for form processing state
-        function setProcessingState(processing){
-            const reset = $('#buttonResetModal');
-            const submit = $('#buttonSubmitModal');
-            const overlay = $('#overlay-modal');
-
-            if(processing){
-                reset.prop('disabled', true);
-
-                submit.prop('disabled', true);
-
-                overlay.addClass('overlay').removeClass('d-none');
-            }
-            else{
-                reset.prop('disabled', false);
-
-                submit.prop('disabled', false);
-
-                overlay.addClass('d-none').removeClass('overlay');
-            }
         }
     </script>
 @endpush

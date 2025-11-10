@@ -230,7 +230,7 @@ abstract class BaseRepository{
             }
 
             // Save updated data
-            $datas = $datas->save();
+            $datas->save();
 
             // Call broadcaster if set
             if($this->broadcastClass){

@@ -56,7 +56,7 @@ php artisan view:clear && npm run build && php artisan view:clear
 
 9. Laravel `php artisan serve` might be broken as everything relied on API usage (CURL timeout, etc) -- Idk why tho. So try this boilerplate using something that supports a virtual host, such as Laragon, etc.
 
-## Estras
+## Extras
 
 1. Some features (email, websocket, etc) rely on a queue. Make sure the queue is working in the background.
 
@@ -81,7 +81,8 @@ The queue in the background can be managed using third-party tools, such as [Sup
 - ~~Login~~
 - ~~Verify~~
 - ~~Reset Password~~
-- SSO (Need to learn)
+- SSO (Need to learn later)
+- OAuth (Need to learn later)
 
 4. ~~Websocket  => 100% => Done~~ => Example @ \app\Http\Controllers\API\Core\Access\PermissionController.php
 - ~~Pusher~~
@@ -100,7 +101,7 @@ The queue in the background can be managed using third-party tools, such as [Sup
 - FrankenPHP
 
 94. Email fallback
-- Multiple provider
+- ~~Multiple provider~~
 
 95. CI/CD
 

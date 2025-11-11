@@ -74,7 +74,7 @@ The queue in the background can be managed using third-party tools, such as [Sup
 - ~~UAC~~
 
 2. Access => 50%
-- Dynamic Menu (Backend logic is done; No GUI / Form yet)
+- Dynamic Menu (~~Backend logic is done~~; No GUI / Form yet)
 
 3. ~~Auth (Mailable via queue) => Done~~
 - ~~Register~~
@@ -91,6 +91,7 @@ The queue in the background can be managed using third-party tools, such as [Sup
 5. Payment Gateway => 0%
 - Midtrans
 - Tripay
+- Crypto-related
 
 6. Caching => 0%
 - Redis
@@ -100,16 +101,19 @@ The queue in the background can be managed using third-party tools, such as [Sup
 - Docker
 - FrankenPHP
 
-94. Email fallback
+94. ~~Email fallback (Brevo, Zepto) => Done~~
 - ~~Multiple provider~~
 
 95. CI/CD
+- What?
 
-96. Database replication => 0%
-- Need to learn.
+96. Database => 0%
+- Need to replicate? => Postgre replication.
+- Need to cluster? => Postgre + Patroni + HAProxy.
+- ~~Need to sharding? No.~~
 
 97. High availability => 0%
-- Need to learn.
+- HAProxy.
 
 98. Split the frontend & backend
 - Rn still monolith.

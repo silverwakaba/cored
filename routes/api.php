@@ -114,4 +114,9 @@ Route::prefix('/')->name('be.')->group(function(){
             });
         });
     });
+
+    // // Feature outside core component (e.g: new project under cored branch as monorepo)
+    // Route::prefix('feature')->name('feature.')->group(function(){
+    //     // 
+    // });
 });

@@ -20,7 +20,7 @@ class PageController extends Controller{
 
     // Index
     public function index(){
-        return view('pages/blank');
+        return view('pages/index');
     }
 
     // Index auth

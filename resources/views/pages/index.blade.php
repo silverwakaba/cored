@@ -1,11 +1,11 @@
 @extends('layouts.arsha')
-@section('title', 'Affordable and Exceptional')
+@section('title', 'Professionally Reliable Solution')
 @section('content')
     <section id="hero" class="hero section dark-background">
         <div class="container">
             <div class="row gy-4">
                 <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="zoom-out">
-                    <h1>Affordable and Exceptional, Without Compromise.</h1>
+                    <h1>Affordable and Reliable, Without Compromise.</h1>
                     <p>We are obsessively focused on delivering products built to a high standard, minus the overpriced cost.</p>
                     <div class="d-flex">
                         <a href="#about" class="btn-get-started">Get Started</a>
@@ -172,7 +172,7 @@
                 <div class="col-lg-7 d-flex flex-column justify-content-center order-2 order-lg-1">
                     <div class="content px-xl-5">
                         <h3>Have a question? <strong>We've got you covered!</strong></h3>
-                        <p><i>You heard it right and probably have a few questions, so we've gathered the answers to the most common ones right here.</i></p>
+                        <p><i>You heard it right! You probably have a few questions, so we've gathered the answers to the most common ones right here.</i></p>
                     </div>
                     <div class="accordion" id="accordionFAQ">
                         <div class="accordion-item">
@@ -183,9 +183,9 @@
                             </h2>
                             <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionFAQ">
                                 <div class="accordion-body">
-                                    <p>Silverspoon is a heartfelt family project, lovingly built and run by Azhar and Salma. We offer services focused on our core passions: programming and illustration. While we began our professional journey in 2019, our love and exposure for these crafts started long before, giving our work a depth of genuine passion.</p>
+                                    <p>Silverspoon is a heartfelt family project, lovingly built and run by Azhar and Salma. We offer combined services focused on our core passions: programming and illustration. While we began our professional journey in 2019, our love and exposure for these crafts started long before, giving our work a depth of genuine passion.</p>
                                     <hr />
-                                    <p><small><i>Trivia: The <a href="https://who.is/whois/silverspoon.me" target="_blank">silverspoon domain</a> has been registered since 2020, but has only been used as a landing page since November 2025.</i></small></p>
+                                    <p><small><i>Trivia: The <a href="https://who.is/whois/silverspoon.me" target="_blank">Silverspoon domain</a> has been registered since 2020, but has only been used as a landing page since late November 2025.</i></small></p>
                                 </div>
                             </div>
                         </div>
@@ -197,12 +197,13 @@
                             </h2>
                             <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
                                 <div class="accordion-body">
-                                    <p>In a simple term, at first Silverspoon is a code name for programming project that I have developed on my own. Inevitably, most of the applications are single-handedly created by myself. Alone in the dark.</p>
-                                    <p>The majority of projects that have been created will usually be published to the internet and can be used publicly. Though the code base itself is mostly closed source. Still, it is possible that there will be several open source projects in the future.</p>
-                                    <p>The products offered primarily consist of everyday applications based on a SaaS (Software as a Service) model. I rarely create an application that is specificly tied to one person or company. That's all simply because I really like the SaaS business model.</p>
-                                    <p>The short-term goal is to serve it as a portfolio of my skills. Meanwhile, the long-term goal is to target these projects to be able to run professionally as matured, product-driven business.</p>
-                                    <p>However, in late 2025, I felt the need for a public landing page to showcase my wife and I's portfolio and start to be open to working on projects for client needs. So, Silverspoon's primary domain was used for the landing page.</p>
-                                    <p>So hey everyone, we're open!</p>
+                                    <p>At first, Silverspoon was the code name for one of my programming projects. But as time passed, without my knowing I already have developed several projects.</p>
+                                    <p>I love the terms "Silverspoon" but cannot assign it to the original project it belonged to. With that in mind, Silverspoon became the main project name, while the original project was renamed "vTual."</p>
+                                    <p>After that, the projects I develop are usually published on the internet and can be used publicly, though the code base itself is mostly closed source. Still, it is possible that there will be several open source projects in the future.</p>
+                                    <p>The developed project primarily consist of everyday applications based on a SaaS (Software as a Service) model. I rarely create an application that is specificly tied to one person or company, that's all simply because I really like the SaaS business model.</p>
+                                    <p>The short-term goal for those project is to serve it as a portfolio of my skills. Meanwhile, the long-term goal is to target these projects to be able to run professionally as matured product-driven business.</p>
+                                    <p>However, in late 2025, I felt the need for a public landing page to showcase my wife's and my portfolio and start to be open to working on projects for client needs as a business model expansion. So, Silverspoon's primary domain was used for the landing page.</p>
+                                    <p>So hey everyone, we're open for the public!</p>
                                 </div>
                             </div>
                         </div>
@@ -231,7 +232,7 @@
                             </h2>
                             <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
                                 <div class="accordion-body">
-                                    <p>My technical foundation is built on a robust and reliable internal stack that has served me well since the beginning: Laravel powers the backend, authenticated with JWT, while the frontend is crafted with Blade and jQuery/VueJS. This is all supported by PostgreSQL, elegantly managed via the Eloquent ORM and deployed on an Ubuntu server with nginx.</p>
+                                    <p>My technical foundation is built on a robust and reliable internal stack that has served me well since the beginning: Laravel powers the backend, authenticated with JWT, while the frontend is crafted with Blade and jQuery/VueJS. This is all supported by PostgreSQL, elegantly managed via the Eloquent ORM and deployed on an Ubuntu server with nginx and/or Apache.</p>
                                     <p>To ensure performance and security, I integrate with powerful external services like S3-compatible storage, GitHub/Gitlab for version control and acme for certificate management, all protected by Cloudflare Zero Trust.</p>
                                     <p>I'm also continuously growing my toolkit. I'm currently exploring and adapting to new technologies like FrankenPHP, HAProxy, Patroni, Redis, RabbitMQ, containerization (Docker/Kubernetes) and automation (n8n/Zapier) to solve more complex problems. Throughout all my projects, I employ the repository pattern to ensure a clean, maintainable and scalable architecture.</p>
                                 </div>

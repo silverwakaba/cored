@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class PermissionCreateRequest extends FormRequest{
+class CTAMessageRequest extends FormRequest{
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -20,7 +19,12 @@ class PermissionCreateRequest extends FormRequest{
      */
     public function rules() : array{
         return [
-            'name' => ['required', 'string', Rule::unique('permissions')->ignore(request()->id ?? 0)],
+            'name'                  => ['required', 'string'],
+            'email'                 => ['required', 'email'],
+            'subject'               => ['required', 'string'],
+            'message'               => ['required', 'string'],
+            'agreement'             => ['accepted', 'boolean'],
+            'h-captcha-response'    => ['required', 'HCaptcha'], // this one works
         ];
     }
 }

@@ -8,11 +8,18 @@ use App\Http\Controllers\API\Core\Access\MenuController;
 use App\Http\Controllers\API\Core\Access\PermissionController;
 use App\Http\Controllers\API\Core\Access\RoleController;
 use App\Http\Controllers\API\Core\Access\UserAccessController;
+use App\Http\Controllers\API\Core\Shared\CallToActionController;
 
 // API routing
 Route::prefix('/')->name('be.')->group(function(){
     // Core
     Route::prefix('core')->name('core.')->group(function(){
+        // CTA
+        Route::prefix('cta')->name('cta.')->controller(CallToActionController::class)->group(function(){
+            // Messages
+            Route::post('message', 'message')->name('message');
+        });
+
         // Auth
         Route::prefix('auth')->name('auth.')->group(function(){
             // JWT Auth

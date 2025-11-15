@@ -70,6 +70,29 @@ class PageController extends Controller{
         ]);
     }
 
+    // Index cta
+    public function cta(){
+        // Data option
+        $datas = [
+            'breadcrumb'    => 'cta',
+            'title'         => 'Call To Action',
+            'navigation'    => [
+                // Message
+                [
+                    'icon'      => 'fas fa-message',
+                    'title'     => 'Message',
+                    'content'   => 'Send us a message.',
+                    'link'      => route('fe.cta.message'),
+                ],
+            ],
+        ];
+
+        // View
+        return view('pages/app/index-standardized', [
+            'datas' => $datas,
+        ]);
+    }
+
     // Index app
     public function app(){
         return view('pages/app/index');

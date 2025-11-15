@@ -25,18 +25,15 @@
                 </ul>
             </div>
             <div class="col-lg-4 col-md-12">
-                <h4>Discover Us</h4>
-                <p>Out of the many social services that are available, see you on other platforms.</p>
-                <div class="social-links d-flex">
-                    <a href="https://www.linkedin.com/in/azhar-fahrurazi-raka-praja/" target="_blank"><i class="bi bi-linkedin"></i></a>
-                </div>
+                <h4>About Us</h4>
+                <p>We're a family project (not an agency whatsoever) that offers programming and/or illustration as a service with a high standard, but less overpriced compared to others.</p>
             </div>
         </div>
     </div>
     <div class="container copyright text-center mt-4">
         <p>Copyright &copy; 2025 <strong class="sitename">{{ config('app.name', 'Cored') }} v.0.0.1</strong>. All rights reserved.</p>
         <div class="credits">
-            <span><small>Designed by <a href="https://bootstrapmade.com">BootstrapMade</a> & Illustrated by Kimiko.</small></span>
+            <span><small>Designed by <a href="https://bootstrapmade.com">BootstrapMade</a> & asset illustrated by Sanadz.</small></span>
         </div>
     </div>
 </footer>

@@ -52,6 +52,18 @@ Breadcrumbs::for('auth.reset-password-tokenized', function (BreadcrumbTrail $tra
     $trail->push(request()->token, route('fe.auth.reset-password-tokenized', ['token' => request()->token]));
 });
 
+// CTA
+Breadcrumbs::for('cta', function (BreadcrumbTrail $trail){
+    $trail->parent('index');
+    $trail->push('CTA', route('fe.page.cta'));
+});
+
+// CTA
+Breadcrumbs::for('cta.message', function (BreadcrumbTrail $trail){
+    $trail->parent('cta');
+    $trail->push('Message', route('fe.cta.message'));
+});
+
 /**
  * Apps
 */

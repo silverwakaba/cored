@@ -166,6 +166,112 @@
         </div>
     </section>
 
+    <section id="portfolio" class="portfolio section light-background">
+        <div class="container section-title">
+            <h2>Portfolio</h2>
+            <p>We have several portfolios that we can present as examples of the work we have done.</p>
+        </div>
+        <div class="container">
+            <div class="isotope-layout" data-default-filter="*" data-layout="masonry" data-sort="original-order">
+                <ul class="portfolio-filters isotope-filters">
+                    <li data-filter="*" class="filter-active">All</li>
+                    <li data-filter=".filter-illustration">Illustration</li>
+                    <li data-filter=".filter-web">Web</li>
+                </ul>
+                <div class="row gy-4 isotope-container">
+                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-illustration">
+                        <img src="https://static.silverspoon.me/project/itssanadz/image/porto/stream/emote/1.webp" class="img-fluid" alt="Emotes Chibi Waka">
+                        <div class="portfolio-info">
+                            <h4>Emotes Chibi Waka</h4>
+                            <p>Custom emoticon of Waka. Suitable as chat emotes or even avatar.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-illustration">
+                        <img src="https://static.silverspoon.me/project/itssanadz/image/porto/stream/badge/1.webp" class="img-fluid" alt="Badges Love">
+                        <div class="portfolio-info">
+                            <h4>Badges Love</h4>
+                            <p>Badge of cute love. Suitable as chat badges to differentiate the level of fans in the community.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-web">
+                        <img src="https://static.silverspoon.me/project/silverspoon/image/porto/vTual.webp" class="img-fluid" alt="vTual Project">
+                        <div class="portfolio-info">
+                            <h4>vTual Project</h4>
+                            <p>An aggregator site that tracks the activity and statistics of known streamers and/or vTubers, both from Twitch and YouTube.</p>
+                            <a href="https://www.vtual.net/" target="_blank" class="details-link"><i class="bi bi-link-45deg"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-illustration">
+                        <img src="https://static.silverspoon.me/project/itssanadz/image/porto/stream/badge/4.webp" class="img-fluid" alt="Badges Cute Dessert">
+                        <div class="portfolio-info">
+                            <h4>Badges Cute Dessert</h4>
+                            <p>Badge of cute dessert. Your badge could be something different and cute at the same time.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-illustration">
+                        <img src="https://static.silverspoon.me/project/itssanadz/image/porto/illust/11.webp" class="img-fluid" alt="Semi-realism">
+                        <div class="portfolio-info">
+                            <h4>Semi-realism</h4>
+                            <p>Art styles is not always about anime-style. Sometimes something like semi-realism does exist!</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-illustration">
+                        <img src="https://static.silverspoon.me/project/itssanadz/image/porto/stream/emote/4.webp" class="img-fluid" alt="Emotes Cute Red Panda">
+                        <div class="portfolio-info">
+                            <h4>Emotes Cute Red Panda</h4>
+                            <p>Custom emoticon of cute red panda. Aren't they just too adorable?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="team section">
+        <div class="container section-title">
+            <h2>Team</h2>
+            <p>We're the faces and hearts of the Silverspoon project and we are looking forward to getting in touch with you.</p>
+        </div>
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-6">
+                    <div class="team-member d-flex align-items-start">
+                        <div class="pic">
+                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-m-7.webp" class="img-fluid" alt="Azhar Fahrurazi">
+                        </div>
+                        <div class="member-info">
+                            <h4>Azhar "Waka" Fahrurazi</h4>
+                            <span>Programmer, the Husband</span>
+                            <p>A backend specialist at heart, with the proven flexibility to seamlessly handle full-stack development when needed.</p>
+                            <div class="social">
+                                <a href="https://linkedin.com/in/azhar-fahrurazi-raka-praja"><i class="bi bi-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="team-member d-flex align-items-start">
+                        <div class="pic">
+                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-f-8.webp" class="img-fluid" alt="">
+                        </div>
+                        <div class="member-info">
+                            <h4>Salma "Sanadz" Nadzirah</h4>
+                            <span>Illustrator, the Wife</span>
+                            <p>The dynamic world of microstock has honed the experience to draw in countless styles, making adaptable and versatile.</p>
+                            <div class="social">
+                                <a href="https://www.instagram.com/itssanadz"><i class="bi bi-instagram"></i></a>
+                                <a href="https://www.tiktok.com/@itssanadz"><i class="bi bi-tiktok"></i></a>
+                                <a href="https://stock.adobe.com/uk/contributor/211699431/Salma" title="Adobe Stock"><i class="bi bi-box-arrow-up-right"></i></a>
+                                <a href="https://www.canva.com/p/its-sanadz" title="Canva"><i class="bi bi-box-arrow-up-right"></i></a>
+                                <a href="https://www.vecteezy.com/members/113449829645431624840" title="Vecteezy"><i class="bi bi-box-arrow-up-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="why-us" class="section why-us light-background">
         <div class="container-fluid">
             <div class="row gy-4">
@@ -247,84 +353,16 @@
         </div>
     </section>
 
-    <section id="team" class="team section">
-        <div class="container section-title">
-            <h2>Team</h2>
-            <p>We're the faces and hearts of the Silverspoon project and we are looking forward to getting in touch with you.</p>
-        </div>
+    <section id="call-to-action" class="call-to-action section dark-background">
+        <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/bg/bg-8.webp" alt="CTA">
         <div class="container">
-            <div class="row gy-4">
-                <div class="col-lg-6">
-                    <div class="team-member d-flex align-items-start">
-                        <div class="pic">
-                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-m-7.webp" class="img-fluid" alt="Azhar Fahrurazi">
-                        </div>
-                        <div class="member-info">
-                            <h4>Azhar "Waka" Fahrurazi</h4>
-                            <span>Programmer, the Husband</span>
-                            <p>A backend specialist at heart, with the proven flexibility to seamlessly handle full-stack development when needed.</p>
-                            <div class="social">
-                                <a href=""><i class="bi bi-twitter-x"></i></a>
-                                <a href=""><i class="bi bi-facebook"></i></a>
-                                <a href=""><i class="bi bi-instagram"></i></a>
-                                <a href=""> <i class="bi bi-linkedin"></i> </a>
-                            </div>
-                        </div>
-                    </div>
+            <div class="row" data-aos="zoom-in" data-aos-delay="100">
+                <div class="col-xl-9 text-center text-xl-start">
+                    <h3>Ready to start?</h3>
+                    <p>If you think we have something to offer you, don't hesitate to contact us to talk about the possibility of cooperation. We're open to any reasonable inquiry.</p>
                 </div>
-                <div class="col-lg-6">
-                    <div class="team-member d-flex align-items-start">
-                        <div class="pic">
-                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-f-8.webp" class="img-fluid" alt="">
-                        </div>
-                        <div class="member-info">
-                            <h4>Salma "Kimiko" Nadzirah</h4>
-                            <span>Illustrator, the Wife</span>
-                            <p>The dynamic world of microstock has honed the experience to draw in countless styles, making adaptable and versatile.</p>
-                            <div class="social">
-                                <a href=""><i class="bi bi-twitter-x"></i></a>
-                                <a href=""><i class="bi bi-facebook"></i></a>
-                                <a href=""><i class="bi bi-instagram"></i></a>
-                                <a href=""> <i class="bi bi-linkedin"></i> </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact" class="contact section light-background">
-        <div class="container section-title">
-            <h2>Contact</h2>
-            <p>Drop us a message through the form below to discuss something wonderful.</p>
-        </div>
-        <div class="container">
-            <div class="row gy-4">
-                <div class="col-lg-12">
-                    <form action="#" method="post" class="php-email-form">
-                        <div class="row gy-4">
-                            <div class="col-md-6">
-                                <label for="name-field" class="pb-2">Your Name</label>
-                                <input type="text" name="name" id="name-field" class="form-control" required="">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="email-field" class="pb-2">Your Email</label>
-                                <input type="email" class="form-control" name="email" id="email-field" required="">
-                            </div>
-                            <div class="col-md-12">
-                                <label for="subject-field" class="pb-2">Subject</label>
-                                <input type="text" class="form-control" name="subject" id="subject-field" required="">
-                            </div>
-                            <div class="col-md-12">
-                                <label for="message-field" class="pb-2">Message</label>
-                                <textarea class="form-control" name="message" rows="10" id="message-field" required=""></textarea>
-                            </div>
-                            <div class="col-md-12 text-center">
-                                <button type="submit">Send Message</button>
-                            </div>
-                        </div>
-                    </form>
+                <div class="col-xl-3 cta-btn-container text-center">
+                    <a class="cta-btn align-middle" href="{{ route('fe.cta.message') }}">Contact Us</a>
                 </div>
             </div>
         </div>

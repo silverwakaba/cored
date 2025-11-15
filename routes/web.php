@@ -8,6 +8,7 @@ use App\Http\Controllers\FE\Core\Access\RoleController;
 use App\Http\Controllers\FE\Core\Access\UserAccessController;
 use App\Http\Controllers\FE\Core\Auth\GeneralAuthController;
 use App\Http\Controllers\FE\Core\Shared\BasedataController;
+use App\Http\Controllers\FE\Core\Shared\CallToActionController;
 
 // General Controller
 use App\Http\Controllers\FE\PageController;
@@ -29,10 +30,20 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
 
             // Index auth
             Route::get('auth', 'auth')->name('auth'); // => this one is masking as /auth root
+
+            // Index cta
+            Route::get('cta', 'cta')->name('cta'); // => this one is masking as /cta root
         });
 
-        // Root page (reserved: /base, /auth, /apps)
+        // Root page (reserved: /base, /auth, /apps, /cta)
         // => Add something
+    });
+
+    // CTA
+    Route::prefix('cta')->name('cta.')->controller(CallToActionController::class)->group(function(){
+        // Messages
+        Route::get('message', 'message')->name('message');
+        Route::post('message', 'messagePost');
     });
 
     // General Auth (core - do not touch)

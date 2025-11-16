@@ -106,67 +106,7 @@
         </div>
     </section>
 
-    <section id="services" class="services section">
-        <div class="container section-title">
-            <h2>Services</h2>
-            <p>You've found the heart of our family project. Here's a little about who we are and the services we provide.</p>
-        </div>
-        <div class="container">
-            <div class="row gy-4">
-                <div class="col-xl-4 col-md-6 d-flex">
-                    <div class="service-item position-relative">
-                        <div class="icon"><i class="bi bi-file-break-fill"></i></div>
-                        <h4><span class="stretched-link">Landing Page</span></h4>
-                        <p>A landing page to share information about you and what you can offer to the world.</p>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-md-6 d-flex">
-                    <div class="service-item position-relative">
-                        <div class="icon"><i class="bi bi-window-split"></i></div>
-                        <h4><span class="stretched-link">Simple Apps</span></h4>
-                        <p>A simple, yet easy-to-use app that makes simple things, well... simpler.</p>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-md-6 d-flex">
-                    <div class="service-item position-relative">
-                        <div class="icon"><i class="bi bi-window-stack"></i></div>
-                        <h4><span class="stretched-link">Complicated Apps</span></h4>
-                        <p>Or perhaps you need a more sophisticated system, like a pre-made ERP.</p>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-md-6 d-flex">
-                    <div class="service-item position-relative">
-                        <div class="icon"><i class="bi bi-brush"></i></div>
-                        <h4><span class="stretched-link">Illustration</span></h4>
-                        <p>Bringing your ideas into canvas, crafted in a wide range of artistic styles.</p>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-md-6 d-flex">
-                    <div class="service-item position-relative">
-                        <div class="icon"><i class="bi bi-emoji-smile"></i></div>
-                        <h4><span class="stretched-link">Emoticon</span></h4>
-                        <p>Enlighten your community conversations and reactions with unique, custom emoticons.</p>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-md-6 d-flex">
-                    <div class="service-item position-relative">
-                        <div class="icon"><i class="bi bi-person-badge"></i></div>
-                        <h4><span class="stretched-link">Badge</span></h4>
-                        <p>Elevate your community engagement with a gamified prestige badge system that members will love.</p>
-                    </div>
-                </div>
-                <div class="col-12 text-center">
-                    <div class="service-item position-relative">
-                        <div class="icon"><i class="bi bi-eye"></i></div>
-                        <h4><span class="stretched-link">Care to Hire</span></h4>
-                        <p>We understand that some custom-made project require more time, focus and care compared to pre-made solutions. We're committed to giving your vision the detailed attention and dedication it deserves, so that it can turns into a reality.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="portfolio" class="portfolio section light-background">
+    <section id="portfolio" class="portfolio section">
         <div class="container section-title">
             <h2>Portfolio</h2>
             <p>We have several portfolios that we can present as examples of the work we have done.</p>
@@ -227,52 +167,67 @@
         </div>
     </section>
 
-    <section id="team" class="team section">
+    <section id="services" class="services section light-background">
         <div class="container section-title">
-            <h2>Team</h2>
-            <p>We're the faces and hearts of the Silverspoon project and we are looking forward to getting in touch with you.</p>
+            <h2>Services</h2>
+            <p>You've found the heart of our family project. Here's a little about who we are and the services we provide.</p>
         </div>
         <div class="container">
             <div class="row gy-4">
-                <div class="col-lg-6">
-                    <div class="team-member d-flex align-items-start">
-                        <div class="pic">
-                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-m-7.webp" class="img-fluid" alt="Azhar Fahrurazi">
-                        </div>
-                        <div class="member-info">
-                            <h4>Azhar "Waka" Fahrurazi</h4>
-                            <span>Programmer, the Husband</span>
-                            <p>A backend specialist at heart, with the proven flexibility to seamlessly handle full-stack development when needed.</p>
-                            <div class="social">
-                                <a href="https://linkedin.com/in/azhar-fahrurazi-raka-praja"><i class="bi bi-linkedin"></i></a>
-                            </div>
-                        </div>
+                <div class="col-xl-4 col-md-6 d-flex">
+                    <div class="service-item position-relative">
+                        <div class="icon"><i class="bi bi-file-break-fill"></i></div>
+                        <h4><span class="stretched-link">Landing Page</span></h4>
+                        <p>A landing page to share information about you and what you can offer to the world.</p>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="team-member d-flex align-items-start">
-                        <div class="pic">
-                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-f-8.webp" class="img-fluid" alt="">
-                        </div>
-                        <div class="member-info">
-                            <h4>Salma "Sanadz" Nadzirah</h4>
-                            <span>Illustrator, the Wife</span>
-                            <p>The dynamic world of microstock has honed the experience to draw in countless styles, making adaptable and versatile.</p>
-                            <div class="social">
-                                <a href="https://www.instagram.com/itssanadz"><i class="bi bi-instagram"></i></a>
-                                <a href="https://www.tiktok.com/@itssanadz"><i class="bi bi-tiktok"></i></a>
-                                <a href="https://stock.adobe.com/uk/contributor/211699431/Salma" title="Adobe Stock"><i class="bi bi-box-arrow-up-right"></i></a>
-                                <a href="https://www.canva.com/p/its-sanadz" title="Canva"><i class="bi bi-box-arrow-up-right"></i></a>
-                                <a href="https://www.vecteezy.com/members/113449829645431624840" title="Vecteezy"><i class="bi bi-box-arrow-up-right"></i></a>
-                            </div>
-                        </div>
+                <div class="col-xl-4 col-md-6 d-flex">
+                    <div class="service-item position-relative">
+                        <div class="icon"><i class="bi bi-window-split"></i></div>
+                        <h4><span class="stretched-link">Simple Apps</span></h4>
+                        <p>A simple, yet easy-to-use app that makes simple things, well... simpler.</p>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 d-flex">
+                    <div class="service-item position-relative">
+                        <div class="icon"><i class="bi bi-window-stack"></i></div>
+                        <h4><span class="stretched-link">Complicated Apps</span></h4>
+                        <p>Or perhaps you need a more sophisticated system, like a pre-made ERP.</p>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 d-flex">
+                    <div class="service-item position-relative">
+                        <div class="icon"><i class="bi bi-brush"></i></div>
+                        <h4><span class="stretched-link">Illustration</span></h4>
+                        <p>Bringing your ideas into canvas, crafted in a wide range of artistic styles.</p>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 d-flex">
+                    <div class="service-item position-relative">
+                        <div class="icon"><i class="bi bi-emoji-smile"></i></div>
+                        <h4><span class="stretched-link">Emoticon</span></h4>
+                        <p>Enlighten your community conversations and reactions with unique, custom emoticons.</p>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-6 d-flex">
+                    <div class="service-item position-relative">
+                        <div class="icon"><i class="bi bi-person-badge"></i></div>
+                        <h4><span class="stretched-link">Badge</span></h4>
+                        <p>Elevate your community engagement with a gamified prestige badge system that members will love.</p>
+                    </div>
+                </div>
+                <div class="col-12 text-center">
+                    <div class="service-item position-relative">
+                        <div class="icon"><i class="bi bi-eye"></i></div>
+                        <h4><span class="stretched-link">Care to Hire</span></h4>
+                        <p>We understand that some custom-made project require more time, focus and care compared to pre-made solutions. We're committed to giving your vision the detailed attention and dedication it deserves, so that it can turns into a reality.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="why-us" class="section why-us light-background">
+    <section id="why-us" class="section why-us">
         <div class="container-fluid">
             <div class="row gy-4">
                 <div class="col-lg-7 d-flex flex-column justify-content-center order-2 order-lg-1">
@@ -348,6 +303,51 @@
                 </div>
                 <div class="col-lg-5 order-1 order-lg-2 why-us-img">
                     <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/why-us.png" class="img-fluid" alt="Why Us">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="team section light-background   cxcdsesr ">
+        <div class="container section-title">
+            <h2>Team</h2>
+            <p>We're the faces and hearts of the Silverspoon project and we are looking forward to getting in touch with you.</p>
+        </div>
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-6">
+                    <div class="team-member d-flex align-items-start">
+                        <div class="pic">
+                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-m-7.webp" class="img-fluid" alt="Azhar Fahrurazi">
+                        </div>
+                        <div class="member-info">
+                            <h4>Azhar "Waka" Fahrurazi</h4>
+                            <span>Programmer, the Husband</span>
+                            <p>A backend specialist at heart, with the proven flexibility to seamlessly handle full-stack development when needed.</p>
+                            <div class="social">
+                                <a href="https://linkedin.com/in/azhar-fahrurazi-raka-praja" target="_blank"><i class="bi bi-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="team-member d-flex align-items-start">
+                        <div class="pic">
+                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-f-8.webp" class="img-fluid" alt="">
+                        </div>
+                        <div class="member-info">
+                            <h4>Salma "Sanadz" Nadzirah</h4>
+                            <span>Illustrator, the Wife</span>
+                            <p>The dynamic world of microstock has honed the experience to draw in countless styles, making adaptable and versatile.</p>
+                            <div class="social">
+                                <a href="https://www.instagram.com/itssanadz" target="_blank"><i class="bi bi-instagram"></i></a>
+                                <a href="https://www.tiktok.com/@itssanadz" target="_blank"><i class="bi bi-tiktok"></i></a>
+                                <a href="https://stock.adobe.com/uk/contributor/211699431/Salma" title="Adobe Stock" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>
+                                <a href="https://www.canva.com/p/its-sanadz" title="Canva" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>
+                                <a href="https://www.vecteezy.com/members/113449829645431624840" title="Vecteezy" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

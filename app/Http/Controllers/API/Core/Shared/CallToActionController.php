@@ -50,13 +50,13 @@ class CallToActionController extends Controller{
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'message'   => 'The Message was sent successfully.',
+                'message'   => 'The message was sent successfully.',
             ]);
         }
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([
                 'status'    => 409,
-                'message'   => $th,
+                'message'   => null,
             ]);
         }
     }

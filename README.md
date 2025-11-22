@@ -1,6 +1,6 @@
 ## About This Project
 
-Azhar's starter pack for creating Laravel applications; And it is (sort of) using monorepo approach.
+Azhar's starter pack for creating Laravel applications; And it is (sort of, still) using monorepo approach.
 
 There's not yet plan for advanced implementation such as SSO, microservice, etc. Just a tiny starter pack; Hence vertical scaling -- At least for now.
 
@@ -66,7 +66,7 @@ $ php artisan queue:work
 
 The queue in the background can be managed using third-party tools, such as [Supervisor](https://supervisord.org/) or [PM2](https://pm2.keymetrics.io/).
 
-2. When working with general asset like component, please do it inside main repo, so that the entire project can get the benefit.
+2. When working with general asset like component / feature like websocket, or any other QOL feature; Please do it inside main repo so that the entire project can get the benefit.
 
 3. For a feature, please:
 
@@ -89,6 +89,32 @@ $ php artisan make:model Feat/xxx
 ```
 
 So that it will have minimal impact on the main branch.
+
+4. There's a new feature which is "Cloudflare D1" as a database driver by [Erimeilis](https://github.com/erimeilis/laravel-cloudflare-d1). But to be honest, I don't think it's good enough to be used as a main driver.
+
+```
+Reason:
+
+- Single-threaded, so it processes queries one at a time.
+- Must implement sharding if the project becomes too large, because the maximum size of one the database is 10 GB per database.
+- When manual sharding is needed, it is hard to implement because there are no tools available, for now, at least, probably.
+```
+
+But if you're interested, here's the reference:
+
+```
+Reference:
+
+- Migration: database\migrations\0001_01_02_000003_create_d1_test_table.php
+- Model: app\Models\D1Test.php
+- Config: config\cloudflare-d1.php
+```
+
+It needs to be known that the connection must be explicitly declared, or the connection will error.
+
+For now, I think the best use-case for Cloudflare D1 is to use it as a database driver that handles unimportant data such as queues, logs and other miscellaneous data if the project is too large.
+
+But if the project is small to medium, or not really that important (e.g: a landing page), then it is perfectly fine to use. Since other free databases like Supabase will deactivate the database if inactive for a period of time.
 
 ## Roadmap
 

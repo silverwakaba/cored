@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "550b52ab0cc5164f49d4d3cc47105ced",
+    "content-hash": "088f0e73a997e20ac83d7dc46f392c12",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -730,6 +730,73 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "erimeilis/laravel-cloudflare-d1",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erimeilis/laravel-cloudflare-d1.git",
+                "reference": "084203781c678794e3caf99a5271aaf415e7f494"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erimeilis/laravel-cloudflare-d1/zipball/084203781c678794e3caf99a5271aaf415e7f494",
+                "reference": "084203781c678794e3caf99a5271aaf415e7f494",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.8",
+                "illuminate/database": "^11.0|^12.0",
+                "illuminate/support": "^11.0|^12.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^9.0|^10.0",
+                "phpunit/phpunit": "^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "EriMeilis\\CloudflareD1\\D1ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "EriMeilis\\CloudflareD1\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eri Meilis",
+                    "email": "eri@redshoes.pro"
+                }
+            ],
+            "description": "Production-ready Cloudflare D1 database driver for Laravel with full Eloquent support, 20x faster bulk inserts, and complete MySQL migration tooling",
+            "keywords": [
+                "cloudflare",
+                "d1",
+                "database",
+                "database-migration",
+                "edge-database",
+                "eloquent",
+                "laravel",
+                "mysql-migration",
+                "performance",
+                "sqlite"
+            ],
+            "support": {
+                "issues": "https://github.com/erimeilis/laravel-cloudflare-d1/issues",
+                "source": "https://github.com/erimeilis/laravel-cloudflare-d1/tree/v1.1.0"
+            },
+            "time": "2025-11-04T10:52:18+00:00"
         },
         {
             "name": "facade/ignition-contracts",

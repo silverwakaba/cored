@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "diglactic/laravel-breadcrumbs": "^10.0",
+        "erimeilis/laravel-cloudflare-d1": "^1.1",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "3.0",

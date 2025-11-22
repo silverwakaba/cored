@@ -90,11 +90,15 @@ $ php artisan make:model Feat/xxx
 
 So that it will have minimal impact on the main branch.
 
-4. There's a new feature which is "Cloudflare D1" as a database driver by [Erimeilis](https://github.com/erimeilis/laravel-cloudflare-d1). But to be honest, I don't think it's good enough to be used as a main driver. The reason is:
+4. There's a new feature which is "Cloudflare D1" as a database driver by [Erimeilis](https://github.com/erimeilis/laravel-cloudflare-d1). But to be honest, I don't think it's good enough to be used as a main driver.
+
+```
+Reason:
 
 - Single-threaded, so it processes queries one at a time.
 - Must implement sharding if the project becomes too large, because the maximum size of one the database is 10 GB per database.
 - Manual sharding implementation is required but hard to implement because there are no tools available, for now, at least, probably.
+```
 
 But if you're interested, here's the reference:
 

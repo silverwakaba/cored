@@ -97,7 +97,7 @@ Reason:
 
 - Single-threaded, so it processes queries one at a time.
 - Must implement sharding if the project becomes too large, because the maximum size of one the database is 10 GB per database.
-- Manual sharding implementation is required but hard to implement because there are no tools available, for now, at least, probably.
+- When manual sharding is needed, it is hard to implement because there are no tools available, for now, at least, probably.
 ```
 
 But if you're interested, here's the reference:

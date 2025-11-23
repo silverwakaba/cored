@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Contracts\UserRepositoryInterface;
 
 // Helper
+use App\Helpers\FileHelper;
 use App\Helpers\GeneralHelper;
 
 // Request

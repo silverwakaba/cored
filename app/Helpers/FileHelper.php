@@ -2,34 +2,133 @@
 
 namespace App\Helpers;
 
-use Faker\Factory;
+// Helper
+use App\Helpers\GeneralHelper;
+
+// Internal
+use Illuminate\Http\File;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+// External
+use Carbon\Carbon;
+use Faker\Factory;
+
 class FileHelper{
-    // Disk properties
-    public static function disk(){
-        $datas = config('filesystems.disks.s3Custom');
-        
-        return $datas;
+    // Property
+    protected $disk;
+    protected $directory;
+    protected $expire;
+
+    // Link expire in minutes
+    public function expire($expire = 30){
+        // Set disk
+        $this->expire = $expire;
+
+        // Chainable
+        return $this;
     }
 
-    // Path directory
-    public static function directory($type){
-        switch($type){
-            case 'avatar': return 'app/avatar'; break;
-        }
+    // Set Disk (s3 only)
+    public function disk($disk = 's3Custom'){
+        // Set disk
+        $this->disk = $disk;
+        
+        // Chainable
+        return $this;
     }
 
-    // Avatar
-    public static function avatar($path = null){
-        $disk = self::disk();
+    // Set directory
+    public function directory($directory){
+        // Determine directory
+        switch($directory){
+            // Avatar
+            case 'avatar': $directory; break;
 
-        if($path == null){
-            $rangeAvatar = Factory::create()->numberBetween(1, 5);
-
-            return 'https://static.pub.spnd.uk/system/internal/image/avatar/avatar-' . $rangeAvatar . '.png';
+            // Test
+            case 'test': $directory; break;
+            
+            // Default
+            default: $directory = 'general'; break;
         }
+
+        // Set project + document directory (e.g: The project name is silverspoon and document is avatar, so the result is: silverspoon/avatar/, etc)
+        $this->directory = Str::of($directory)->prepend(strtolower(config('app.name')) . '/')->finish('/');
         
-        return Str::of($disk['domain'] . '/')->append(self::directory('avatar') . '/' . $path);
+        // Chainable
+        return $this;
+    }
+
+    // Upload
+    public function upload($path){
+        // Init storage
+        $storage = Storage::disk($this->disk);
+
+        // Upload files
+        foreach(GeneralHelper::getType($path) as $key => $object){
+            $uploaded[$key] = $storage->put($this->directory, new File($object));
+        }
+
+        // Return response
+        return $uploaded;
+    }
+
+    // Get
+    public function get($path, $private = false, $download = false, $proxy = true){
+        // Init storage
+        $storage = Storage::disk($this->disk);
+
+        // Handle download option
+        if($download == false){
+            // No params
+            $download_params = [];
+        } else {
+            // Mime typee + new file name
+            $download_params = [
+                'ResponseContentType'           => 'application/octet-stream',
+                'ResponseContentDisposition'    => 'attachment; filename=' . Str::replace('+', '_', urlencode(Str::of($path)->basename())),
+            ];
+        }
+
+        // Handle access
+        if($private == false){
+            // Public access
+            $url = $storage->url($path);
+        } else {
+            // Private access
+            $url = $storage->temporaryUrl(
+                $path, now()->addMinutes($this->expire), $download_params
+            );
+        }
+
+        // Handle proxy
+        if($proxy == false){
+            // No proxy
+            $get = $url;
+        } else {
+            // Parse original url
+            $parse_schema = parse_url($url);
+
+            // Proxy the url
+            $get = Str::replace("{$parse_schema['scheme']}://{$parse_schema['host']}", config("filesystems.disks.{$this->disk}.domain"), $url);
+        }
+
+        // Return response
+        return $get;
+    }
+
+    // Delete
+    public function delete($path){
+        // Init storage
+        $storage = Storage::disk($this->disk);
+
+        // Delete files
+        foreach(GeneralHelper::getType($path) as $key => $object){
+            $deleted[$key] = $storage->delete($object);
+        }
+
+        // Return response
+        return $deleted;
     }
 }

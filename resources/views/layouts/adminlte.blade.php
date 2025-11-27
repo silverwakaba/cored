@@ -5,6 +5,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
         <title>@yield('title', 'Page Title') | {{ config('app.name', 'Cored') }}</title>
+        <link rel="shortcut icon" href="https://static.silverspoon.me/system/internal/image/logo/silverspoon/logo-50px.webp">
+        <link rel="apple-touch-icon" sizes="50x50" href="https://static.silverspoon.me/system/internal/image/logo/silverspoon/logo-50px.webp">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">

@@ -147,6 +147,9 @@ class UserAccessController extends Controller{
                 ], 422);
             }
 
+            // Test upload
+            // (new FileHelper)->disk()->directory('test')->upload($request->allFiles());
+
             // Update registered user
             $datas = $this->repositoryInterface->modify($id, [
                 'name'  => $request->name,

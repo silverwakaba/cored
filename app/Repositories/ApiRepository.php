@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 // Helper
 use App\Helpers\CookiesHelper;
+use App\Helpers\GeneralHelper;
 use App\Helpers\HeaderHelper;
 
 // Interface
@@ -28,9 +29,9 @@ class ApiRepository implements ApiRepositoryInterface{
     }
 
     // Preload attachment
-    public function attach(array $files) : self{
+    public function withAttachment() : self{
         // Define 'attach' property
-        $this->attachments = $files;
+        $this->attachments = request()->allFiles();
         
         // Chainable
         return $this;
@@ -38,44 +39,34 @@ class ApiRepository implements ApiRepositoryInterface{
 
     // Base http request
     protected function baseRequest(){
+        // Load basic http request
         $http = Http::withHeaders(
             HeaderHelper::apiHeader()
         );
         
+        // Attach token
         if($this->withToken){
             $http->withToken(CookiesHelper::jwtToken());
         }
+
+        // Attach an attachment
+        if($this->attachments){
+            foreach($this->attachments as $key => $object){
+                // Handle multiple files from a single input (e.g., name="file[]")
+                if(is_array($object)){
+                    foreach($object as $index => $file){
+                        $http->attach("{$key}[{$index}]", fopen($file->getRealPath(), 'r'), $file->getClientOriginalName());
+                    }
+                }
+                // Handle single file
+                else{
+                    $http->attach($key, fopen($object->getRealPath(), 'r'), $object->getClientOriginalName());
+                }
+            }
+        }
         
+        // Extendable
         return $http;
-    }
-
-    // Prepare attachment | TBC
-    protected function prepareRequestWithAttachments($http, array $data){
-        if(empty($this->attachments)){
-            return $http->withOptions(['json' => $data]);
-        }
-
-        // Start with data as multipart
-        $multipart = [];
-        
-        // Add regular data fields
-        foreach($data as $name => $value){
-            $multipart[] = [
-                'name'      => $name,
-                'contents'  => is_array($value) ? json_encode($value) : $value
-            ];
-        }
-        
-        // Add file attachments
-        foreach($this->attachments as $name => $file){
-            $multipart[] = [
-                'name'      => $name,
-                'contents'  => fopen($file->getRealPath(), 'r'),
-                'filename'  => $file->getClientOriginalName()
-            ];
-        }
-        
-        return $http->asMultipart()->withOptions(['multipart' => $multipart]);
     }
 
     // Get method

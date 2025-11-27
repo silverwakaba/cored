@@ -12,6 +12,7 @@ class InputForm extends Component{
     public string $text;
     public bool $hidden;
     public bool $required;
+    public bool $multiple;
     public bool $asFile;
     public bool $asTextarea;
 
@@ -19,11 +20,12 @@ class InputForm extends Component{
     /**
      * Create a new component instance.
      */
-    public function __construct(string $name, string $type, string $text = '', bool $hidden = false, bool $required = false, bool $asFile = false, bool $asTextarea = false){
+    public function __construct(string $name, string $type, string $text = '', bool $hidden = false, bool $required = false, $multiple = false, bool $asFile = false, bool $asTextarea = false){
         $this->name = $name;
         $this->type = $type;
         $this->text = $text;
         $this->hidden = $hidden;
+        $this->multiple = $multiple;
         $this->required = $required;
         $this->asFile = $asFile;
         $this->asTextarea = $asTextarea;

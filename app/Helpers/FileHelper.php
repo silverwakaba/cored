@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Faker\Factory;
 
+// Currently this file helper is only designed to be used with S3-compatible file system
 class FileHelper{
     // Property
     protected $disk;
@@ -67,7 +68,16 @@ class FileHelper{
 
         // Upload files
         foreach(GeneralHelper::getType($path) as $key => $object){
-            $uploaded[$key] = $storage->put($this->directory, new File($object));
+            // Handle multiple files from a single input (e.g., name="file[]")
+            if(is_array($object)){
+                foreach($object as $index => $file){
+                    $uploaded["{$key}[{$index}]"] = Str::replace('//', '/', $storage->put($this->directory, $file));
+                }
+            }
+            // Handle single file
+            else{
+                $uploaded[$key] = Str::replace('//', '/', $storage->put($this->directory, new File($object)));
+            }
         }
 
         // Return response

@@ -79,7 +79,7 @@ class UserAccessController extends Controller{
 
     // Update
     public function update($id, Request $request){
-        // Update user
+        // Update user | withAttachment()
         $update = $this->apiRepository->withToken()->post('be.core.rbac.uac.update', [
             'id'    => $id,
             'name'  => $request->name,

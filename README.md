@@ -146,6 +146,10 @@ But if the project is small to medium, or not really that important (e.g: a land
 6. Caching => 0%
 - Redis
 
+7. File Upload => 85%
+- Upload to file driver: ~~S3~~, FTP (TBD)
+- ~~Multiple field file upload (file1, file2, etc) and/or (file1[], file2[], etc)~~
+
 93. Infra
 - n8n
 - Docker

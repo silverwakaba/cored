@@ -30,7 +30,7 @@ class ApiRepository implements ApiRepositoryInterface{
 
     // Preload attachment
     public function withAttachment() : self{
-        // Define 'attach' property
+        // Define 'withAttachment' property
         $this->attachments = request()->allFiles();
         
         // Chainable

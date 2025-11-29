@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="200">
-                    <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/hero-img.png" class="img-fluid animated" alt="">
+                    <img src="https://static.silverspoon.me/system/internal/template/arsha/02222025/img/hero-img.png" class="img-fluid animated" alt="">
                 </div>
             </div>
         </div>
@@ -259,11 +259,11 @@
                             <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
                                 <div class="accordion-body">
                                     <p>At first, Silverspoon was the code name for one of my programming projects. But as time passed, without my knowing I already have developed several projects.</p>
-                                    <p>I love the terms "Silverspoon" but cannot assign it to the original project it belonged to. With that in mind, Silverspoon became the main project name, while the original project was renamed "vTual."</p>
-                                    <p>After that, the projects I develop are usually published on the internet and can be used publicly, though the code base itself is mostly closed source. Still, it is possible that there will be several open source projects in the future.</p>
+                                    <p>I love the terms "Silverspoon" but cannot assign it to the original project it belonged to. With that in mind, then Silverspoon became the main project name, while the original project was renamed/rebranded as "vTual."</p>
+                                    <p>After that, the projects I develop are usually published on the internet and can be used publicly, though the code base itself is mostly closed source. But still, it is possible that there will be several open source projects in the future.</p>
                                     <p>The developed project primarily consist of everyday applications based on a SaaS (Software as a Service) model. I rarely create an application that is specificly tied to one person or company, that's all simply because I really like the SaaS business model.</p>
-                                    <p>The short-term goal for those project is to serve it as a portfolio of my skills. Meanwhile, the long-term goal is to target these projects to be able to run professionally as matured product-driven business.</p>
-                                    <p>However, in late 2025, I felt the need for a public landing page to showcase my wife's and my portfolio and start to be open to working on projects for client needs as a business model expansion. So, Silverspoon's primary domain was used for the landing page.</p>
+                                    <p>My short-term goal for those project is to serve it as a portfolio of my skill set. Meanwhile, the long-term goal is to make these projects to be able to run professionally as matured, product-driven business.</p>
+                                    <p>However, in late 2025, I felt the need for a public landing page to showcase my wife's and my portfolio as a new business model expansion, so that we can start to be open to working on projects for client needs. Thus, Silverspoon's primary domain was used for the landing page.</p>
                                     <p>So hey everyone, we're open for the public!</p>
                                 </div>
                             </div>
@@ -293,16 +293,28 @@
                             </h2>
                             <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
                                 <div class="accordion-body">
-                                    <p>My technical foundation is built on a robust and reliable internal stack that has served me well since the beginning: Laravel powers the backend, authenticated with JWT, while the frontend is crafted with Blade and jQuery/VueJS. This is all supported by PostgreSQL, elegantly managed via the Eloquent ORM and deployed on an Ubuntu server with nginx and/or Apache.</p>
+                                    <p>My technical foundation is built on a robust and reliable internal stack that has served me well since the beginning: Laravel powers the backend, authenticated with JWT, while the frontend is crafted with Blade and jQuery/VueJS. This is all supported by PostgreSQL, elegantly managed via the Eloquent ORM and deployed on an Ubuntu server with nginx and/or Apache web server.</p>
                                     <p>To ensure performance and security, I integrate with powerful external services like S3-compatible storage, GitHub/Gitlab for version control and acme for certificate management, all protected by Cloudflare Zero Trust.</p>
-                                    <p>I'm also continuously growing my toolkit. I'm currently exploring and adapting to new technologies like FrankenPHP, HAProxy, Patroni, Redis, RabbitMQ, containerization (Docker/Kubernetes) and automation (n8n/Zapier) to solve more complex problems. Throughout all my projects, I employ the repository pattern to ensure a clean, maintainable and scalable architecture.</p>
+                                    <p>I'm also continuously growing my toolkit. I'm currently exploring and adapting to new technologies like FrankenPHP, HAProxy, Patroni, Redis, RabbitMQ, containerization (Docker/Kubernetes) and automation (n8n/Zapier) to solve more complex problems while scaling. Throughout all my projects, I employ the repository pattern to ensure a clean, maintainable and scalable architecture.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                    What is the rate card?
+                                </button>
+                            </h2>
+                            <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionFAQ">
+                                <div class="accordion-body">
+                                    <p>We currently don't have a public rate card available as we're still in the preparation stage. Once the rate card is ready to be published, it will be posted on the relevant information page.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-5 order-1 order-lg-2 why-us-img">
-                    <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/why-us.png" class="img-fluid" alt="Why Us">
+                    <img src="https://static.silverspoon.me/system/internal/template/arsha/02222025/img/why-us.png" class="img-fluid" alt="Why Us">
                 </div>
             </div>
         </div>
@@ -318,10 +330,10 @@
                 <div class="col-lg-6">
                     <div class="team-member d-flex align-items-start">
                         <div class="pic">
-                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-m-7.webp" class="img-fluid" alt="Azhar Fahrurazi">
+                            <img src="https://static.silverspoon.me/system/internal/image/misc/wakava/default/Pasfoto-Waka-1.webp" class="img-fluid" alt="Azhar Fahrurazi">
                         </div>
                         <div class="member-info">
-                            <h4>Azhar "Waka" Fahrurazi</h4>
+                            <h4>Azhar Fahrurazi</h4>
                             <span>Programmer, the Husband</span>
                             <p>A backend specialist at heart, with the proven flexibility to seamlessly handle full-stack development when needed.</p>
                             <div class="social">
@@ -333,10 +345,10 @@
                 <div class="col-lg-6">
                     <div class="team-member d-flex align-items-start">
                         <div class="pic">
-                            <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/person/person-f-8.webp" class="img-fluid" alt="">
+                            <img src="https://static.silverspoon.me/system/internal/template/arsha/02222025/img/person/person-f-8.webp" class="img-fluid" alt="">
                         </div>
                         <div class="member-info">
-                            <h4>Salma "Sanadz" Nadzirah</h4>
+                            <h4>Salma Nadzirah</h4>
                             <span>Illustrator, the Wife</span>
                             <p>The dynamic world of microstock has honed the experience to draw in countless styles, making adaptable and versatile.</p>
                             <div class="social">
@@ -354,7 +366,7 @@
     </section>
 
     <section id="call-to-action" class="call-to-action section dark-background">
-        <img src="https://static.silverspoon.me/system/internal/template/arsha/feb-2-2025/img/bg/bg-8.webp" alt="CTA">
+        <img src="https://static.silverspoon.me/system/internal/template/arsha/02222025/img/bg/bg-8.webp" alt="CTA">
         <div class="container">
             <div class="row" data-aos="zoom-in" data-aos-delay="100">
                 <div class="col-xl-9 text-center text-xl-start">

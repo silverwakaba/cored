@@ -15,7 +15,8 @@
             <div class="col-lg-2 col-md-3 footer-links">
                 <h4>Internal</h4>
                 <ul>
-                    <li><i class="bi bi-chevron-right"></i><a href="#">Other</a></li>
+                    <li><i class="bi bi-chevron-right"></i><a href="https://help.silverspoon.me/docs/silverspoon/tos" target="_blank">TOS</a></li>
+                    <li><i class="bi bi-chevron-right"></i><a href="https://help.silverspoon.me/docs/silverspoon/privacy" target="_blank">Privacy</a></li>
                 </ul>
             </div>
             <div class="col-lg-2 col-md-3 footer-links">
@@ -33,7 +34,7 @@
     <div class="container copyright text-center mt-4">
         <p>Copyright &copy; 2025 <strong class="sitename">{{ config('app.name', 'Cored') }} v.0.0.1</strong>. All rights reserved.</p>
         <div class="credits">
-            <span><small>Designed by <a href="https://bootstrapmade.com" target="_blank">BootstrapMade</a> & asset illustrated by Sanadz.</small></span>
+            <span><small>Designed by <a href="https://bootstrapmade.com/arsha-free-bootstrap-html-template-corporate" target="_blank">BootstrapMade</a> & Asset illustrated by Sanadz.</small></span>
         </div>
     </div>
 </footer>

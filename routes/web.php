@@ -96,7 +96,7 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
                 // Index
                 Route::get('/', 'index')->name('index');
 
-                // List (using index method, but keeping list method for backward compatibility)
+                // List
                 Route::get('list', 'list')->name('list');
 
                 // Create
@@ -114,7 +114,7 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
                 // Index
                 Route::get('/', 'index')->name('index');
 
-                // List (using index method, but keeping list method for backward compatibility)
+                // List
                 Route::get('list', 'list')->name('list');
 
                 // Create
@@ -136,7 +136,7 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
                 // Index
                 Route::get('/', 'index')->name('index');
 
-                // List (using index method, but keeping list method for backward compatibility)
+                // List
                 Route::get('list', 'list')->name('list');
 
                 // Create

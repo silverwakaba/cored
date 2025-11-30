@@ -107,7 +107,7 @@ class RoleController extends Controller{
     }
 
     // Read
-    public function read(Request $request){
+    public function read($id, Request $request){
         try{
             // Get role data
             $datas = $this->repositoryInterface;
@@ -123,7 +123,7 @@ class RoleController extends Controller{
             }
             
             // Continue variable
-            $datas = $datas->find($request->id);
+            $datas = $datas->find($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -140,7 +140,7 @@ class RoleController extends Controller{
     }
 
     // Sync role to Permission
-    public function syncToPermission(Request $request){
+    public function syncToPermission($id, Request $request){
         try{
             // Validate input
             $validator = Validator::make($request->all(), (new RoleSyncToPermissionRequest())->rules());
@@ -154,7 +154,7 @@ class RoleController extends Controller{
             }
 
             // Sync permission to role (id from role)
-            $datas = $this->repositoryInterface->permission($request->permission)->syncToPermission($request->id);
+            $datas = $this->repositoryInterface->permission($request->permission)->syncToPermission($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -172,7 +172,7 @@ class RoleController extends Controller{
     }
 
     // Sync role to user
-    public function syncToUser(Request $request){
+    public function syncToUser($id, Request $request){
         try{
             // Validate input
             $validator = Validator::make($request->all(), (new RoleSyncToUserRequest())->rules());
@@ -186,7 +186,7 @@ class RoleController extends Controller{
             }
 
             // Sync role to user (id from user)
-            $datas = $this->repositoryInterface->withRelation('roles')->role($request->role)->syncToUser($request->id);
+            $datas = $this->repositoryInterface->withRelation('roles')->role($request->role)->syncToUser($id);
 
             // Return response
             return GeneralHelper::jsonResponse([

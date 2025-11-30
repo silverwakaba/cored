@@ -93,7 +93,10 @@
                     $('#theModalLabel').text('Add User');
 
                     // Set route action
-                    routeAction = `{{ route('fe.apps.rbac.uac.create') }}`;
+                    routeAction = `{{ route('fe.apps.rbac.uac.store') }}`;
+                    
+                    // Set HTTP method for create (default POST, but explicit for clarity)
+                    routeMethod = 'POST';
 
                     // Init form action
                     <x-Adminlte.FormComponent id="theModal" :asModal="true" />
@@ -105,7 +108,7 @@
                     $('#theModalLabel').text('Edit User');
 
                     // Get route with id placeholder
-                    const readRouteBase = `{{ route('fe.apps.rbac.uac.read', ['id' => '::ID::']) }}`;
+                    const readRouteBase = `{{ route('fe.apps.rbac.uac.show', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     let readRoute = readRouteBase.replace('::ID::', dataID);
@@ -136,6 +139,9 @@
 
                     // Change id placeholder with the actual id
                     routeAction = routeBase.replace('::ID::', dataID);
+                    
+                    // Set HTTP method for update
+                    routeMethod = 'PUT';
 
                     // Init form action
                     <x-Adminlte.FormComponent id="theModal" :asModal="true" />

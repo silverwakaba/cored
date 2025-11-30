@@ -81,7 +81,10 @@
                     $('#theModalLabel').text('Add Role');
 
                     // Set route action
-                    routeAction = `{{ route('fe.apps.rbac.role.create') }}`;
+                    routeAction = `{{ route('fe.apps.rbac.role.store') }}`;
+                    
+                    // Set HTTP method for create (default POST)
+                    routeMethod = 'POST';
 
                     // Init form action
                     <x-Adminlte.FormComponent id="theModal" :asModal="true" />
@@ -93,7 +96,7 @@
                     $('#theModalLabel').text('Sync Role to Permission');
 
                     // Get route with id placeholder
-                    const readRouteBase = `{{ route('fe.apps.rbac.role.read', ['id' => '::ID::']) }}`;
+                    const readRouteBase = `{{ route('fe.apps.rbac.role.show', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     let readRoute = readRouteBase.replace('::ID::', dataID);
@@ -119,10 +122,13 @@
                     });
 
                     // Get route with id placeholder
-                    const routeBase = `{{ route('fe.apps.rbac.role.stp', ['id' => '::ID::']) }}`;
+                    const routeBase = `{{ route('fe.apps.rbac.role.sync_to_permission', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     routeAction = routeBase.replace('::ID::', dataID);
+                    
+                    // Set HTTP method for sync (POST for custom action)
+                    routeMethod = 'POST';
 
                     // Init form action
                     <x-Adminlte.FormComponent id="theModal" :asModal="true" />

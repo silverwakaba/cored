@@ -29,7 +29,7 @@ class PermissionController extends Controller{
     // List
     public function list(){
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.rbac.permission.list', array_merge(
+        $http = $this->apiRepository->withToken()->get('be.core.rbac.permission.index', array_merge(
             request()->all(), [
                 'type'      => request()->type,
                 'relation'  => ['roles:id,name'],
@@ -43,7 +43,7 @@ class PermissionController extends Controller{
     // Create
     public function create(Request $request){
         // Create permission
-        $http = $this->apiRepository->withToken()->post('be.core.rbac.permission.create', [
+        $http = $this->apiRepository->withToken()->post('be.core.rbac.permission.store', [
             'name' => $request->name,
         ]);
         
@@ -54,7 +54,7 @@ class PermissionController extends Controller{
     // Read
     public function read($id){
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.rbac.permission.read', [
+        $http = $this->apiRepository->withToken()->get('be.core.rbac.permission.show', [
             'id'        => $id,
             'relation'  => ['roles:id,name'],
         ]);
@@ -66,7 +66,7 @@ class PermissionController extends Controller{
     // Update
     public function update($id, Request $request){
         // Update permission
-        $http = $this->apiRepository->withToken()->post('be.core.rbac.permission.update', [
+        $http = $this->apiRepository->withToken()->put('be.core.rbac.permission.update', [
             'id'    => $id,
             'name'  => $request->name,
         ]);
@@ -78,7 +78,7 @@ class PermissionController extends Controller{
     // Delete
     public function delete($id, Request $request){
         // Delete permission
-        $http = $this->apiRepository->withToken()->post('be.core.rbac.permission.delete', [
+        $http = $this->apiRepository->withToken()->delete('be.core.rbac.permission.destroy', [
             'id'    => $id,
             'name'  => $request->name,
         ]);

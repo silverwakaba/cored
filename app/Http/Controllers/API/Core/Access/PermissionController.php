@@ -107,7 +107,7 @@ class PermissionController extends Controller{
     }
 
     // Read
-    public function read(Request $request){
+    public function read($id, Request $request){
         try{
             // Get permission data
             $datas = $this->repositoryInterface;
@@ -123,7 +123,7 @@ class PermissionController extends Controller{
             }
             
             // Continue variable
-            $datas = $datas->find($request->id);
+            $datas = $datas->find($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -140,7 +140,7 @@ class PermissionController extends Controller{
     }
 
     // Update
-    public function update(Request $request){
+    public function update($id, Request $request){
         try{
             // Validate input
             $validator = Validator::make($request->all(), (new PermissionCreateRequest())->rules());
@@ -154,7 +154,7 @@ class PermissionController extends Controller{
             }
 
             // Update permission data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($request->id, [
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
                 'name' => $request->name,
             ]);
 
@@ -174,10 +174,10 @@ class PermissionController extends Controller{
     }
 
     // Delete
-    public function delete(Request $request){
+    public function delete($id, Request $request){
         try{
             // Delete permission data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->delete($request->id);
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->delete($id);
 
             // Return response
             return GeneralHelper::jsonResponse([

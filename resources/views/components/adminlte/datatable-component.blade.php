@@ -77,10 +77,11 @@ $('#{{ $id }}').DataTable({
 
                 // Handle ajax
                 $.ajax({
-                    type: 'POST',
+                    type: 'POST', // Laravel method spoofing requires POST
                     url: routeDelete,
                     dataType: 'json',
                     data: {
+                        '_method': 'DELETE',
                         '_token': '{{ csrf_token() }}',
                     },
                     success: function(response){

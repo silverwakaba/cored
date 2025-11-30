@@ -13,9 +13,18 @@ $('#{{ $id }}').off('submit').on('submit', function(e){
     // Populate form data into single variable
     let formData = new FormData(this);
 
+    // Use routeMethod if set, otherwise default to POST
+    // routeMethod can be: 'POST', 'PUT', 'PATCH', 'DELETE'
+    let httpMethod = (typeof routeMethod !== 'undefined' && routeMethod) ? routeMethod : 'POST';
+    
+    // Add method spoofing for PUT, PATCH, DELETE (Laravel requirement)
+    if(['PUT', 'PATCH', 'DELETE'].includes(httpMethod)){
+        formData.append('_method', httpMethod);
+    }
+
     // Handle ajax
     $.ajax({
-        type: 'POST',
+        type: 'POST', // Laravel method spoofing always uses POST
         data: formData,
         processData: false,
         contentType: false,

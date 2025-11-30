@@ -96,17 +96,17 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
                 // Index
                 Route::get('/', 'index')->name('index');
 
-                // Index
+                // List (using index method, but keeping list method for backward compatibility)
                 Route::get('list', 'list')->name('list');
 
                 // Create
-                Route::post('create', 'create')->name('create');
+                Route::post('/', 'create')->name('store');
 
                 // Read
-                Route::get('read/{id}', 'read')->name('read');
+                Route::get('/{id}', 'read')->name('show');
 
                 // Sync role to Permission
-                Route::post('sync-to-permission/{id}', 'syncToPermission')->name('stp');
+                Route::post('/{id}/sync-to-permission', 'syncToPermission')->name('sync_to_permission');
             });
 
             // Permission
@@ -114,41 +114,43 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
                 // Index
                 Route::get('/', 'index')->name('index');
 
-                // List
+                // List (using index method, but keeping list method for backward compatibility)
                 Route::get('list', 'list')->name('list');
 
                 // Create
-                Route::post('create', 'create')->name('create');
+                Route::post('/', 'create')->name('store');
 
                 // Read
-                Route::get('read/{id}', 'read')->name('read');
+                Route::get('/{id}', 'read')->name('show');
 
                 // Update
-                Route::post('update/{id}', 'update')->name('update');
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
 
                 // Delete
-                Route::post('delete/{id}', 'delete')->name('delete');
+                Route::delete('/{id}', 'delete')->name('destroy');
             });
 
             // User Access Control
             Route::prefix('uac')->name('uac.')->controller(UserAccessController::class)->group(function(){
-                // List
+                // Index
                 Route::get('/', 'index')->name('index');
 
-                // List
+                // List (using index method, but keeping list method for backward compatibility)
                 Route::get('list', 'list')->name('list');
 
                 // Create
-                Route::post('create', 'create')->name('create');
+                Route::post('/', 'create')->name('store');
 
                 // Read
-                Route::get('read/{id}', 'read')->name('read');
+                Route::get('/{id}', 'read')->name('show');
 
                 // Update
-                Route::post('update/{id}', 'update')->name('update');
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
 
                 // Activation
-                Route::post('activation/{id}', 'activation')->name('activation');
+                Route::post('/{id}/activation', 'activation')->name('activation');
             });
         });
     });

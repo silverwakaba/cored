@@ -106,7 +106,7 @@ class UserAccessController extends Controller{
     }
 
     // Read
-    public function read(Request $request){
+    public function read($id, Request $request){
         try{
             // Read user account
             $datas = $this->repositoryInterface;
@@ -117,7 +117,7 @@ class UserAccessController extends Controller{
             }
 
             // Continue variable
-            $datas = $datas->find($request->id);
+            $datas = $datas->find($id);
 
             // Return created data
             return response()->json([

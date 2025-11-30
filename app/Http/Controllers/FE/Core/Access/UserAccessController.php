@@ -30,7 +30,7 @@ class UserAccessController extends Controller{
     // List
     public function list(){
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.rbac.uac.list', array_merge(
+        $http = $this->apiRepository->withToken()->get('be.core.rbac.uac.index', array_merge(
             request()->all(), [
                 'type'      => request()->type,
                 'relation'  => ['roles:id,name'],
@@ -44,7 +44,7 @@ class UserAccessController extends Controller{
     // Create
     public function create(Request $request){
         // Create user
-        $create = $this->apiRepository->withToken()->post('be.core.rbac.uac.create', [
+        $create = $this->apiRepository->withToken()->post('be.core.rbac.uac.store', [
             'name'  => $request->name,
             'email' => $request->email,
         ]);
@@ -52,7 +52,7 @@ class UserAccessController extends Controller{
         // Sync role to user if create is success
         if(($create->status() == 201) && ($request->role)){
             // Sync role
-            $sync = $this->apiRepository->withToken()->post('be.core.rbac.role.stu', [
+            $sync = $this->apiRepository->withToken()->post('be.core.rbac.role.sync_to_user', [
                 'id'    => $create['data']['id'],
                 'role'  => $request->role,
             ]);
@@ -68,7 +68,7 @@ class UserAccessController extends Controller{
     // Read
     public function read($id){
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.rbac.uac.read', [
+        $http = $this->apiRepository->withToken()->get('be.core.rbac.uac.show', [
             'id'        => $id,
             'relation'  => ['roles:id,name'],
         ]);
@@ -80,7 +80,7 @@ class UserAccessController extends Controller{
     // Update
     public function update($id, Request $request){
         // Update user | withAttachment()
-        $update = $this->apiRepository->withToken()->post('be.core.rbac.uac.update', [
+        $update = $this->apiRepository->withToken()->put('be.core.rbac.uac.update', [
             'id'    => $id,
             'name'  => $request->name,
             'email' => $request->email,
@@ -89,7 +89,7 @@ class UserAccessController extends Controller{
         // Sync role to user if update is success
         if(isset($update) && isset($request->role) && ($update->status() == 200) && (RBACHelper::roleLevelCompare(RBACHelper::userProp($id, 'role'), auth()->user()->roles) == true)){
             // Sync role
-            $sync = $this->apiRepository->withToken()->post('be.core.rbac.role.stu', [
+            $sync = $this->apiRepository->withToken()->post('be.core.rbac.role.sync_to_user', [
                 'id'    => $update['data']['id'],
                 'role'  => $request->role,
             ]);

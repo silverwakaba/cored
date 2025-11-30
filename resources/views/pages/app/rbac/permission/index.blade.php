@@ -41,7 +41,7 @@
         // Init datatable
         function initDatatable(){
             // Server-side Datatable from API Endpoint
-            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')" :deleteUrl="route('fe.apps.rbac.permission.delete', ['id' => '::ID::'])" method="GET">
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')" :deleteUrl="route('fe.apps.rbac.permission.destroy', ['id' => '::ID::'])" method="GET">
                 {
                     title: 'Name', data: 'name',
                 },
@@ -86,7 +86,10 @@
                     $('#theModalLabel').text('Add Permission');
 
                     // Set route action
-                    routeAction = `{{ route('fe.apps.rbac.permission.create') }}`;
+                    routeAction = `{{ route('fe.apps.rbac.permission.store') }}`;
+                    
+                    // Set HTTP method for create (default POST)
+                    routeMethod = 'POST';
 
                     // Init form action
                     <x-Adminlte.FormComponent id="theModal" :asModal="true" />
@@ -98,7 +101,7 @@
                     $('#theModalLabel').text('Edit Permission');
 
                     // Get route with id placeholder
-                    let readRouteBase = `{{ route('fe.apps.rbac.permission.read', ['id' => '::ID::']) }}`;
+                    let readRouteBase = `{{ route('fe.apps.rbac.permission.show', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     readRoute = readRouteBase.replace('::ID::', dataID);
@@ -119,6 +122,9 @@
 
                     // Change id placeholder with the actual id
                     routeAction = routeBase.replace('::ID::', dataID);
+                    
+                    // Set HTTP method for update
+                    routeMethod = 'PUT';
 
                     // Init form action
                     <x-Adminlte.FormComponent id="theModal" :asModal="true" />

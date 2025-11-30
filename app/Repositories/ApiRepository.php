@@ -84,16 +84,25 @@ class ApiRepository implements ApiRepositoryInterface{
 
     // Put method
     public function put(string $route, array $data = []){
-        return $this->baseRequest()->put(route($route), $data);
+        return $this->baseRequest()->put(route($route, [
+            'id'    => isset($data['id']) ? $data['id'] : null,
+            'token' => isset($data['token']) ? $data['token'] : null,
+        ]), $data);
     }
 
     // Patch method
     public function patch(string $route, array $data = []){
-        return $this->baseRequest()->patch(route($route), $data);
+        return $this->baseRequest()->patch(route($route, [
+            'id'    => isset($data['id']) ? $data['id'] : null,
+            'token' => isset($data['token']) ? $data['token'] : null,
+        ]), $data);
     }
 
     // Delete method
     public function delete(string $route, array $data = []){
-        return $this->baseRequest()->delete(route($route), $data);
+        return $this->baseRequest()->delete(route($route, [
+            'id'    => isset($data['id']) ? $data['id'] : null,
+            'token' => isset($data['token']) ? $data['token'] : null,
+        ]), $data);
     }
 }

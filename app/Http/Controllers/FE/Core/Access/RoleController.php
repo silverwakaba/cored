@@ -29,7 +29,7 @@ class RoleController extends Controller{
     // List
     public function list(){
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.rbac.role.list', array_merge(
+        $http = $this->apiRepository->withToken()->get('be.core.rbac.role.index', array_merge(
             request()->all(), [
                 'type'      => request()->type,
                 'relation'  => ['permissions:id,name'],
@@ -43,14 +43,14 @@ class RoleController extends Controller{
     // Create
     public function create(Request $request){
         // Create role
-        $create = $this->apiRepository->withToken()->post('be.core.rbac.role.create', [
+        $create = $this->apiRepository->withToken()->post('be.core.rbac.role.store', [
             'name' => $request->name,
         ]);
 
         // Sync role to permission if create is success
         if(($create->status() == 201) && ($request->permission)){
             // Sync role
-            $sync = $this->apiRepository->withToken()->post('be.core.rbac.role.stp', [
+            $sync = $this->apiRepository->withToken()->post('be.core.rbac.role.sync_to_permission', [
                 'id'            => $create['data']['id'],
                 'permission'    => $request->permission,
             ]);
@@ -66,7 +66,7 @@ class RoleController extends Controller{
     // Read
     public function read($id){
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.rbac.role.read', [
+        $http = $this->apiRepository->withToken()->get('be.core.rbac.role.show', [
             'id'        => $id,
             'relation'  => ['permissions:id,name'],
         ]);
@@ -78,7 +78,7 @@ class RoleController extends Controller{
     // Sync to permission
     public function syncToPermission($id, Request $request){
         // Make http call
-        $http = $this->apiRepository->withToken()->post('be.core.rbac.role.stp', [
+        $http = $this->apiRepository->withToken()->post('be.core.rbac.role.sync_to_permission', [
             'id'            => $id,
             'permission'    => $request->permission,
         ]);

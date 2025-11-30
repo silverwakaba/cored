@@ -66,57 +66,59 @@ Route::prefix('/')->name('be.')->group(function(){
             // Role
             Route::prefix('role')->name('role.')->controller(RoleController::class)->group(function(){
                 // List
-                Route::get('list', 'list')->name('list');
+                Route::get('/', 'list')->name('index');
 
                 // Create
-                Route::post('create', 'create')->name('create');
+                Route::post('/', 'create')->name('store');
 
                 // Read
-                Route::get('read/{id}', 'read')->name('read');
+                Route::get('/{id}', 'read')->name('show');
 
                 // Sync to Permission
-                Route::post('sync-to-permission/{id}', 'syncToPermission')->name('stp');
+                Route::post('/{id}/sync-to-permission', 'syncToPermission')->name('sync_to_permission');
 
                 // Sync to User
-                Route::post('sync-to-user/{id}', 'syncToUser')->name('stu');
+                Route::post('/{id}/sync-to-user', 'syncToUser')->name('sync_to_user');
             });
 
             // Permission
             Route::prefix('permission')->name('permission.')->controller(PermissionController::class)->group(function(){
                 // List
-                Route::get('list', 'list')->name('list');
+                Route::get('/', 'list')->name('index');
 
                 // Create
-                Route::post('create', 'create')->name('create');
+                Route::post('/', 'create')->name('store');
 
                 // Read
-                Route::get('read/{id}', 'read')->name('read');
+                Route::get('/{id}', 'read')->name('show');
 
                 // Update
-                Route::post('update/{id}', 'update')->name('update');
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
 
                 // Delete
-                Route::post('delete/{id}', 'delete')->name('delete');
+                Route::delete('/{id}', 'delete')->name('destroy');
             });
 
             // User Access Control
             Route::prefix('uac')->name('uac.')->controller(UserAccessController::class)->group(function(){
                 // List
-                Route::get('list', 'list')->name('list');
+                Route::get('/', 'list')->name('index');
 
                 // Create
-                Route::post('create', 'create')->name('create');
+                Route::post('/', 'create')->name('store');
 
                 // Public UAC
                 Route::withoutMiddleware(['role:Root'])->group(function(){
                     // Read
-                    Route::get('read/{id}', 'read')->name('read');
+                    Route::get('/{id}', 'read')->name('show');
 
                     // Update
-                    Route::post('update/{id}', 'update')->name('update');
+                    Route::put('/{id}', 'update')->name('update');
+                    Route::patch('/{id}', 'update')->name('update');
 
                     // Activation
-                    Route::post('activation/{id}', 'activation')->name('activation')->middleware(['role:Root|Admin']);
+                    Route::post('/{id}/activation', 'activation')->name('activation')->middleware(['role:Root|Admin']);
                 });
             });
         });

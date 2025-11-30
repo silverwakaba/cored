@@ -19,7 +19,7 @@ return new class extends Migration{
         });
 
         // Pivot table for menu-role relationship
-        Schema::create('menu_role', function (Blueprint $table){
+        Schema::create('menu_roles', function (Blueprint $table){
             $table->foreignId('menu_id')->constrained()->onDelete('cascade');
             $table->foreignId('role_id')->constrained()->onDelete('cascade');
             $table->primary(['menu_id', 'role_id']);
@@ -28,6 +28,6 @@ return new class extends Migration{
 
     public function down() : void{
         Schema::dropIfExists('menus');
-        Schema::dropIfExists('menu_role');
+        Schema::dropIfExists('menu_roles');
     }
 };

@@ -12,7 +12,7 @@ return new class extends Migration{
     //  * Run the migrations.
     //  */
     // public function up() : void{
-    //     Schema::connection('d1')->create('d1_test', function (Blueprint $table){
+    //     Schema::connection('d1_tests')->create('d1_test', function (Blueprint $table){
     //         $table->id();
     //         $table->string('column')->nullable();
     //     });
@@ -22,6 +22,6 @@ return new class extends Migration{
     //  * Reverse the migrations.
     //  */
     // public function down() : void{
-    //     Schema::connection('d1')->dropIfExists('d1_test');
+    //     Schema::connection('d1')->dropIfExists('d1_tests');
     // }
 };

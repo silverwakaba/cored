@@ -38,7 +38,7 @@ class Menu extends Model{
 
     // Belong to role
     public function roles(){
-        return $this->belongsToMany(Role::class, 'menu_role');
+        return $this->belongsToMany(Role::class, 'menu_roles');
     }
 
     // User has access

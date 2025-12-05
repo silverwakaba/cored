@@ -79,21 +79,27 @@
                     <p class="fst-italic">"My focus is on crafting microstock assets, but my true passion is adaptability. Let me create illustrations that don't just meet your requirements, but also seamlessly fit your desired style."</p>
                     <div class="skills-content skills-animation">
                         <div class="progress">
-                            <span class="skill"><span>Clip Studio Paint</span><i class="val">100%</i></span>
+                            <span class="skill"><span>Clip Studio Paint</span><i class="val">85%</i></span>
                             <div class="progress-bar-wrap">
-                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                         <div class="progress">
-                            <span class="skill"><span>Figma</span><i class="val">100%</i></span>
+                            <span class="skill"><span>Figma</span><i class="val">85%</i></span>
                             <div class="progress-bar-wrap">
-                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                         <div class="progress">
-                            <span class="skill"><span>GoPaint</span><i class="val">100%</i></span>
+                            <span class="skill"><span>Procreate</span><i class="val">75%</i></span>
                             <div class="progress-bar-wrap">
-                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="progress">
+                            <span class="skill"><span>Procreate Dreams</span><i class="val">75%</i></span>
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                         </div>
                     </div>

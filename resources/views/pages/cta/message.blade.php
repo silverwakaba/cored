@@ -10,6 +10,7 @@
             <x-Form.InputForm name="email" type="email" text="Email" :required="true" />
             <x-Form.InputForm name="subject" type="text" text="Subject" :required="true" />
             <x-Form.InputForm name="message" type="text" text="Message" :required="true" :asTextarea="true" />
+            <x-Form.InputForm name="attachment[]" type="file" text="Attachment" :required="false" :asFile="true" :multiple="true" />
             <x-Form.CheckboxForm name="agreement" :value="true" :required="true">I confirm that the message I am sending contains accurate information and is in good faith.</x-Form.CheckboxForm>
         </x-Adminlte.CardComponent>
     </x-Adminlte.ContentWrapperComponent>

@@ -28,13 +28,13 @@ class CallToActionController extends Controller{
 
     public function messagePost(Request $request){
         // Create permission
-        $http = $this->apiRepository->withToken()->post('be.core.cta.message', [
+        $http = $this->apiRepository->withToken()->withAttachment()->post('be.core.cta.message', [
             'name'                  => $request->name,
             'email'                 => $request->email,
             'subject'               => $request->subject,
             'message'               => $request->message,
             'agreement'             => $request->agreement,
-            'h-captcha-response'    => $request->input('h-captcha-response'), // works because of this
+            'h-captcha-response'    => $request->input('h-captcha-response'),
         ]);
         
         // Response

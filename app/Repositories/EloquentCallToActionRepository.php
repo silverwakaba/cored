@@ -9,6 +9,7 @@ use App\Helpers\GeneralHelper;
 // use App\Models\User;
 // use Spatie\Permission\Models\Permission;
 // use Spatie\Permission\Models\Role;
+use App\Models\UserCtaMessage;
 
 // Interface
 use App\Contracts\CallToActionRepositoryInterface;
@@ -27,6 +28,7 @@ class EloquentCallToActionRepository implements CallToActionRepositoryInterface{
 
     // Messages
     public function messages($datas){
+        // Send as webhook for guest
         Http::post("https://discord.com/api/webhooks/1190930890625404948/glIFNLTZ2ea7_92n_pzSZtZn_aGjKzKHP-2Pch7rB14XDl_Xfawv2bB9DdJ22oPi1A6l", [
             "embeds"    => [
                 [
@@ -36,5 +38,17 @@ class EloquentCallToActionRepository implements CallToActionRepositoryInterface{
                 ]
             ],
         ]);
+
+        // Save the message for registered user
+        if(auth()->guard('api')->user()){
+            // Implementing db transaction
+            return DB::transaction(function() use($datas){
+                // Start create query
+                $data = UserCtaMessage::create($datas);
+
+                // Return response
+                return $data;
+            });
+        }
     }
 }

@@ -47,6 +47,9 @@ class FileHelper{
             // Avatar
             case 'avatar': $directory; break;
 
+            // CTA message
+            case 'cta/message': $directory; break;
+
             // Test
             case 'test': $directory; break;
             

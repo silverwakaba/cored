@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Contracts\CallToActionRepositoryInterface;
 
 // Helper
+use App\Helpers\FileHelper;
 use App\Helpers\GeneralHelper;
 
 // Request
@@ -39,13 +40,34 @@ class CallToActionController extends Controller{
                 ]);
             }
 
-            // Send message
-            $this->repositoryInterface->messages([
+            // Default form submission
+            $message = [
                 'name'      => $request->name,
                 'email'     => $request->email,
                 'subject'   => $request->subject,
                 'message'   => $request->message,
-            ]);
+            ];
+
+            // Check attachment
+            $check_attachment = $request->hasFile('attachment');
+
+            // Check auth
+            $check_auth = auth()->guard('api')->user();
+
+            // Handle attachment if user is authenticated and upload an attachment
+            if($check_attachment && $check_auth){
+                // Handle attachment
+                $attachment = (new FileHelper)->disk()->directory('cta/message')->upload($request->allFiles());
+
+                // Normalisasi key attachment agar tersimpan rapi di kolom JSON
+                $message['attachment'] = array_values($attachment);
+            }
+
+            // Add user info to the message
+            $message['users_id'] = $check_auth['id'] ?? null;
+
+            // Send message
+            $this->repositoryInterface->messages($message);
 
             // Return response
             return GeneralHelper::jsonResponse([

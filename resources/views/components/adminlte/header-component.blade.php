@@ -7,10 +7,10 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('fe.page.auth') }}">Auth</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('fe.page.cta') }}">CTA</a>
-            </li>
         @endguest
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('fe.page.cta') }}">CTA</a>
+        </li>
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">

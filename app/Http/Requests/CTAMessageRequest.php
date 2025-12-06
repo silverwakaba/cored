@@ -24,7 +24,7 @@ class CTAMessageRequest extends FormRequest{
             'subject'               => ['required', 'string'],
             'message'               => ['required', 'string'],
             'agreement'             => ['accepted', 'boolean'],
-            'h-captcha-response'    => ['required', 'HCaptcha'], // this one works
+            'h-captcha-response'    => ['required', 'HCaptcha'],
         ];
     }
 }

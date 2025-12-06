@@ -17,13 +17,13 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" integrity="sha256-FdatTf20PQr/rWg+cAKfl6j4/IY3oohFAJ7gVC3M34E=" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css" integrity="sha256-h7vy42BP4MtLE0udIyBuOEoB8nJI2iLaiOJEgO5Ykp0=" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2.0/dist/css/adminlte.min.css" integrity="sha256-rhU0oslUDWrWDxTY4JxI2a2OdRtG7YSf3v5zcRbcySE=" crossorigin="anonymous">
-        @vite(['resources/css/app.css'])
+        @vite(['resources/css/adminlte3.css'])
     </head>
     <body class="hold-transition sidebar-mini">
         <div id="app">
             <x-Adminlte.MainComponent />
         </div>
-        @vite(['resources/js/app.js'])
+        @vite(['resources/js/adminlte3.js', 'resources/js/echo.js'])
         <script src="https://hcaptcha.com/1/api.js" async defer></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/jscroll@2.4.1/jquery.jscroll.min.js" integrity="sha256-sJRx4f+y7jaXUs1JgAMhYQujFu+g3+MMPjVzluCRGm8=" crossorigin="anonymous"></script>

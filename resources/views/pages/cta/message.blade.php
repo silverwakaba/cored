@@ -1,5 +1,5 @@
 @extends('layouts.adminlte')
-@section('title', 'Send us a Message')
+@section('title', 'Send Us a Message')
 @section('content')
     <x-Adminlte.ContentWrapperComponent breadcrumb="cta.message">
         <div class="callout callout-info">

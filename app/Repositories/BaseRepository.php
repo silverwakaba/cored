@@ -224,10 +224,8 @@ abstract class BaseRepository{
             // Start update with pessimistic locking
             $datas = $this->query->lockForUpdate()->find($id);
 
-            // Populate data as is (we don't use mass assignment in case of partial update -- eg. only updating 'name')
-            foreach($data as $key => $value){
-                $datas[$key] = $value;
-            }
+            // Populate with an array of attributes
+            $datas->fill($data);
 
             // Save updated data
             $datas->save();

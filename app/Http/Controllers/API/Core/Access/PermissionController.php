@@ -20,7 +20,6 @@ use App\Http\Requests\PermissionCreateRequest;
 
 // Internal
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class PermissionController extends Controller{
     // Property
@@ -33,7 +32,7 @@ class PermissionController extends Controller{
 
     // List
     public function list(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Get data while sorting
             $datas = $this->repositoryInterface;
 
@@ -52,43 +51,25 @@ class PermissionController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
-            // Response
-            if(($request->type == 'datatable')){
-                // Return response as datatable
-                $datas = $datas->useDatatable()->all();
-            } else {
-                // Return response as plain query
-                $datas = $datas->all();
-            }
-
             // Return response
-            return $datas;
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+            return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Create
     public function create(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validator = Validator::make($request->all(), (new PermissionCreateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new PermissionCreateRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return GeneralHelper::jsonResponse([
-                    'status'    => 422,
-                    'errors'    => $validator->errors(),
-                ]);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Create permission
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
-                'name' => $request->name,
+                'name' => $validated['name'],
             ]);
 
             // Return response
@@ -97,18 +78,12 @@ class PermissionController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Permission created successfully.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Read
     public function read($id, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($id, $request){
             // Get permission data
             $datas = $this->repositoryInterface;
             
@@ -130,32 +105,23 @@ class PermissionController extends Controller{
                 'status'    => 200,
                 'data'      => $datas,
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Update
     public function update($id, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validator = Validator::make($request->all(), (new PermissionCreateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new PermissionCreateRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return GeneralHelper::jsonResponse([
-                    'status'    => 422,
-                    'errors'    => $validator->errors(),
-                ]);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Update permission data
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
-                'name' => $request->name,
+                'name' => $validated['name'],
             ]);
 
             // Return response
@@ -164,18 +130,12 @@ class PermissionController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Permission updated successfully.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Delete
     public function delete($id, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($id, $request){
             // Delete permission data
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->delete($id);
 
@@ -184,12 +144,6 @@ class PermissionController extends Controller{
                 'status'    => 200,
                 'message'   => 'Permission deleted successfully.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        }, ['status' => 409, 'message' => false]);
     }
 }

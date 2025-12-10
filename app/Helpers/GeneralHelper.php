@@ -8,6 +8,7 @@ use App\Helpers\ErrorHelper;
 // Internal
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class GeneralHelper{
     // Create random token
@@ -73,6 +74,36 @@ class GeneralHelper{
 
         // Return the result
         return $data;
+    }
+
+    // Execute callback with unified try-catch response
+    public static function safe(callable $callback, array $onError = ['status' => 409, 'message' => false]){
+        try{
+            // Callback content
+            return $callback();
+        }
+        catch(\Throwable $th){
+            // Error payload
+            $payload = $onError;
+            $payload['message'] = ($payload['message'] === true) ? $th->getMessage() : null;
+
+            // Return response
+            return self::jsonResponse($payload);
+        }
+    }
+
+    // Validate data and return unified response when it fails
+    public static function validate(array $data, array $rules, array $messages = [], array $customAttributes = [], int $status = 422){
+        $validator = Validator::make($data, $rules, $messages, $customAttributes);
+
+        if($validator->fails()){
+            return self::jsonResponse([
+                'status' => $status,
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        return $validator->validated();
     }
 
     // Json response

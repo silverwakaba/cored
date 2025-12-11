@@ -1,39 +1,36 @@
 <?php
 
-namespace App\Http\Controllers\API\Core\Access;
+namespace App\Http\Controllers\Core\API\Core\Access;
 use App\Http\Controllers\Controller;
 
 // Repository interface
-use App\Contracts\RoleRepositoryInterface;
+use App\Contracts\UserRepositoryInterface;
 
 // Helper
+use App\Helpers\FileHelper;
 use App\Helpers\GeneralHelper;
 
-// Model
-use App\Models\User;
-use Spatie\Permission\Models\Role;
-
 // Request
-use App\Http\Requests\RoleCreateRequest;
-use App\Http\Requests\RoleSyncToPermissionRequest;
-use App\Http\Requests\RoleSyncToUserRequest;
+use App\Http\Requests\UserActivationRequest;
+use App\Http\Requests\UserCreateRequest;
+use App\Http\Requests\UserUpdateRequest;
 
 // Internal
 use Illuminate\Http\Request;
 
-class RoleController extends Controller{
+class UserAccessController extends Controller{
     // Property
     private $repositoryInterface;
 
     // Constructor
-    public function __construct(RoleRepositoryInterface $repositoryInterface){
+    public function __construct(UserRepositoryInterface $repositoryInterface){
         $this->repositoryInterface = $repositoryInterface;
     }
 
     // List
     public function list(Request $request){
         return GeneralHelper::safe(function() use($request){
-            // Get data
+            // Get data while sorting
             $datas = $this->repositoryInterface;
 
             // Sort data
@@ -60,23 +57,25 @@ class RoleController extends Controller{
     public function create(Request $request){
         return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new RoleCreateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserCreateRequest())->rules());
 
             // Stop if validation failed
             if(!is_array($validated)){
                 return $validated;
             }
 
-            // Create role
-            $datas = $this->repositoryInterface->create([
-                'name' => $request['name'],
-            ]);
+            // Create registered user
+            $datas = $this->repositoryInterface->prepare([
+                'name'      => $request['name'],
+                'email'     => $request['email'],
+                'password'  => bcrypt(GeneralHelper::randomPassword()),
+            ])->role($request['role'])->register();
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 201,
                 'data'      => $datas,
-                'message'   => 'Role created successfully.',
+                'message'   => 'User created successfully.',
             ]);
         });
     }
@@ -84,72 +83,76 @@ class RoleController extends Controller{
     // Read
     public function read($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
-            // Get role data
+            // Read user account
             $datas = $this->repositoryInterface;
-
-            // Load column selection
-            if(isset($request->select)){
-                $datas->onlySelect($request->select);
-            }
 
             // Load relation
             if(isset($request->relation)){
                 $datas->withRelation($request->relation);
             }
-            
+
             // Continue variable
             $datas = $datas->find($id);
 
-            // Return response
-            return GeneralHelper::jsonResponse([
-                'status'    => 200,
+            // Return created data
+            return response()->json([
+                'success'   => true,
                 'data'      => $datas,
-            ]);
+            ], 200);
         });
     }
 
-    // Sync role to Permission
-    public function syncToPermission($id, Request $request){
+    // Update
+    public function update($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new RoleSyncToPermissionRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserUpdateRequest())->rules());
 
-            // Check validation and stop if failed
+            // Stop if validation failed
             if(!is_array($validated)){
                 return $validated;
             }
 
-            // Sync permission to role (id from role)
-            $datas = $this->repositoryInterface->permission($request['permission'])->syncToPermission($id);
+            // Update registered user
+            $datas = $this->repositoryInterface->modify($id, [
+                'name'  => $request['name'],
+                'email' => $request['email'],
+            ]);
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
                 'data'      => $datas,
-                'message'   => 'Role successfully synchronized with permission.',
+                'message'   => 'User updated successfully.',
             ]);
         });
     }
 
-    // Sync role to user
-    public function syncToUser($id, Request $request){
+    // Activation
+    public function activation($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new RoleSyncToUserRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserActivationRequest())->rules());
 
-            // Check validation and stop if failed
+            // Stop if validation failed
             if(!is_array($validated)){
                 return $validated;
             }
 
-            // Sync role to user (id from user)
-            $datas = $this->repositoryInterface->withRelation('roles')->role($request['role'])->syncToUser($id);
+            // Init activation
+            $activation = (bool) $request['activation'];
+
+            // Read user account
+            $datas = $this->repositoryInterface->activate($id, $activation);
+
+            // State message
+            $state = ($activation == true) ? 'activated' : 'deactivated';
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
                 'data'      => $datas,
-                'message'   => 'Role successfully synchronized to user.',
+                'message'   => "User $state successfully.",
             ]);
         });
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\FE;
+namespace App\Http\Controllers\Core\FE;
 use App\Http\Controllers\Controller;
 
 // Repository interface

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Core\Auth;
+namespace App\Http\Controllers\Core\API\Core\Auth;
 use App\Http\Controllers\Controller;
 
 // Repository interface

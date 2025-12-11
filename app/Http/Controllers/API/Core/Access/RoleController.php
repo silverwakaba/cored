@@ -20,7 +20,6 @@ use App\Http\Requests\RoleSyncToUserRequest;
 
 // Internal
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class RoleController extends Controller{
     // Property
@@ -33,7 +32,7 @@ class RoleController extends Controller{
 
     // List
     public function list(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Get data
             $datas = $this->repositoryInterface;
 
@@ -52,43 +51,25 @@ class RoleController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
-            // Response
-            if(($request->type == 'datatable')){
-                // Return response as datatable
-                $datas = $datas->useDatatable()->all();
-            } else {
-                // Return response as plain query
-                $datas = $datas->all();
-            }
-
             // Return response
-            return $datas;
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+            return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
+        });
     }
 
     // Create
     public function create(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validator = Validator::make($request->all(), (new RoleCreateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new RoleCreateRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return GeneralHelper::jsonResponse([
-                    'status'    => 422,
-                    'errors'    => $validator->errors(),
-                ]);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Create role
             $datas = $this->repositoryInterface->create([
-                'name' => $request->name,
+                'name' => $request['name'],
             ]);
 
             // Return response
@@ -97,18 +78,12 @@ class RoleController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Role created successfully.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Read
     public function read($id, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($id, $request){
             // Get role data
             $datas = $this->repositoryInterface;
 
@@ -130,31 +105,22 @@ class RoleController extends Controller{
                 'status'    => 200,
                 'data'      => $datas,
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Sync role to Permission
     public function syncToPermission($id, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validator = Validator::make($request->all(), (new RoleSyncToPermissionRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new RoleSyncToPermissionRequest())->rules());
 
             // Check validation and stop if failed
-            if($validator->fails()){
-                return GeneralHelper::jsonResponse([
-                    'status'    => 422,
-                    'errors'    => $validator->errors(),
-                ]);
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Sync permission to role (id from role)
-            $datas = $this->repositoryInterface->permission($request->permission)->syncToPermission($id);
+            $datas = $this->repositoryInterface->permission($request['permission'])->syncToPermission($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -162,31 +128,22 @@ class RoleController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Role successfully synchronized with permission.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Sync role to user
     public function syncToUser($id, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validator = Validator::make($request->all(), (new RoleSyncToUserRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new RoleSyncToUserRequest())->rules());
 
             // Check validation and stop if failed
-            if($validator->fails()){
-                return GeneralHelper::jsonResponse([
-                    'status'    => 422,
-                    'errors'    => $validator->errors(),
-                ]);
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Sync role to user (id from user)
-            $datas = $this->repositoryInterface->withRelation('roles')->role($request->role)->syncToUser($id);
+            $datas = $this->repositoryInterface->withRelation('roles')->role($request['role'])->syncToUser($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -194,12 +151,6 @@ class RoleController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Role successfully synchronized to user.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 }

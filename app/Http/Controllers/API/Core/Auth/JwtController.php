@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 
 // External
 use Carbon\Carbon;
@@ -44,23 +43,20 @@ class JwtController extends Controller{
 
     // Register
     public function register(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validator = Validator::make($request->all(), (new UserAuthRegisterRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserAuthRegisterRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
-                    'errors'    => $validator->errors(),
-                ], 422);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Create registered user
             $datas = $this->userRepository->prepare([
-                'name'      => $request->name,
-                'email'     => $request->email,
-                'password'  => bcrypt($request->password),
+                'name'      => $request['name'],
+                'email'     => $request['email'],
+                'password'  => bcrypt($request['password']),
             ])->rolePublic()->register();
 
             // Send email
@@ -77,34 +73,28 @@ class JwtController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Registration successful.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Login
     public function login(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validator = Validator::make($request->all(), (new UserAuthLoginRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserAuthLoginRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
-                    'errors'    => $validator->errors(),
-                ], 422);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Token TTL in minutes
             $tokenTTL = config('jwt.ttl');
 
             // Get credential input
-            $credentials = $request->only('email', 'password');
+            $credentials = [
+                'email'     => $request['email'],
+                'password'  => $request['password'],
+            ];
 
             // Attempt auth
             if(!$token = auth()->guard('api')->setTTL($tokenTTL)->attempt(
@@ -144,18 +134,12 @@ class JwtController extends Controller{
                 'token_ttl' => $timestamp,
                 'message'   => 'Session started successfully.',
             ], 200);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Validate token
     public function validateToken(){
-        try{
+        return GeneralHelper::safe(function(){
             // Get JWT token
             $token = JWTAuth::getToken();
 
@@ -164,18 +148,12 @@ class JwtController extends Controller{
                 'status'    => 200,
                 'message'   => 'Authorized token.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => $th,
-            ]);
-        }
+        }, ['status' => 409, 'message' => true]);
     }
 
     // Create token
     public function createToken(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Get JWT token
             $token = JWTAuth::getToken();
 
@@ -195,18 +173,12 @@ class JwtController extends Controller{
                 'token_ttl' => $timestamp,
                 'message'   => 'Token refreshed successfully.',
             ], 200);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Logout
     public function logout(){
-        try{
+        return GeneralHelper::safe(function(){
             // Get JWT token
             $token = JWTAuth::getToken();
             
@@ -218,33 +190,24 @@ class JwtController extends Controller{
                 'status'    => 200,
                 'message'   => 'Authentication revoked successfully.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Verify account
     public function verifyAccount(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validator = Validator::make($request->all(), (new UserAuthVerifyRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserAuthVerifyRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
-                    'errors'    => $validator->errors(),
-                ], 422);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Search user and it's eligibility
             $eligibility = $this->userRepository->search([
-                'id'    => $request->id,
-                'email' => $request->email,
+                'id'    => $request['id'],
+                'email' => $request['email'],
             ])->requestEligibility(1)->getData(true); // get data as array
 
             // If account is not found and/or not eligible
@@ -257,7 +220,7 @@ class JwtController extends Controller{
             } else {
                 // Send email
                 try{
-                    Mail::to($request->email)->send(new UserVerifyEmail($eligibility['data']['id']));
+                    Mail::to($request['email'])->send(new UserVerifyEmail($eligibility['data']['id']));
                 }
                 catch(\Throwable $th){
                     // skip invoking the error
@@ -269,18 +232,12 @@ class JwtController extends Controller{
                 'status'    => 200,
                 'message'   => 'The account is found to be eligible for this action. Please check your email for more information.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Verify account via token
     public function verifyAccountTokenized($token){
-        try{
+        return GeneralHelper::safe(function() use($token){
             // Verify account
             $datas = $this->userRepository->verifyAccount($token);
 
@@ -290,33 +247,24 @@ class JwtController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Account verification successful.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Reset password
     public function resetPassword(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Validate input (this have same request rules as verification)
-            $validator = Validator::make($request->all(), (new UserAuthVerifyRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserAuthVerifyRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
-                    'errors'    => $validator->errors(),
-                ], 422);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Search user and it's eligibility
             $eligibility = $this->userRepository->search([
-                'id'    => $request->id,
-                'email' => $request->email,
+                'id'    => $request['id'],
+                'email' => $request['email'],
             ])->requestEligibility(3)->getData(true); // get data as array
 
             // If account is not found and/or not eligible
@@ -329,7 +277,7 @@ class JwtController extends Controller{
             } else {
                 // Send email
                 try{
-                    Mail::to($request->email)->send(new UserResetPassword($eligibility['data']['id']));
+                    Mail::to($request['email'])->send(new UserResetPassword($eligibility['data']['id']));
                 }
                 catch(\Throwable $th){
                     // skip invoking the error
@@ -341,33 +289,24 @@ class JwtController extends Controller{
                 'status'    => 200,
                 'message'   => 'The account is found to be eligible for this action. Please check your email for more information.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => $th,
-            ]);
-        }
+        }, ['status' => 409, 'message' => true]);
     }
 
     // Reset password
     public function resetPasswordTokenized($token, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($token, $request){
             // Validate input (this have same request rules as verification)
-            $validator = Validator::make($request->all(), (new UserAuthResetPasswordRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserAuthResetPasswordRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
-                    'errors'    => $validator->errors(),
-                ], 422);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Search user and it's eligibility
             $datas = $this->userRepository->resetPassword([
                 'token'         => $token,
-                'new_password'  => $request->new_password,
+                'new_password'  => $request['new_password'],
             ]);
 
             // Return response
@@ -375,12 +314,6 @@ class JwtController extends Controller{
                 'status'    => 200,
                 'message'   => 'Password has been successfully reset',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 }

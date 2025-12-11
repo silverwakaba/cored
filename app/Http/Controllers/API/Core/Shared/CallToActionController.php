@@ -28,16 +28,13 @@ class CallToActionController extends Controller{
 
     // Message
     public function message(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validator = Validator::make($request->all(), (new CTAMessageRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new CTAMessageRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return GeneralHelper::jsonResponse([
-                    'status'    => 422,
-                    'errors'    => $validator->errors(),
-                ]);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Default form submission
@@ -74,12 +71,6 @@ class CallToActionController extends Controller{
                 'status'    => 200,
                 'message'   => 'The message was sent successfully.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        }, ['status' => 409, 'message' => false]);
     }
 }

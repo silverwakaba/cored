@@ -69,7 +69,7 @@ class PermissionController extends Controller{
 
             // Create permission
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
-                'name' => $validated['name'],
+                'name' => $request['name'],
             ]);
 
             // Return response
@@ -121,7 +121,7 @@ class PermissionController extends Controller{
 
             // Update permission data
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
-                'name' => $validated['name'],
+                'name' => $request['name'],
             ]);
 
             // Return response

@@ -17,7 +17,6 @@ use App\Http\Requests\UserUpdateRequest;
 
 // Internal
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class UserAccessController extends Controller{
     // Property
@@ -30,7 +29,7 @@ class UserAccessController extends Controller{
 
     // List
     public function list(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Get data while sorting
             $datas = $this->repositoryInterface;
 
@@ -49,46 +48,28 @@ class UserAccessController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
-            // Response
-            if(($request->type == 'datatable')){
-                // Return response as datatable
-                $datas = $datas->useDatatable()->all();
-            } else {
-                // Return response as plain query
-                $datas = $datas->all();
-            }
-
             // Return response
-            return $datas;
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+            return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
+        });
     }
 
     // Create
     public function create(Request $request){
-        try{
+        return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validator = Validator::make($request->all(), (new UserCreateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserCreateRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
-                    'errors'    => $validator->errors(),
-                ], 422);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Create registered user
             $datas = $this->repositoryInterface->prepare([
-                'name'      => $request->name,
-                'email'     => $request->email,
+                'name'      => $request['name'],
+                'email'     => $request['email'],
                 'password'  => bcrypt(GeneralHelper::randomPassword()),
-            ])->role($request->role)->register();
+            ])->role($request['role'])->register();
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -96,18 +77,12 @@ class UserAccessController extends Controller{
                 'data'      => $datas,
                 'message'   => 'User created successfully.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Read
     public function read($id, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($id, $request){
             // Read user account
             $datas = $this->repositoryInterface;
 
@@ -124,36 +99,24 @@ class UserAccessController extends Controller{
                 'success'   => true,
                 'data'      => $datas,
             ], 200);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Update
     public function update($id, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validator = Validator::make($request->all(), (new UserUpdateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserUpdateRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
-                    'errors'    => $validator->errors(),
-                ], 422);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
-
-            // Test upload
-            // (new FileHelper)->disk()->directory('test')->upload($request->allFiles());
 
             // Update registered user
             $datas = $this->repositoryInterface->modify($id, [
-                'name'  => $request->name,
-                'email' => $request->email,
+                'name'  => $request['name'],
+                'email' => $request['email'],
             ]);
 
             // Return response
@@ -162,31 +125,22 @@ class UserAccessController extends Controller{
                 'data'      => $datas,
                 'message'   => 'User updated successfully.',
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 
     // Activation
     public function activation($id, Request $request){
-        try{
+        return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validator = Validator::make($request->all(), (new UserActivationRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new UserActivationRequest())->rules());
 
-            // Check validation and stop if failed
-            if($validator->fails()){
-                return response()->json([
-                    'success'   => false,
-                    'errors'    => $validator->errors(),
-                ], 422);
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
             }
 
             // Init activation
-            $activation = (bool) $request->activation;
+            $activation = (bool) $request['activation'];
 
             // Read user account
             $datas = $this->repositoryInterface->activate($id, $activation);
@@ -200,12 +154,6 @@ class UserAccessController extends Controller{
                 'data'      => $datas,
                 'message'   => "User $state successfully.",
             ]);
-        }
-        catch(\Throwable $th){
-            return GeneralHelper::jsonResponse([
-                'status'    => 409,
-                'message'   => null,
-            ]);
-        }
+        });
     }
 }

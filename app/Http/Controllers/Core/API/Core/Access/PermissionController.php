@@ -1,29 +1,32 @@
 <?php
 
-namespace App\Http\Controllers\API\Core\Access;
+namespace App\Http\Controllers\Core\API\Core\Access;
 use App\Http\Controllers\Controller;
 
 // Repository interface
-use App\Contracts\UserRepositoryInterface;
+use App\Contracts\PermissionRepositoryInterface;
+
+// Event
+use App\Events\GeneralEventHandler;
 
 // Helper
-use App\Helpers\FileHelper;
 use App\Helpers\GeneralHelper;
 
+// Model
+use Spatie\Permission\Models\Permission;
+
 // Request
-use App\Http\Requests\UserActivationRequest;
-use App\Http\Requests\UserCreateRequest;
-use App\Http\Requests\UserUpdateRequest;
+use App\Http\Requests\PermissionCreateRequest;
 
 // Internal
 use Illuminate\Http\Request;
 
-class UserAccessController extends Controller{
+class PermissionController extends Controller{
     // Property
     private $repositoryInterface;
 
     // Constructor
-    public function __construct(UserRepositoryInterface $repositoryInterface){
+    public function __construct(PermissionRepositoryInterface $repositoryInterface){
         $this->repositoryInterface = $repositoryInterface;
     }
 
@@ -50,110 +53,97 @@ class UserAccessController extends Controller{
 
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Create
     public function create(Request $request){
         return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new UserCreateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new PermissionCreateRequest())->rules());
 
             // Stop if validation failed
             if(!is_array($validated)){
                 return $validated;
             }
 
-            // Create registered user
-            $datas = $this->repositoryInterface->prepare([
-                'name'      => $request['name'],
-                'email'     => $request['email'],
-                'password'  => bcrypt(GeneralHelper::randomPassword()),
-            ])->role($request['role'])->register();
+            // Create permission
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
+                'name' => $request['name'],
+            ]);
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 201,
                 'data'      => $datas,
-                'message'   => 'User created successfully.',
+                'message'   => 'Permission created successfully.',
             ]);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Read
     public function read($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
-            // Read user account
+            // Get permission data
             $datas = $this->repositoryInterface;
+            
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
 
             // Load relation
             if(isset($request->relation)){
                 $datas->withRelation($request->relation);
             }
-
+            
             // Continue variable
             $datas = $datas->find($id);
 
-            // Return created data
-            return response()->json([
-                'success'   => true,
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
                 'data'      => $datas,
-            ], 200);
-        });
+            ]);
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Update
     public function update($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new UserUpdateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new PermissionCreateRequest())->rules());
 
             // Stop if validation failed
             if(!is_array($validated)){
                 return $validated;
             }
 
-            // Update registered user
-            $datas = $this->repositoryInterface->modify($id, [
-                'name'  => $request['name'],
-                'email' => $request['email'],
+            // Update permission data
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
+                'name' => $request['name'],
             ]);
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
                 'data'      => $datas,
-                'message'   => 'User updated successfully.',
+                'message'   => 'Permission updated successfully.',
             ]);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
-    // Activation
-    public function activation($id, Request $request){
+    // Delete
+    public function delete($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
-            // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new UserActivationRequest())->rules());
-
-            // Stop if validation failed
-            if(!is_array($validated)){
-                return $validated;
-            }
-
-            // Init activation
-            $activation = (bool) $request['activation'];
-
-            // Read user account
-            $datas = $this->repositoryInterface->activate($id, $activation);
-
-            // State message
-            $state = ($activation == true) ? 'activated' : 'deactivated';
+            // Delete permission data
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->delete($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'data'      => $datas,
-                'message'   => "User $state successfully.",
+                'message'   => 'Permission deleted successfully.',
             ]);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 }

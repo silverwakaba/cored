@@ -29,6 +29,10 @@ class AppServiceProvider extends ServiceProvider{
      * Bootstrap any application services.
      */
     public function boot() : void{
-        //
+        // Prioritize core view path while keeping default fallback
+        $this->app['config']->set('view.paths', [
+            resource_path('views/core'),
+            resource_path('views'),
+        ]);
     }
 }

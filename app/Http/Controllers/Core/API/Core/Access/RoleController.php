@@ -1,39 +1,39 @@
 <?php
 
-namespace App\Http\Controllers\API\Core\Access;
+namespace App\Http\Controllers\Core\API\Core\Access;
 use App\Http\Controllers\Controller;
 
 // Repository interface
-use App\Contracts\PermissionRepositoryInterface;
-
-// Event
-use App\Events\GeneralEventHandler;
+use App\Contracts\RoleRepositoryInterface;
 
 // Helper
 use App\Helpers\GeneralHelper;
 
 // Model
-use Spatie\Permission\Models\Permission;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 // Request
-use App\Http\Requests\PermissionCreateRequest;
+use App\Http\Requests\RoleCreateRequest;
+use App\Http\Requests\RoleSyncToPermissionRequest;
+use App\Http\Requests\RoleSyncToUserRequest;
 
 // Internal
 use Illuminate\Http\Request;
 
-class PermissionController extends Controller{
+class RoleController extends Controller{
     // Property
     private $repositoryInterface;
 
     // Constructor
-    public function __construct(PermissionRepositoryInterface $repositoryInterface){
+    public function __construct(RoleRepositoryInterface $repositoryInterface){
         $this->repositoryInterface = $repositoryInterface;
     }
 
     // List
     public function list(Request $request){
         return GeneralHelper::safe(function() use($request){
-            // Get data while sorting
+            // Get data
             $datas = $this->repositoryInterface;
 
             // Sort data
@@ -53,22 +53,22 @@ class PermissionController extends Controller{
 
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
-        }, ['status' => 409, 'message' => false]);
+        });
     }
 
     // Create
     public function create(Request $request){
         return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new PermissionCreateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new RoleCreateRequest())->rules());
 
             // Stop if validation failed
             if(!is_array($validated)){
                 return $validated;
             }
 
-            // Create permission
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
+            // Create role
+            $datas = $this->repositoryInterface->create([
                 'name' => $request['name'],
             ]);
 
@@ -76,17 +76,17 @@ class PermissionController extends Controller{
             return GeneralHelper::jsonResponse([
                 'status'    => 201,
                 'data'      => $datas,
-                'message'   => 'Permission created successfully.',
+                'message'   => 'Role created successfully.',
             ]);
-        }, ['status' => 409, 'message' => false]);
+        });
     }
 
     // Read
     public function read($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
-            // Get permission data
+            // Get role data
             $datas = $this->repositoryInterface;
-            
+
             // Load column selection
             if(isset($request->select)){
                 $datas->onlySelect($request->select);
@@ -105,45 +105,52 @@ class PermissionController extends Controller{
                 'status'    => 200,
                 'data'      => $datas,
             ]);
-        }, ['status' => 409, 'message' => false]);
+        });
     }
 
-    // Update
-    public function update($id, Request $request){
+    // Sync role to Permission
+    public function syncToPermission($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new PermissionCreateRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new RoleSyncToPermissionRequest())->rules());
 
-            // Stop if validation failed
+            // Check validation and stop if failed
             if(!is_array($validated)){
                 return $validated;
             }
 
-            // Update permission data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
-                'name' => $request['name'],
-            ]);
+            // Sync permission to role (id from role)
+            $datas = $this->repositoryInterface->permission($request['permission'])->syncToPermission($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
                 'data'      => $datas,
-                'message'   => 'Permission updated successfully.',
+                'message'   => 'Role successfully synchronized with permission.',
             ]);
-        }, ['status' => 409, 'message' => false]);
+        });
     }
 
-    // Delete
-    public function delete($id, Request $request){
+    // Sync role to user
+    public function syncToUser($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
-            // Delete permission data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->delete($id);
+            // Validate input
+            $validated = GeneralHelper::validate($request->all(), (new RoleSyncToUserRequest())->rules());
+
+            // Check validation and stop if failed
+            if(!is_array($validated)){
+                return $validated;
+            }
+
+            // Sync role to user (id from user)
+            $datas = $this->repositoryInterface->withRelation('roles')->role($request['role'])->syncToUser($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'message'   => 'Permission deleted successfully.',
+                'data'      => $datas,
+                'message'   => 'Role successfully synchronized to user.',
             ]);
-        }, ['status' => 409, 'message' => false]);
+        });
     }
 }

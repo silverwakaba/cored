@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Core\FE\Core\Access;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Core\Controller;
 
 // Repository interface
-use App\Contracts\ApiRepositoryInterface;
+use App\Contracts\Core\ApiRepositoryInterface;
 
 // Helper
-use App\Helpers\ErrorHelper;
-use App\Helpers\RBACHelper;
+use App\Helpers\Core\ErrorHelper;
+use App\Helpers\Core\RBACHelper;
 
 // Internal
 use Illuminate\Http\Request;
@@ -123,3 +123,7 @@ class UserAccessController extends Controller{
         return response()->json($http->json(), $http->status());
     }
 }
+
+
+
+

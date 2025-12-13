@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Core\FE;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Core\Controller;
 
 // Repository interface
-use App\Contracts\ApiRepositoryInterface;
+use App\Contracts\Core\ApiRepositoryInterface;
 
 // Internal
 use Illuminate\Http\Request;
@@ -134,3 +134,7 @@ class PageController extends Controller{
         ]);
     }
 }
+
+
+
+

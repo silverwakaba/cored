@@ -22,23 +22,23 @@ return Application::configure(basePath: dirname(__DIR__))
         // Alias middleware
         $middleware->alias([
             // Dummy (as in stupid) validation
-            'dummy.validation'      => \App\Http\Middleware\DummyValidationMiddleware::class,
+            'dummy.validation'      => \App\Http\Middleware\Core\DummyValidationMiddleware::class,
 
             // App-related
-            'app.locale'            => \App\Http\Middleware\AppLocaleMiddleware::class,
-            'app.nodebug'           => \App\Http\Middleware\DisableDebuggerMiddleware::class,
+            'app.locale'            => \App\Http\Middleware\Core\AppLocaleMiddleware::class,
+            'app.nodebug'           => \App\Http\Middleware\Core\DisableDebuggerMiddleware::class,
             
             // JWT-related
-            'jwt.be'                => \App\Http\Middleware\JwtAuthBeMiddleware::class,
-            'jwt.fe'                => \App\Http\Middleware\JwtAuthFeMiddleware::class,
-            'jwt.global'            => \App\Http\Middleware\JwtAuthGlobalMiddleware::class,
-            'jwt.guest'             => \App\Http\Middleware\JwtAuthGuestMiddleware::class,
+            'jwt.be'                => \App\Http\Middleware\Core\JwtAuthBeMiddleware::class,
+            'jwt.fe'                => \App\Http\Middleware\Core\JwtAuthFeMiddleware::class,
+            'jwt.global'            => \App\Http\Middleware\Core\JwtAuthGlobalMiddleware::class,
+            'jwt.guest'             => \App\Http\Middleware\Core\JwtAuthGuestMiddleware::class,
 
             // Custom rate limiter
-            'request.limiter'       => \App\Http\Middleware\RateLimitMiddleware::class,
+            'request.limiter'       => \App\Http\Middleware\Core\RateLimitMiddleware::class,
 
             // Blade minify
-            'minify.blade'          => \App\Http\Middleware\MinifyBladeMiddleware::class,
+            'minify.blade'          => \App\Http\Middleware\Core\MinifyBladeMiddleware::class,
 
             // Spatie role-permission related
             'role'                  => \Spatie\Permission\Middleware\RoleMiddleware::class,

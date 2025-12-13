@@ -29,3 +29,7 @@ class DatatableComponent extends Component{
         return view('components.adminlte.datatable-component');
     }
 }
+
+
+
+

@@ -24,3 +24,7 @@ class WrapperComponent extends Component
         return view('components.adminlte.wrapper-component');
     }
 }
+
+
+
+

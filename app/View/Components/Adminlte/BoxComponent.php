@@ -34,3 +34,7 @@ class BoxComponent extends Component{
         return view('components.adminlte.box-component');
     }
 }
+
+
+
+

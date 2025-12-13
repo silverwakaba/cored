@@ -1,25 +1,25 @@
 <?php
 
 namespace App\Http\Controllers\Core\API\Core\Auth;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Core\Controller;
 
 // Repository interface
-use App\Contracts\UserRepositoryInterface;
+use App\Contracts\Core\UserRepositoryInterface;
 
 // Helper
-use App\Helpers\ErrorHelper;
-use App\Helpers\GeneralHelper;
+use App\Helpers\Core\ErrorHelper;
+use App\Helpers\Core\GeneralHelper;
 
 // Mail
-use App\Mail\UserResetPassword;
-use App\Mail\UserVerifyEmail;
+use App\Mail\Core\UserResetPassword;
+use App\Mail\Core\UserVerifyEmail;
 
 // Request
-use App\Http\Requests\UserAuthLoginRequest;
-use App\Http\Requests\UserAuthLostPasswordRequest;
-use App\Http\Requests\UserAuthRegisterRequest;
-use App\Http\Requests\UserAuthResetPasswordRequest;
-use App\Http\Requests\UserAuthVerifyRequest;
+use App\Http\Requests\Core\UserAuthLoginRequest;
+use App\Http\Requests\Core\UserAuthLostPasswordRequest;
+use App\Http\Requests\Core\UserAuthRegisterRequest;
+use App\Http\Requests\Core\UserAuthResetPasswordRequest;
+use App\Http\Requests\Core\UserAuthVerifyRequest;
 
 // Internal
 use Illuminate\Http\Request;
@@ -317,3 +317,7 @@ class JwtController extends Controller{
         });
     }
 }
+
+
+
+

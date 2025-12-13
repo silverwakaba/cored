@@ -37,7 +37,10 @@ return [
     |
     */
 
-    'files' => base_path('routes/breadcrumbs.php'),
+    'files' => [
+        base_path('routes/core/breadcrumbs.php'), // Core breadcrumbs (load first)
+        base_path('routes/breadcrumbs.php'),       // Project breadcrumbs (can override core)
+    ],
 
     /*
     |--------------------------------------------------------------------------

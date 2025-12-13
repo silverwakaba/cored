@@ -1,22 +1,22 @@
 <?php
 
 namespace App\Http\Controllers\Core\API\Core\Access;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Core\Controller;
 
 // Repository interface
-use App\Contracts\RoleRepositoryInterface;
+use App\Contracts\Core\RoleRepositoryInterface;
 
 // Helper
-use App\Helpers\GeneralHelper;
+use App\Helpers\Core\GeneralHelper;
 
 // Model
-use App\Models\User;
+use App\Models\Core\User;
 use Spatie\Permission\Models\Role;
 
 // Request
-use App\Http\Requests\RoleCreateRequest;
-use App\Http\Requests\RoleSyncToPermissionRequest;
-use App\Http\Requests\RoleSyncToUserRequest;
+use App\Http\Requests\Core\RoleCreateRequest;
+use App\Http\Requests\Core\RoleSyncToPermissionRequest;
+use App\Http\Requests\Core\RoleSyncToUserRequest;
 
 // Internal
 use Illuminate\Http\Request;
@@ -154,3 +154,7 @@ class RoleController extends Controller{
         });
     }
 }
+
+
+
+

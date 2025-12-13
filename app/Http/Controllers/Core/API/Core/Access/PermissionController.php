@@ -1,22 +1,22 @@
 <?php
 
 namespace App\Http\Controllers\Core\API\Core\Access;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Core\Controller;
 
 // Repository interface
-use App\Contracts\PermissionRepositoryInterface;
+use App\Contracts\Core\PermissionRepositoryInterface;
 
 // Event
-use App\Events\GeneralEventHandler;
+use App\Events\Core\GeneralEventHandler;
 
 // Helper
-use App\Helpers\GeneralHelper;
+use App\Helpers\Core\GeneralHelper;
 
 // Model
 use Spatie\Permission\Models\Permission;
 
 // Request
-use App\Http\Requests\PermissionCreateRequest;
+use App\Http\Requests\Core\PermissionCreateRequest;
 
 // Internal
 use Illuminate\Http\Request;
@@ -68,7 +68,7 @@ class PermissionController extends Controller{
             }
 
             // Create permission
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
+            $datas = $this->repositoryInterface->broadcaster(\App\Events\Core\GeneralEventHandler::class, 'create')->create([
                 'name' => $request['name'],
             ]);
 
@@ -137,7 +137,7 @@ class PermissionController extends Controller{
     public function delete($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Delete permission data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->delete($id);
+            $datas = $this->repositoryInterface->broadcaster(\App\Events\Core\GeneralEventHandler::class, 'delete')->delete($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -147,3 +147,7 @@ class PermissionController extends Controller{
         }, ['status' => 409, 'message' => false]);
     }
 }
+
+
+
+

@@ -23,3 +23,7 @@ class TableComponent extends Component{
         return view('components.adminlte.table-component');
     }
 }
+
+
+
+

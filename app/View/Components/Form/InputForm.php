@@ -38,3 +38,7 @@ class InputForm extends Component{
         return view('components.form.input-form');
     }
 }
+
+
+
+

@@ -1,19 +1,19 @@
 <?php
 
 namespace App\Http\Controllers\Core\API\Core\Access;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Core\Controller;
 
 // Repository interface
-use App\Contracts\UserRepositoryInterface;
+use App\Contracts\Core\UserRepositoryInterface;
 
 // Helper
-use App\Helpers\FileHelper;
-use App\Helpers\GeneralHelper;
+use App\Helpers\Core\FileHelper;
+use App\Helpers\Core\GeneralHelper;
 
 // Request
-use App\Http\Requests\UserActivationRequest;
-use App\Http\Requests\UserCreateRequest;
-use App\Http\Requests\UserUpdateRequest;
+use App\Http\Requests\Core\UserActivationRequest;
+use App\Http\Requests\Core\UserCreateRequest;
+use App\Http\Requests\Core\UserUpdateRequest;
 
 // Internal
 use Illuminate\Http\Request;
@@ -157,3 +157,7 @@ class UserAccessController extends Controller{
         });
     }
 }
+
+
+
+

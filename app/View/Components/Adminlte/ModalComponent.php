@@ -39,3 +39,7 @@ class ModalComponent extends Component{
         return view('components.adminlte.modal-component');
     }
 }
+
+
+
+

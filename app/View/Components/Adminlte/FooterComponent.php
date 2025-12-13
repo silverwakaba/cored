@@ -21,3 +21,7 @@ class FooterComponent extends Component{
         return view('components.adminlte.footer-component');
     }
 }
+
+
+
+

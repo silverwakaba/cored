@@ -11,7 +11,8 @@ return new class extends Migration{
     public function up() : void{
         Schema::create('user_cta_messages', function (Blueprint $table){
             $table->id();
-            $table->foreignId('users_id')->references('id')->on('users')->onDelete('cascade');
+            $table->ulid('users_id');
+            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('subject');
             $table->longText('message');
             $table->json('attachment')->nullable();

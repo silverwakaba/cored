@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Core\API\Core\Access;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Core\Controller;
 
 // Repository interface
-use App\Contracts\MenuRepositoryInterface;
+use App\Contracts\Core\MenuRepositoryInterface;
 
 // Model
-use App\Models\Menu;
+use App\Models\Core\Menu;
 
 // Internal
 use Illuminate\Http\Request;
@@ -83,3 +83,7 @@ class MenuController extends Controller{
         // $this->repositoryInterface->deleteMenu(13);
     }
 }
+
+
+
+

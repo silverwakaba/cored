@@ -1,15 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Core\FE\Core\Auth;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Core\Controller;
 
 // Repository interface
-use App\Contracts\ApiRepositoryInterface;
+use App\Contracts\Core\ApiRepositoryInterface;
 
 // Helper
-use App\Helpers\CookiesHelper;
-use App\Helpers\ErrorHelper;
-use App\Helpers\GeneralHelper;
+use App\Helpers\Core\CookiesHelper;
+use App\Helpers\Core\ErrorHelper;
+use App\Helpers\Core\GeneralHelper;
 
 // Internal
 use Illuminate\Http\Request;
@@ -233,3 +233,7 @@ class GeneralAuthController extends Controller{
         }
     }
 }
+
+
+
+

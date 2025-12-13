@@ -41,3 +41,7 @@ class CardComponent extends Component{
         return view('components.adminlte.card-component');
     }
 }
+
+
+
+

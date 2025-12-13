@@ -1,17 +1,17 @@
 <?php
 
 namespace App\Http\Controllers\Core\API\Core\Shared;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Core\Controller;
 
 // Repository interface
-use App\Contracts\CallToActionRepositoryInterface;
+use App\Contracts\Core\CallToActionRepositoryInterface;
 
 // Helper
-use App\Helpers\FileHelper;
-use App\Helpers\GeneralHelper;
+use App\Helpers\Core\FileHelper;
+use App\Helpers\Core\GeneralHelper;
 
 // Request
-use App\Http\Requests\CTAMessageRequest;
+use App\Http\Requests\Core\CTAMessageRequest;
 
 // Internal
 use Illuminate\Http\Request;
@@ -74,3 +74,7 @@ class CallToActionController extends Controller{
         }, ['status' => 409, 'message' => false]);
     }
 }
+
+
+
+

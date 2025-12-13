@@ -3,7 +3,7 @@
 namespace App\View\Components\Adminlte;
 
 // Repository interface
-use App\Contracts\ApiRepositoryInterface;
+use App\Contracts\Core\ApiRepositoryInterface;
 
 // Internal
 use Closure;
@@ -30,3 +30,7 @@ class DynamicMenu extends Component{
         return view('components.adminlte.dynamic-menu');
     }
 }
+
+
+
+

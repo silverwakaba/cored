@@ -52,9 +52,3 @@ class EloquentCallToActionRepository implements CallToActionRepositoryInterface{
         }
     }
 }
-
-
-
-
-
-

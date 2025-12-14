@@ -30,7 +30,3 @@ class ContentWrapperComponent extends Component{
         return view('components.adminlte.content-wrapper-component');
     }
 }
-
-
-
-

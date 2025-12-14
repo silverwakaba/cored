@@ -153,9 +153,3 @@ class CookiesHelper{
         }
     }
 }
-
-
-
-
-
-

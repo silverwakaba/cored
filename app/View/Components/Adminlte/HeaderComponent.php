@@ -21,7 +21,3 @@ class HeaderComponent extends Component{
         return view('components.adminlte.header-component');
     }
 }
-
-
-
-

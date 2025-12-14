@@ -145,9 +145,3 @@ class FileHelper{
         return $deleted;
     }
 }
-
-
-
-
-
-

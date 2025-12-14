@@ -58,9 +58,3 @@ class AuthHelper{
         return collect($users)->pluck('id')->toArray();
     }
 }
-
-
-
-
-
-

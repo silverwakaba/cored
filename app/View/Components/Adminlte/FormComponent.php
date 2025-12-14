@@ -29,7 +29,3 @@ class FormComponent extends Component{
         return view('components.adminlte.form-component');
     }
 }
-
-
-
-

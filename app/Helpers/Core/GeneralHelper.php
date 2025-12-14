@@ -149,9 +149,3 @@ class GeneralHelper{
         return response()->json($response, $datas['status']);
     }
 }
-
-
-
-
-
-

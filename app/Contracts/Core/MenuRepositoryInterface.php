@@ -8,8 +8,3 @@ interface MenuRepositoryInterface{
     public function updateMenuPosition($menuId, $position, $referenceId);
     public function deleteMenu($menuId);
 }
-
-
-
-
-

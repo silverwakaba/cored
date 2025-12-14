@@ -74,12 +74,11 @@ class User extends Authenticatable implements JWTSubject{
         return [];
     }
 
-    public function hasOneUserRequest(){
-        return $this->hasOne(UserRequest::class, 'users_id');
+    public function hasManyUserRequests(){
+        return $this->hasMany(UserRequest::class, 'users_id');
+    }
+
+    public function hasManyUserCtaMessages(){
+        return $this->hasMany(UserCtaMessage::class, 'users_id');
     }
 }
-
-
-
-
-

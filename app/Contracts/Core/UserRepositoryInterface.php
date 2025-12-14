@@ -9,8 +9,3 @@ interface UserRepositoryInterface{
     public function search($data);
     public function resetPassword($data);
 }
-
-
-
-
-

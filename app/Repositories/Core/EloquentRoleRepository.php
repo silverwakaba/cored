@@ -93,9 +93,3 @@ class EloquentRoleRepository extends BaseRepository implements RoleRepositoryInt
         });
     }
 }
-
-
-
-
-
-

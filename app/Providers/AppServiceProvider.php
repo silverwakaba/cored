@@ -36,14 +36,10 @@ class AppServiceProvider extends ServiceProvider{
         ]);
 
         // Load migrations from core and project directories
-        // Laravel doesn't automatically scan subdirectories, so we need to explicitly load them
+        // As Laravel doesn't automatically scan subdirectories, so we need to explicitly load them
         $this->loadMigrationsFrom([
             database_path('migrations/core'),
             database_path('migrations/project'),
         ]);
     }
 }
-
-
-
-

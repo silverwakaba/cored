@@ -62,4 +62,3 @@ class JwtManagerController extends Controller{
         }
     }
 }
-

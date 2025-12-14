@@ -317,7 +317,3 @@ class JwtController extends Controller{
         });
     }
 }
-
-
-
-

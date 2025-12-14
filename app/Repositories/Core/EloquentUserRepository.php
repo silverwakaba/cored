@@ -213,7 +213,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         // If the user exist
         if($datas){
             // Include the request to the logic
-            $requests = $datas->hasOneUserRequest()->where([
+            $requests = $datas->hasManyUserRequests()->where([
                 ['base_requests_id', '=', $request],
                 ['users_id', '=', $datas['id']],
             ])->whereNotNull('token');
@@ -301,9 +301,3 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         });
     }
 }
-
-
-
-
-
-

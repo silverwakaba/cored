@@ -35,7 +35,3 @@ class BasedataController extends Controller{
         }
     }
 }
-
-
-
-

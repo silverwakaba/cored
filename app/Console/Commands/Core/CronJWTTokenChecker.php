@@ -28,4 +28,3 @@ class CronJWTTokenChecker extends Command{
         $cron->refresh();
     }
 }
-

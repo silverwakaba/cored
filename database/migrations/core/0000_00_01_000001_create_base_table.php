@@ -9,13 +9,18 @@ return new class extends Migration{
      * Run the migrations.
      */
     public function up() : void{
-        // Request
-        Schema::create('base_requests', function (Blueprint $table){
+        // Module
+        Schema::create('base_modules', function (Blueprint $table){
             $table->id();
             $table->string('name');
         });
 
-        // ..add more base here
+        // Request
+        Schema::create('base_requests', function (Blueprint $table){
+            $table->id();
+            $table->foreignId('base_modules_id')->references('id')->on('base_modules')->onDelete('cascade');
+            $table->string('name');
+        });
     }
 
     /**
@@ -23,7 +28,6 @@ return new class extends Migration{
      */
     public function down() : void{
         Schema::dropIfExists('base_requests');
-
-        // ..add more base here
+        Schema::dropIfExists('base_modules');
     }
 };

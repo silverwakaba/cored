@@ -24,7 +24,3 @@ class MainComponent extends Component
         return view('components.arsha.main-component');
     }
 }
-
-
-
-

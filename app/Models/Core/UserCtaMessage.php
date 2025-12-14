@@ -24,8 +24,3 @@ class UserCtaMessage extends Model{
         return $this->belongsTo(User::class, 'users_id', 'id')->select('id', 'name', 'email');
     }
 }
-
-
-
-
-

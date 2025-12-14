@@ -147,7 +147,3 @@ class PermissionController extends Controller{
         }, ['status' => 409, 'message' => false]);
     }
 }
-
-
-
-

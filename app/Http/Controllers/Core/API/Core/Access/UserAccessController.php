@@ -157,7 +157,3 @@ class UserAccessController extends Controller{
         });
     }
 }
-
-
-
-

@@ -238,9 +238,3 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
         return Menu::byParent($parentId)->byType($type)->orderBy('order')->get();
     }
 }
-
-
-
-
-
-

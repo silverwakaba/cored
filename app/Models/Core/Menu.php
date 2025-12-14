@@ -94,7 +94,3 @@ class Menu extends Model{
         return $query->where('type', $type);
     }
 }
-
-
-
-

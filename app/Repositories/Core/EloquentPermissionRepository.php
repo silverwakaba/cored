@@ -23,9 +23,3 @@ class EloquentPermissionRepository extends BaseRepository implements PermissionR
         $this->query = $model->query();
     }
 }
-
-
-
-
-
-

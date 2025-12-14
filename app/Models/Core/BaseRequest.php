@@ -10,9 +10,17 @@ class BaseRequest extends Model{
     public $timestamps = false;
 
     protected $fillable = [
+        'base_modules_id',
         'name',
     ];
+
+    // Belong to base module
+    public function belongsToBaseModule(){
+        return $this->belongsTo(BaseModule::class, 'base_modules_id', 'id')->select('id', 'name');
+    }
+
+    // Has many user requests
+    public function hasManyUserRequests(){
+        return $this->hasMany(UserRequest::class, 'base_requests_id', 'id');
+    }
 }
-
-
-

@@ -44,9 +44,3 @@ class QueryHelper{
         return $selected;
     }
 }
-
-
-
-
-
-

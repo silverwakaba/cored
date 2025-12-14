@@ -1,0 +1,29 @@
+name: Prevent Project Branch Merge to Main
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR is from protected project branch
+        run: |
+          SOURCE_BRANCH="${{ github.head_ref }}"
+          
+          # List of branches that cannot be merged into main
+          PROTECTED_BRANCHES=("project-hris" "test-protection")
+          
+          for branch in "${PROTECTED_BRANCHES[@]}"; do
+            if [[ "$SOURCE_BRANCH" == "$branch" ]]; then
+              echo "❌ Cannot merge $SOURCE_BRANCH into main"
+              echo "Project branches are intended to be independent."
+              echo "You can still fetch updates from main using: git fetch origin main && git rebase origin/main"
+              exit 1
+            fi
+          done
+          
+          echo "✅ Branch $SOURCE_BRANCH can be merged into main"

@@ -63,9 +63,3 @@ class UserResetPassword extends Mailable implements ShouldQueue{
         return [];
     }
 }
-
-
-
-
-
-

@@ -8,9 +8,3 @@ class RedirectHelper{
         return array_merge($data, ['redirect' => $route]);
     }
 }
-
-
-
-
-
-

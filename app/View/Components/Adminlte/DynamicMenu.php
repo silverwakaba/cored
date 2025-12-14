@@ -30,7 +30,3 @@ class DynamicMenu extends Component{
         return view('components.adminlte.dynamic-menu');
     }
 }
-
-
-
-

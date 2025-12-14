@@ -21,7 +21,3 @@ class MainComponent extends Component{
         return view('components.adminlte.main-component');
     }
 }
-
-
-
-

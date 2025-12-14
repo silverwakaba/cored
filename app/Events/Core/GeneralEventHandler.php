@@ -34,9 +34,3 @@ class GeneralEventHandler implements ShouldBroadcast, ShouldDispatchAfterCommit{
         return 'generalEvent';
     }
 }
-
-
-
-
-
-

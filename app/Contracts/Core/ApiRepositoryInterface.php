@@ -11,8 +11,3 @@ interface ApiRepositoryInterface{
     public function patch(string $route, array $data = []);
     public function delete(string $route, array $data = []);
 }
-
-
-
-
-

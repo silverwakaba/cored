@@ -24,7 +24,3 @@ class FooterComponent extends Component
         return view('components.arsha.footer-component');
     }
 }
-
-
-
-

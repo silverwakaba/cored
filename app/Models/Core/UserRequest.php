@@ -23,8 +23,3 @@ class UserRequest extends Model{
         return $this->belongsTo(BaseRequest::class, 'base_requests_id', 'id')->select('id', 'name');
     }
 }
-
-
-
-
-

@@ -29,7 +29,3 @@ class CheckboxForm extends Component{
         return view('components.form.checkbox-form');
     }
 }
-
-
-
-

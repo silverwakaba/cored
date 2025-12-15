@@ -1,4 +1,4 @@
-## About This Project
+## About This Project (edit readme)
 
 Azhar's starter pack for creating Laravel applications; And it is (sort of, still) using monorepo approach.
 

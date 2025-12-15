@@ -72,21 +72,27 @@ jobs:
           # In monorepo, these branches represent individual projects and should be protected
           
           # Determine which branch to check based on trigger
-          if [ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "create" ]; then
-            # Check the specific branch that triggered this workflow
+          EVENT_NAME="${{ github.event_name }}"
+          echo "Workflow triggered by: $EVENT_NAME"
+          
+          if [ "$EVENT_NAME" = "push" ]; then
+            # For push event, use ref_name (e.g., refs/heads/branch-name -> branch-name)
             TRIGGER_BRANCH="${{ github.ref_name }}"
-            echo "Checking triggered branch: $TRIGGER_BRANCH"
+            echo "Push event detected. Branch: $TRIGGER_BRANCH"
+          elif [ "$EVENT_NAME" = "create" ]; then
+            # For create event, ref is the full ref (refs/heads/branch-name or refs/tags/tag-name)
+            REF="${{ github.event.ref }}"
+            REF_TYPE="${{ github.event.ref_type }}"
+            echo "Create event detected. Ref: $REF, Type: $REF_TYPE"
             
-            # Check if it matches the pattern
-            case "$TRIGGER_BRANCH" in
-              project-*|test-*)
-                BRANCHES="$TRIGGER_BRANCH"
-                ;;
-              *)
-                echo "Branch $TRIGGER_BRANCH does not match protected pattern, skipping"
-                exit 0
-                ;;
-            esac
+            if [ "$REF_TYPE" != "branch" ]; then
+              echo "Not a branch (type: $REF_TYPE), skipping"
+              exit 0
+            fi
+            
+            # Extract branch name from ref (refs/heads/branch-name -> branch-name)
+            TRIGGER_BRANCH=$(echo "$REF" | sed 's|refs/heads/||')
+            echo "Branch name extracted: $TRIGGER_BRANCH"
           else
             # For manual trigger or schedule: check all branches
             echo "Checking all branches that should have delete protection..."
@@ -96,6 +102,26 @@ jobs:
               echo "⚠️  No branches found or API access denied"
               exit 0
             fi
+            
+            # Process all branches (skip to loop)
+            TRIGGER_BRANCH=""
+          fi
+          
+          # If we have a specific branch from push/create event, check it
+          if [ -n "$TRIGGER_BRANCH" ]; then
+            echo "Checking triggered branch: $TRIGGER_BRANCH"
+            
+            # Check if it matches the pattern
+            case "$TRIGGER_BRANCH" in
+              project-*|test-*)
+                echo "✅ Branch matches protected pattern"
+                BRANCHES="$TRIGGER_BRANCH"
+                ;;
+              *)
+                echo "Branch $TRIGGER_BRANCH does not match protected pattern (project-*|test-*), skipping"
+                exit 0
+                ;;
+            esac
           fi
           
           for BRANCH in $BRANCHES; do
@@ -118,14 +144,26 @@ jobs:
                   # Preserve existing protection settings if any
                   if [ "$PROTECTION" != "{}" ]; then
                     # Branch has existing protection, update only allow_deletions
-                    gh api \
+                    echo "Updating existing protection rules..."
+                    RESULT=$(gh api \
                       -X PUT \
                       repos/${{ github.repository }}/branches/$BRANCH/protection \
                       -f allow_deletions=false \
-                      --jq '.' && echo "✅ Successfully enabled delete protection for $BRANCH" || echo "❌ Failed to update protection for $BRANCH (may require admin permissions or Personal Access Token)"
+                      --jq '.' 2>&1)
+                    
+                    if [ $? -eq 0 ]; then
+                      echo "✅ Successfully enabled delete protection for $BRANCH"
+                    else
+                      echo "❌ Failed to update protection for $BRANCH"
+                      echo "Error details: $RESULT"
+                      echo "⚠️  This may require admin permissions or Personal Access Token (PAT)"
+                      echo "⚠️  Check if ADMIN_PAT secret is configured if GITHUB_TOKEN doesn't work"
+                      exit 1
+                    fi
                   else
                     # Branch has no protection, create minimal protection with delete protection only
-                    gh api \
+                    echo "Creating new protection rules..."
+                    RESULT=$(gh api \
                       -X PUT \
                       repos/${{ github.repository }}/branches/$BRANCH/protection \
                       -f allow_deletions=false \
@@ -133,7 +171,17 @@ jobs:
                       -f enforce_admins=null \
                       -f required_pull_request_reviews=null \
                       -f restrictions=null \
-                      --jq '.' && echo "✅ Successfully created delete protection for $BRANCH" || echo "❌ Failed to create protection for $BRANCH (may require admin permissions or Personal Access Token)"
+                      --jq '.' 2>&1)
+                    
+                    if [ $? -eq 0 ]; then
+                      echo "✅ Successfully created delete protection for $BRANCH"
+                    else
+                      echo "❌ Failed to create protection for $BRANCH"
+                      echo "Error details: $RESULT"
+                      echo "⚠️  This may require admin permissions or Personal Access Token (PAT)"
+                      echo "⚠️  Check if ADMIN_PAT secret is configured if GITHUB_TOKEN doesn't work"
+                      exit 1
+                    fi
                   fi
                 else
                   echo "✅ Branch $BRANCH already has delete protection enabled"

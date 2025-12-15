@@ -32,28 +32,30 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      administration: write
+      # Note: Branch protection requires admin access via Personal Access Token (PAT)
+      # The GITHUB_TOKEN doesn't have admin permissions by default
+      # You need to create a PAT with 'admin:repo' scope and store it as ADMIN_PAT secret
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Enforce delete protection on project branches
         env:
-          # GITHUB_TOKEN is automatically provided by GitHub Actions (no setup needed)
-          # However, for administration:write permission, you may need a Personal Access Token (PAT)
+          # IMPORTANT: Branch protection requires admin permissions
+          # GITHUB_TOKEN does NOT have permission to modify branch protection rules by default
+          # You MUST create a Personal Access Token (PAT) with admin:repo scope
           # 
-          # Option 1: Try GITHUB_TOKEN first (may work if repository settings allow it)
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # 
-          # Option 2: If GITHUB_TOKEN doesn't have sufficient permissions, create a PAT:
+          # Steps to create PAT:
           # 1. Go to GitHub.com → Settings → Developer settings → Personal access tokens → Tokens (classic)
-          # 2. Generate new token (classic) with scopes: "repo" (Full control of private repositories)
-          # 3. Copy the token
+          # 2. Generate new token (classic) with scope: "admin:repo" (Full control of private repositories)
+          # 3. Copy the token (you'll only see it once!)
           # 4. Go to your repository → Settings → Secrets and variables → Actions
           # 5. Click "New repository secret"
           # 6. Name: ADMIN_PAT, Value: paste your token
-          # 7. Uncomment the line below and comment the line above
-          # GITHUB_TOKEN: ${{ secrets.ADMIN_PAT }}
+          # 7. Uncomment the line below and comment/remove the GITHUB_TOKEN line above
+          # 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Try this first, but it likely won't work
+          # GITHUB_TOKEN: ${{ secrets.ADMIN_PAT }}  # Uncomment this and comment line above after creating PAT
         run: |
           # Install GitHub CLI if not available
           if ! command -v gh &> /dev/null; then

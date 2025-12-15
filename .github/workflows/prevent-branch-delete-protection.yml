@@ -68,8 +68,9 @@ jobs:
             apt-get update && apt-get install -y gh
           fi
           
-          # Authenticate GitHub CLI using PAT
-          echo "$GH_TOKEN" | gh auth login --with-token
+          # GitHub CLI automatically uses GH_TOKEN environment variable for authentication
+          # No need to run 'gh auth login' when GH_TOKEN is set
+          echo "GitHub CLI will use GH_TOKEN environment variable for authentication"
           
           # Branches that MUST have delete protection (using same pattern as prevent-project-merge)
           # In monorepo, these branches represent individual projects and should be protected

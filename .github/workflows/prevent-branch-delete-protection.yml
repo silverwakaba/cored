@@ -145,45 +145,84 @@ jobs:
                   echo "Enabling delete protection for $BRANCH to prevent accidental deletion..."
                   
                   # Enable delete protection (set allow_deletions to false)
-                  # Preserve existing protection settings if any
+                  # GitHub API requires JSON body format for branch protection
                   if [ "$PROTECTION" != "{}" ]; then
-                    # Branch has existing protection, update only allow_deletions
+                    # Branch has existing protection, preserve existing settings and update allow_deletions
                     echo "Updating existing protection rules..."
+                    
+                    # Update protection by modifying the existing protection JSON
+                    # Set allow_deletions to false while preserving other settings
+                    JSON_PAYLOAD=$(echo "$PROTECTION" | jq '{
+                      allow_deletions: false,
+                      required_status_checks: .required_status_checks,
+                      enforce_admins: (if .enforce_admins then .enforce_admins.enabled else false end),
+                      required_pull_request_reviews: .required_pull_request_reviews,
+                      restrictions: .restrictions
+                    }')
+                    
                     RESULT=$(gh api \
                       -X PUT \
                       repos/${{ github.repository }}/branches/$BRANCH/protection \
-                      -f allow_deletions=false \
-                      --jq '.' 2>&1)
+                      --input - \
+                      <<< "$JSON_PAYLOAD" 2>&1)
                     
                     if [ $? -eq 0 ]; then
-                      echo "✅ Successfully enabled delete protection for $BRANCH"
+                      echo "✅ API call successful for $BRANCH"
+                      
+                      # Verify protection was actually applied
+                      sleep 2  # Wait a moment for GitHub to process
+                      VERIFY_PROTECTION=$(gh api repos/${{ github.repository }}/branches/$BRANCH/protection 2>/dev/null || echo "{}")
+                      VERIFY_ALLOW_DELETIONS=$(echo "$VERIFY_PROTECTION" | jq -r '.allow_deletions.enabled // true')
+                      
+                      if [ "$VERIFY_ALLOW_DELETIONS" = "false" ]; then
+                        echo "✅ Verified: Delete protection is now enabled for $BRANCH"
+                      else
+                        echo "⚠️  Warning: Delete protection may not be fully applied. Verification shows: allow_deletions=$VERIFY_ALLOW_DELETIONS"
+                        echo "Protection details: $(echo "$VERIFY_PROTECTION" | jq -c '.allow_deletions')"
+                      fi
                     else
                       echo "❌ Failed to update protection for $BRANCH"
                       echo "Error details: $RESULT"
                       echo "⚠️  This may require admin permissions or Personal Access Token (PAT)"
-                      echo "⚠️  Check if ADMIN_PAT secret is configured if GITHUB_TOKEN doesn't work"
                       exit 1
                     fi
                   else
                     # Branch has no protection, create minimal protection with delete protection only
                     echo "Creating new protection rules..."
+                    
+                    # Create minimal JSON payload with only delete protection
+                    JSON_PAYLOAD=$(jq -n '{
+                      "allow_deletions": false,
+                      "required_status_checks": null,
+                      "enforce_admins": false,
+                      "required_pull_request_reviews": null,
+                      "restrictions": null
+                    }')
+                    
                     RESULT=$(gh api \
                       -X PUT \
                       repos/${{ github.repository }}/branches/$BRANCH/protection \
-                      -f allow_deletions=false \
-                      -f required_status_checks=null \
-                      -f enforce_admins=null \
-                      -f required_pull_request_reviews=null \
-                      -f restrictions=null \
-                      --jq '.' 2>&1)
+                      --input - \
+                      <<< "$JSON_PAYLOAD" 2>&1)
                     
                     if [ $? -eq 0 ]; then
-                      echo "✅ Successfully created delete protection for $BRANCH"
+                      echo "✅ API call successful for $BRANCH"
+                      
+                      # Verify protection was actually applied
+                      sleep 2  # Wait a moment for GitHub to process
+                      VERIFY_PROTECTION=$(gh api repos/${{ github.repository }}/branches/$BRANCH/protection 2>/dev/null || echo "{}")
+                      VERIFY_ALLOW_DELETIONS=$(echo "$VERIFY_PROTECTION" | jq -r '.allow_deletions.enabled // true')
+                      
+                      if [ "$VERIFY_ALLOW_DELETIONS" = "false" ]; then
+                        echo "✅ Verified: Delete protection is now enabled for $BRANCH"
+                      else
+                        echo "⚠️  Warning: Delete protection may not be fully applied. Verification shows: allow_deletions=$VERIFY_ALLOW_DELETIONS"
+                        echo "Protection details: $(echo "$VERIFY_PROTECTION" | jq -c '.allow_deletions')"
+                      fi
                     else
                       echo "❌ Failed to create protection for $BRANCH"
                       echo "Error details: $RESULT"
                       echo "⚠️  This may require admin permissions or Personal Access Token (PAT)"
-                      echo "⚠️  Check if ADMIN_PAT secret is configured if GITHUB_TOKEN doesn't work"
                       exit 1
                     fi
                   fi

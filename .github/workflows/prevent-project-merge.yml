@@ -15,12 +15,14 @@ jobs:
           SOURCE_BRANCH="${{ github.head_ref }}"
           
           # Pattern matching: branches matching these patterns cannot be merged into main
-          # Wildcard (*) is supported in bash pattern matching with [[ == ]]
-          if [[ "$SOURCE_BRANCH" == project-* ]] || [[ "$SOURCE_BRANCH" == test-* ]]; then
-            echo "❌ Cannot merge $SOURCE_BRANCH into main"
-            echo "Project branches are intended to be independent."
-            echo "You can still fetch updates from main using: git fetch origin main && git rebase origin/main"
-            exit 1
-          fi
+          # Wildcard (*) is supported in bash case statement
+          case "$SOURCE_BRANCH" in
+            project-*|test-*)
+              echo "❌ Cannot merge $SOURCE_BRANCH into main"
+              echo "Project branches are intended to be independent."
+              echo "You can still fetch updates from main using: git fetch origin main && git rebase origin/main"
+              exit 1
+              ;;
+          esac
           
           echo "✅ Branch $SOURCE_BRANCH can be merged into main"

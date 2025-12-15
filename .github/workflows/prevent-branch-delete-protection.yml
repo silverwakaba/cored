@@ -1,0 +1,149 @@
+name: Enforce Delete Protection on Project Branches
+
+on:
+  # Note: GitHub Actions doesn't have an event for "attempt to delete branch"
+  # The 'delete' event only fires AFTER a branch is deleted (too late)
+  # So we use these triggers instead:
+  
+  push:
+    # Trigger when any branch is pushed (including new branches)
+    # This ensures protection is applied as soon as a branch matching the pattern is created
+    branches-ignore: []
+  
+  create:
+    # Trigger when a new branch or tag is created
+    # This catches branches created via GitHub UI or API
+  
+  workflow_dispatch:
+    # Allow manual trigger for enforcement check
+  
+  schedule:
+    # Safety net: Run daily to verify protection is still active
+    # This ensures protection remains even if manually disabled or branch protection rules are changed
+    # Daily is sufficient because:
+    # - Push/create triggers handle new branches immediately
+    # - Branch protection rules rarely change
+    # - This is a safety net, not the primary protection mechanism
+    # Alternative: Use hourly ('0 * * * *') if you need faster detection
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+
+jobs:
+  enforce-delete-protection:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      administration: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enforce delete protection on project branches
+        env:
+          # GITHUB_TOKEN is automatically provided by GitHub Actions (no setup needed)
+          # However, for administration:write permission, you may need a Personal Access Token (PAT)
+          # 
+          # Option 1: Try GITHUB_TOKEN first (may work if repository settings allow it)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 
+          # Option 2: If GITHUB_TOKEN doesn't have sufficient permissions, create a PAT:
+          # 1. Go to GitHub.com → Settings → Developer settings → Personal access tokens → Tokens (classic)
+          # 2. Generate new token (classic) with scopes: "repo" (Full control of private repositories)
+          # 3. Copy the token
+          # 4. Go to your repository → Settings → Secrets and variables → Actions
+          # 5. Click "New repository secret"
+          # 6. Name: ADMIN_PAT, Value: paste your token
+          # 7. Uncomment the line below and comment the line above
+          # GITHUB_TOKEN: ${{ secrets.ADMIN_PAT }}
+        run: |
+          # Install GitHub CLI if not available
+          if ! command -v gh &> /dev/null; then
+            echo "Installing GitHub CLI..."
+            type -p curl >/dev/null || apt-get update && apt-get install -y curl
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            apt-get update && apt-get install -y gh
+          fi
+          
+          # Authenticate GitHub CLI
+          echo "$GITHUB_TOKEN" | gh auth login --with-token
+          
+          # Branches that MUST have delete protection (using same pattern as prevent-project-merge)
+          # In monorepo, these branches represent individual projects and should be protected
+          
+          # Determine which branch to check based on trigger
+          if [ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "create" ]; then
+            # Check the specific branch that triggered this workflow
+            TRIGGER_BRANCH="${{ github.ref_name }}"
+            echo "Checking triggered branch: $TRIGGER_BRANCH"
+            
+            # Check if it matches the pattern
+            case "$TRIGGER_BRANCH" in
+              project-*|test-*)
+                BRANCHES="$TRIGGER_BRANCH"
+                ;;
+              *)
+                echo "Branch $TRIGGER_BRANCH does not match protected pattern, skipping"
+                exit 0
+                ;;
+            esac
+          else
+            # For manual trigger or schedule: check all branches
+            echo "Checking all branches that should have delete protection..."
+            BRANCHES=$(gh api repos/${{ github.repository }}/branches --jq '.[].name' || echo "")
+            
+            if [ -z "$BRANCHES" ]; then
+              echo "⚠️  No branches found or API access denied"
+              exit 0
+            fi
+          fi
+          
+          for BRANCH in $BRANCHES; do
+            # Check if branch matches protected pattern
+            case "$BRANCH" in
+              project-*|test-*)
+                echo "Checking branch: $BRANCH"
+                
+                # Get branch protection status
+                PROTECTION=$(gh api repos/${{ github.repository }}/branches/$BRANCH/protection 2>/dev/null || echo "{}")
+                
+                # Check if delete protection is enabled (allow_deletions: false means delete protection is ON)
+                ALLOW_DELETIONS=$(echo "$PROTECTION" | jq -r '.allow_deletions.enabled // true')
+                
+                if [ "$ALLOW_DELETIONS" = "true" ]; then
+                  echo "⚠️  Branch $BRANCH does NOT have delete protection"
+                  echo "Enabling delete protection for $BRANCH to prevent accidental deletion..."
+                  
+                  # Enable delete protection (set allow_deletions to false)
+                  # Preserve existing protection settings if any
+                  if [ "$PROTECTION" != "{}" ]; then
+                    # Branch has existing protection, update only allow_deletions
+                    gh api \
+                      -X PUT \
+                      repos/${{ github.repository }}/branches/$BRANCH/protection \
+                      -f allow_deletions=false \
+                      --jq '.' && echo "✅ Successfully enabled delete protection for $BRANCH" || echo "❌ Failed to update protection for $BRANCH (may require admin permissions or Personal Access Token)"
+                  else
+                    # Branch has no protection, create minimal protection with delete protection only
+                    gh api \
+                      -X PUT \
+                      repos/${{ github.repository }}/branches/$BRANCH/protection \
+                      -f allow_deletions=false \
+                      -f required_status_checks=null \
+                      -f enforce_admins=null \
+                      -f required_pull_request_reviews=null \
+                      -f restrictions=null \
+                      --jq '.' && echo "✅ Successfully created delete protection for $BRANCH" || echo "❌ Failed to create protection for $BRANCH (may require admin permissions or Personal Access Token)"
+                  fi
+                else
+                  echo "✅ Branch $BRANCH already has delete protection enabled"
+                fi
+                ;;
+              *)
+                # Skip branches that don't match pattern
+                ;;
+            esac
+          done
+          
+          echo ""
+          echo "Summary: All project branches (project-*, test-*) should now be protected from deletion."

@@ -54,8 +54,8 @@ jobs:
           # 6. Name: ADMIN_PAT, Value: paste your token
           # 7. Uncomment the line below and comment/remove the GITHUB_TOKEN line above
           # 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Try this first, but it likely won't work
-          # GITHUB_TOKEN: ${{ secrets.ADMIN_PAT }}  # Uncomment this and comment line above after creating PAT
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Try this first, but it likely won't work, doesn't works
+          GITHUB_TOKEN: ${{ secrets.ADMIN_PAT }}  # Uncomment this and comment line above after creating PAT
         run: |
           # Install GitHub CLI if not available
           if ! command -v gh &> /dev/null; then

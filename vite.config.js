@@ -5,7 +5,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                // Adminlte 3
+                // Custom Bootstrap 4
                 'resources/css/custom-bs4.css', 'resources/js/custom-bs4.js',
 
                 // Other theme

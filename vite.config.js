@@ -6,7 +6,7 @@ export default defineConfig({
         laravel({
             input: [
                 // Adminlte 3
-                'resources/css/adminlte3.css', 'resources/js/adminlte3.js',
+                'resources/css/custom-bs4.css', 'resources/js/custom-bs4.js',
 
                 // Other theme
 

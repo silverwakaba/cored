@@ -20,15 +20,18 @@ class BaseRequestSeeder extends Seeder{
         BaseRequest::insert([
             [
                 'base_modules_id' => $authenticationModule->id,
-                'name' => "Email Verification"
+                'name' => "Email Verification",
+                'value' => 'email_verification'
             ],
             [
                 'base_modules_id' => $accountManagementModule->id,
-                'name' => "Email Change"
+                'name' => "Email Change",
+                'value' => 'email_change'
             ],
             [
                 'base_modules_id' => $authenticationModule->id,
-                'name' => "Password Reset"
+                'name' => "Password Reset",
+                'value' => 'password_reset'
             ],
         ]);
     }

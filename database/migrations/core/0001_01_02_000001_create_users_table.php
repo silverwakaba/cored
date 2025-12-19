@@ -13,11 +13,11 @@ return new class extends Migration{
             $table->ulid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->mediumText('token')->nullable();
             $table->dateTime('token_expire_at')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });
 

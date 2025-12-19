@@ -203,4 +203,3 @@ $this->loadMigrationsFrom([
 - Project controllers are organized in `app/Http/Controllers/Project/` with subdirectories (API, FE, Cron) matching the Core structure
 - Migrations must be explicitly loaded in `AppServiceProvider` as Laravel doesn't auto-scan subdirectories
 - View paths are explicitly configured in `AppServiceProvider` to prioritize core views
-

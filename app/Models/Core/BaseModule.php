@@ -14,7 +14,7 @@ class BaseModule extends Model{
     ];
 
     // Has many base requests
-    public function hasManyBaseRequests(){
+    public function baseRequests(){
         return $this->hasMany(BaseRequest::class, 'base_modules_id', 'id');
     }
 }

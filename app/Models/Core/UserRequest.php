@@ -15,11 +15,11 @@ class UserRequest extends Model{
         'token',
     ];
 
-    public function belongsToUser(){
+    public function user(){
         return $this->belongsTo(User::class, 'users_id', 'id')->select('id', 'name', 'email');
     }
 
-    public function belongsToBaseRequest(){
+    public function baseRequest(){
         return $this->belongsTo(BaseRequest::class, 'base_requests_id', 'id')->select('id', 'name');
     }
 }

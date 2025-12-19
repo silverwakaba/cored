@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Core\API\Core\Shared;
+namespace App\Http\Controllers\Core\API\Shared;
 use App\Http\Controllers\Core\Controller;
 
 // Repository interface

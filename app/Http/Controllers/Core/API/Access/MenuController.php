@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Core\API\Core\Access;
+namespace App\Http\Controllers\Core\API\Access;
 use App\Http\Controllers\Core\Controller;
 
 // Repository interface

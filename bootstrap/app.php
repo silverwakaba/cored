@@ -7,16 +7,16 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: [
-            __DIR__.'/../routes/core/web.php', // core (boilerplate)
-            __DIR__.'/../routes/web.php',      // feature overrides/extensions
+            __DIR__.'/../routes/core/web.php',          // core (boilerplate)
+            __DIR__.'/../routes/project/web.php',       // feature overrides/extensions
         ],
         api: [
-            __DIR__.'/../routes/core/api.php', // core (boilerplate)
-            __DIR__.'/../routes/api.php',      // feature overrides/extensions
+            __DIR__.'/../routes/core/api.php',          // core (boilerplate)
+            __DIR__.'/../routes/project/api.php',       // feature overrides/extensions
         ],
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
-        health: '/is-up',
+        health: '/watsup',
     )
     ->withMiddleware(function(Middleware $middleware){
         // Alias middleware

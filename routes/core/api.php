@@ -3,12 +3,12 @@
 use Illuminate\Support\Facades\Route;
 
 // Controller
-use App\Http\Controllers\Core\API\Core\Auth\JwtController;
-use App\Http\Controllers\Core\API\Core\Access\MenuController;
-use App\Http\Controllers\Core\API\Core\Access\PermissionController;
-use App\Http\Controllers\Core\API\Core\Access\RoleController;
-use App\Http\Controllers\Core\API\Core\Access\UserAccessController;
-use App\Http\Controllers\Core\API\Core\Shared\CallToActionController;
+use App\Http\Controllers\Core\API\Auth\JwtController;
+use App\Http\Controllers\Core\API\Access\MenuController;
+use App\Http\Controllers\Core\API\Access\PermissionController;
+use App\Http\Controllers\Core\API\Access\RoleController;
+use App\Http\Controllers\Core\API\Access\UserAccessController;
+use App\Http\Controllers\Core\API\Shared\CallToActionController;
 
 // API routing
 Route::prefix('/')->name('be.')->group(function(){

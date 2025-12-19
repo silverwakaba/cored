@@ -3,12 +3,12 @@
 use Illuminate\Support\Facades\Route;
 
 // Core Controller
-use App\Http\Controllers\Core\FE\Core\Access\PermissionController;
-use App\Http\Controllers\Core\FE\Core\Access\RoleController;
-use App\Http\Controllers\Core\FE\Core\Access\UserAccessController;
-use App\Http\Controllers\Core\FE\Core\Auth\GeneralAuthController;
-use App\Http\Controllers\Core\FE\Core\Shared\BasedataController;
-use App\Http\Controllers\Core\FE\Core\Shared\CallToActionController;
+use App\Http\Controllers\Core\FE\Access\PermissionController;
+use App\Http\Controllers\Core\FE\Access\RoleController;
+use App\Http\Controllers\Core\FE\Access\UserAccessController;
+use App\Http\Controllers\Core\FE\Auth\GeneralAuthController;
+use App\Http\Controllers\Core\FE\Shared\BasedataController;
+use App\Http\Controllers\Core\FE\Shared\CallToActionController;
 
 // General Controller
 use App\Http\Controllers\Core\FE\PageController;

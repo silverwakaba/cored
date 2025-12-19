@@ -35,7 +35,10 @@ routes/
 │   ├── web.php              # Core web routes
 │   ├── api.php              # Core API routes
 │   └── breadcrumbs.php      # Core breadcrumbs
-├── breadcrumbs.php          # Project breadcrumbs
+├── project/
+│   ├── web.php              # Project web routes (feature overrides/extensions)
+│   ├── api.php              # Project API routes (feature overrides/extensions)
+│   └── breadcrumbs.php     # Project breadcrumbs
 ├── channels.php             # Broadcast channels (core)
 └── console.php             # Console commands schedule (core)
 
@@ -50,7 +53,10 @@ app/
 ├── Contracts/Project/        # Project-specific interfaces
 ├── Repositories/Project/     # Project-specific repositories
 ├── Models/Project/           # Project-specific models
-├── Http/Controllers/        # Project-specific controllers (outside Core/)
+├── Http/Controllers/Project/ # Project-specific controllers
+│   ├── API/                  # Project API controllers
+│   ├── FE/                   # Project frontend controllers
+│   └── Cron/                 # Project cron controllers
 └── [Other project-specific code]
 
 database/
@@ -58,8 +64,10 @@ database/
 └── seeders/project/          # Project seeders
 
 routes/
-├── web.php                   # Project web routes
-└── api.php                   # Project API routes
+└── project/
+    ├── web.php               # Project web routes (feature overrides/extensions)
+    ├── api.php               # Project API routes (feature overrides/extensions)
+    └── breadcrumbs.php       # Project breadcrumbs
 
 resources/
 └── views/                    # Project-specific views (outside core/)
@@ -86,7 +94,7 @@ resources/
 - Models: `App\Models\Project\...`
 - Repositories: `App\Repositories\Project\...`
 - Contracts: `App\Contracts\Project\...`
-- Controllers: `App\Http\Controllers\...` (or custom namespace)
+- Controllers: `App\Http\Controllers\Project\...` (API, FE, Cron subdirectories)
 - Seeders: `Database\Seeders\Project\...`
 
 ## Migration Strategy
@@ -104,29 +112,47 @@ resources/
 - Rule: Safe to add/modify
 
 ### Execution Order
-Laravel automatically sorts migrations by timestamp, ensuring:
+Migrations are explicitly loaded from both directories in `AppServiceProvider` using `loadMigrationsFrom()`. Laravel automatically sorts migrations by timestamp, ensuring:
 1. Core migrations run first (old timestamps)
 2. Project migrations run after (current timestamps)
 3. New core migrations can be added later with old timestamps and will run in correct order
 
+**Note:** Laravel doesn't automatically scan subdirectories for migrations, so migrations must be explicitly loaded in `AppServiceProvider::boot()` method.
+
 ## Route Loading
 
-Routes are loaded in this order:
-1. `routes/core/web.php` (core web routes)
-2. `routes/web.php` (project web routes)
-3. `routes/core/api.php` (core API routes)
-4. `routes/api.php` (project API routes)
+Routes are configured in `bootstrap/app.php` using Laravel 11's `withRouting()` method and loaded in this order:
+1. `routes/core/web.php` (core web routes - boilerplate)
+2. `routes/project/web.php` (project web routes - feature overrides/extensions)
+3. `routes/core/api.php` (core API routes - boilerplate)
+4. `routes/project/api.php` (project API routes - feature overrides/extensions)
+
+**Note:** Project routes are loaded after core routes, allowing project routes to override or extend core routes.
 
 ## View Resolution
 
-Views are resolved in this order:
+Views are configured in `AppServiceProvider::boot()` method and resolved in this order:
 1. `resources/views/core/` (core views - prioritized)
 2. `resources/views/` (project views - fallback)
 
-## Service Provider Bindings
+**Note:** View paths are explicitly set using `$this->app['config']->set('view.paths', [...])` to ensure core views are prioritized.
 
-Core contracts are bound to core repositories in `AppServiceProvider`:
+## Service Provider Configuration
+
+### Contract Bindings
+Core contracts are bound to core repositories in `AppServiceProvider::register()`:
 - `App\Contracts\Core\*Interface` → `App\Repositories\Core\*Repository`
+
+### Migration Loading
+Migrations are explicitly loaded in `AppServiceProvider::boot()` using:
+```php
+$this->loadMigrationsFrom([
+    database_path('migrations/core'),
+    database_path('migrations/project'),
+]);
+```
+
+**Note:** This is required because Laravel doesn't automatically scan subdirectories for migrations.
 
 ## Best Practices
 
@@ -155,10 +181,12 @@ Core contracts are bound to core repositories in `AppServiceProvider`:
 - [x] All core console commands in `app/Console/Commands/Core/`
 - [x] All core factories in `database/factories/Core/`
 - [x] Core breadcrumbs in `routes/core/breadcrumbs.php`
+- [x] Project breadcrumbs in `routes/project/breadcrumbs.php`
 - [x] All core seeders in `database/seeders/core/`
 - [x] All core migrations in `database/migrations/core/`
 - [x] All core routes in `routes/core/`
 - [x] All core views in `resources/views/core/`
+- [x] Project controllers directory structure in `app/Http/Controllers/Project/` (API, FE, Cron)
 - [x] All namespaces updated correctly
 - [x] Service provider bindings updated
 - [x] Config files updated (auth.php, etc.)
@@ -171,4 +199,7 @@ Core contracts are bound to core repositories in `AppServiceProvider`:
 - View Components remain at `app/View/Components/` (not in Core) as they're framework-level components
 - Console Commands are located at `app/Console/Commands/Core/` with namespace `App\Console\Commands\Core\...`
 - Project-specific versions can be added in Project directories when needed
-
+- Routes are now organized in `routes/project/` directory instead of root `routes/` directory for better separation
+- Project controllers are organized in `app/Http/Controllers/Project/` with subdirectories (API, FE, Cron) matching the Core structure
+- Migrations must be explicitly loaded in `AppServiceProvider` as Laravel doesn't auto-scan subdirectories
+- View paths are explicitly configured in `AppServiceProvider` to prioritize core views

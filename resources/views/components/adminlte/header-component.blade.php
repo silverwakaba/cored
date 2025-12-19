@@ -8,34 +8,29 @@
                 <a class="nav-link" href="{{ route('fe.page.auth') }}">Auth</a>
             </li>
         @endguest
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('fe.page.cta') }}">CTA</a>
-        </li>
     </ul>
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge">15</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <span class="dropdown-item dropdown-header">15 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                    <i class="fas fa-envelope mr-2"></i> 4 new messages
-                    <span class="float-right text-muted text-sm">3 mins</span>
+    @auth
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="far fa-bell"></i>
+                    <span class="badge badge-warning navbar-badge">15</span>
                 </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-            </div>
-        </li>
-        @auth
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <span class="dropdown-item dropdown-header">15 Notifications</span>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-envelope mr-2"></i> 4 new messages
+                        <span class="float-right text-muted text-sm">3 mins</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+                </div>
+            </li>
             <li class="nav-item">
                 <a href="javascript:void(0);" onclick="document.getElementById('myLogoutForm').submit();" class="nav-link">Logout</a>
             </li>
-        @endauth
-    </ul>
-    @auth
+        </ul>
         <form id="myLogoutForm" action="{{ route('fe.auth.logout') }}" method="POST" class="d-none">
             <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly />
         </form>

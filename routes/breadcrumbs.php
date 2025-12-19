@@ -1,8 +1,5 @@
 <?php
 
-/**
- * Project Breadcrumbs
- * Add project-specific breadcrumbs here
- */
+use Diglactic\Breadcrumbs\Breadcrumbs;
+use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
-// Project breadcrumbs can be added here

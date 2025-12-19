@@ -20,6 +20,7 @@ return new class extends Migration{
             $table->id();
             $table->foreignId('base_modules_id')->references('id')->on('base_modules')->onDelete('cascade');
             $table->string('name');
+            $table->boolean('is_active')->default(true);
         });
     }
 

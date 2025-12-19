@@ -42,10 +42,20 @@ class MenuSeeder extends Seeder{
 
         // Create header
         $headerApps = Menu::create([
-            'name'              => 'Apps',
+            'name'              => 'App',
             'type'              => 'h',
             'order'             => $headerGeneral->order + 1,
             'is_authenticate'   => true,
+        ]);
+
+        // Create parent - General Apps
+        $childGeneral = Menu::create([
+            'name'      => 'Apps',
+            'icon'      => 'fas fa-home',
+            'route'     => 'fe.apps.index',
+            'type'      => 'p',
+            'parent_id' => $headerApps->id,
+            'order'     => 1,
         ]);
 
         // Create parent - RBAC
@@ -84,9 +94,11 @@ class MenuSeeder extends Seeder{
             'order'     => $childAppsRBACPermission->order + 1,
         ]);
 
-        // Assign roles to menu items
-        $parentAppsRBAC->roles()->attach([1,2,3]);
+        /**
+         * Assign roles to menu items
+        */
+
+        // App - RBAC
+        $parentAppsRBAC->roles()->attach([1, 2, 3]);
     }
 }
-
-

@@ -4,7 +4,8 @@ namespace App\Models\Project;
 
 use App\Models\Core\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\\Eloquent\\Concerns\\HasUlids;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Support\Facades\Crypt;
 
 class TwoFactorAuthSetting extends Model
 {
@@ -33,6 +34,19 @@ class TwoFactorAuthSetting extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Encryption Accessors & Mutators for sensitive fields
+
+    // Secret Key
+    public function getSecretKeyEncryptedAttribute($value)
+    {
+        return $value ? Crypt::decryptString($value) : null;
+    }
+
+    public function setSecretKeyEncryptedAttribute($value)
+    {
+        $this->attributes['secret_key_encrypted'] = $value ? Crypt::encryptString($value) : null;
     }
 }
 

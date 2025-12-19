@@ -3,7 +3,8 @@
 namespace App\Models\Project;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\\Eloquent\\Concerns\\HasUlids;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Support\Facades\Crypt;
 
 class PayrollEntry extends Model
 {
@@ -19,9 +20,7 @@ class PayrollEntry extends Model
     ];
 
     protected $casts = [
-        'base_salary' => 'decimal:2',
-        'gross_salary' => 'decimal:2',
-        'net_salary' => 'decimal:2',
+        // Salary fields are encrypted, so don't cast them as decimal
     ];
 
     // Relations
@@ -58,6 +57,71 @@ class PayrollEntry extends Model
     public function payslip()
     {
         return $this->hasOne(Payslip::class, 'payroll_entry_id');
+    }
+
+    // Encryption Accessors & Mutators for sensitive fields
+
+    // Base Salary
+    public function getBaseSalaryAttribute($value)
+    {
+        if (!$value) return null;
+        try {
+            $decrypted = Crypt::decryptString($value);
+            return (float) $decrypted;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function setBaseSalaryAttribute($value)
+    {
+        if ($value !== null) {
+            $this->attributes['base_salary'] = Crypt::encryptString((string) $value);
+        } else {
+            $this->attributes['base_salary'] = null;
+        }
+    }
+
+    // Gross Salary
+    public function getGrossSalaryAttribute($value)
+    {
+        if (!$value) return null;
+        try {
+            $decrypted = Crypt::decryptString($value);
+            return (float) $decrypted;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function setGrossSalaryAttribute($value)
+    {
+        if ($value !== null) {
+            $this->attributes['gross_salary'] = Crypt::encryptString((string) $value);
+        } else {
+            $this->attributes['gross_salary'] = null;
+        }
+    }
+
+    // Net Salary
+    public function getNetSalaryAttribute($value)
+    {
+        if (!$value) return null;
+        try {
+            $decrypted = Crypt::decryptString($value);
+            return (float) $decrypted;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function setNetSalaryAttribute($value)
+    {
+        if ($value !== null) {
+            $this->attributes['net_salary'] = Crypt::encryptString((string) $value);
+        } else {
+            $this->attributes['net_salary'] = null;
+        }
     }
 }
 

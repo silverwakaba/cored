@@ -4,7 +4,8 @@ namespace App\Models\Project;
 
 use App\Models\Core\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\\Eloquent\\Concerns\\HasUlids;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Support\Facades\Crypt;
 
 class ApiClient extends Model
 {
@@ -42,6 +43,27 @@ class ApiClient extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    // Encryption Accessors & Mutators for sensitive fields
+    // Note: api_key_hashed field name suggests hashing, but for API keys that need to be retrieved,
+    // encryption is more appropriate. Consider migrating existing hashed values to encrypted.
+
+    // API Key (encrypted instead of hashed for retrieval purposes)
+    public function getApiKeyHashedAttribute($value)
+    {
+        if (!$value) return null;
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Exception $e) {
+            // If decryption fails, might be old hashed value - return null
+            return null;
+        }
+    }
+
+    public function setApiKeyHashedAttribute($value)
+    {
+        $this->attributes['api_key_hashed'] = $value ? Crypt::encryptString($value) : null;
     }
 }
 

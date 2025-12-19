@@ -4,7 +4,8 @@ namespace App\Models\Project;
 
 use App\Models\Core\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\\Eloquent\\Concerns\\HasUlids;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Support\Facades\Crypt;
 
 class OfferLetter extends Model
 {
@@ -27,7 +28,7 @@ class OfferLetter extends Model
     ];
 
     protected $casts = [
-        'offered_salary' => 'decimal:2',
+        // offered_salary is encrypted, so don't cast it as decimal
         'start_date' => 'date',
         'offer_validity_date' => 'date',
         'accepted_at' => 'datetime',
@@ -53,6 +54,29 @@ class OfferLetter extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    // Encryption Accessors & Mutators for sensitive fields
+
+    // Offered Salary
+    public function getOfferedSalaryAttribute($value)
+    {
+        if (!$value) return null;
+        try {
+            $decrypted = Crypt::decryptString($value);
+            return (float) $decrypted;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function setOfferedSalaryAttribute($value)
+    {
+        if ($value !== null) {
+            $this->attributes['offered_salary'] = Crypt::encryptString((string) $value);
+        } else {
+            $this->attributes['offered_salary'] = null;
+        }
     }
 }
 

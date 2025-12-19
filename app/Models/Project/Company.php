@@ -6,6 +6,7 @@ use App\Models\Core\User;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
 class Company extends Model
 {
     use HasUlids, SoftDeletes;
@@ -82,6 +83,30 @@ class Company extends Model
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    // Encryption Accessors & Mutators for sensitive fields
+
+    // Tax ID
+    public function getTaxIdAttribute($value)
+    {
+        return $value ? Crypt::decryptString($value) : null;
+    }
+
+    public function setTaxIdAttribute($value)
+    {
+        $this->attributes['tax_id'] = $value ? Crypt::encryptString($value) : null;
+    }
+
+    // Registration Number
+    public function getRegistrationNumberAttribute($value)
+    {
+        return $value ? Crypt::decryptString($value) : null;
+    }
+
+    public function setRegistrationNumberAttribute($value)
+    {
+        $this->attributes['registration_number'] = $value ? Crypt::encryptString($value) : null;
     }
 }
 

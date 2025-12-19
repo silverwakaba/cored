@@ -4,7 +4,7 @@ namespace App\Models\Project;
 
 use App\Models\Core\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\\Eloquent\\Concerns\\HasUlids;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class Document extends Model
 {

@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder{
         // Run core seeders first
         $this->call(\Database\Seeders\Core\DatabaseSeeder::class);
         
-        // Add project-specific seeders here
-        // $this->call(\Database\Seeders\Project\YourProjectSeeder::class);
+        // Run project-specific seeders afterwards
+        $this->call(\Database\Seeders\Project\DatabaseSeeder::class);
     }
 }

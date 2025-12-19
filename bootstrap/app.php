@@ -14,14 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__.'/../routes/core/api.php',          // core (boilerplate)
             __DIR__.'/../routes/project/api.php',       // feature overrides/extensions
         ],
-        commands: [
-            __DIR__.'/../routes/core/console.php',      // core (boilerplate)
-            __DIR__.'/../routes/project/console.php',   // feature overrides/extensions
-        ],
-        channels: [
-            __DIR__.'/../routes/core/channels.php',     // core (boilerplate)
-            __DIR__.'/../routes/project/channels.php',  // feature overrides/extensions
-        ],
+        commands: __DIR__.'/../routes/console.php',
+        channels: __DIR__.'/../routes/channels.php',
         health: '/watsup',
     )
     ->withMiddleware(function(Middleware $middleware){

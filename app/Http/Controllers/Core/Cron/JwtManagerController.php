@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Core\Cron;
-use App\Http\Controllers\Core\Controller;
+use App\Http\Controllers\Controller;
 
 // Model
 use App\Models\Core\User;

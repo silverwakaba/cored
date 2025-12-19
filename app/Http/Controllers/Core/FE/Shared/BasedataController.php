@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Core\FE\Shared;
-use App\Http\Controllers\Core\Controller;
+use App\Http\Controllers\Controller;
 
 // Repository interface
 use App\Contracts\Core\ApiRepositoryInterface;

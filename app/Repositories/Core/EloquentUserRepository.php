@@ -125,7 +125,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         return DB::transaction(function() use($id){
             // Search the token
             $datas = UserRequest::with([
-                'belongsToUser',
+                'user',
             ])->select(['id', 'users_id', 'token'])->where([
                 ['base_requests_id', '=', 1],
                 ['token', '=', $id],
@@ -142,7 +142,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
                 ]);
 
                 // User data
-                $user = $datas->belongsToUser;
+                $user = $datas->user;
 
                 // Update verification date
                 $user->update([
@@ -213,7 +213,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         // If the user exist
         if($datas){
             // Include the request to the logic
-            $requests = $datas->hasManyUserRequests()->where([
+            $requests = $datas->userRequests()->where([
                 ['base_requests_id', '=', $request],
                 ['users_id', '=', $datas['id']],
             ])->whereNotNull('token');
@@ -271,7 +271,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         return DB::transaction(function() use($data){
             // Search the token
             $datas = UserRequest::with([
-                'belongsToUser',
+                'user',
             ])->select(['id', 'users_id', 'token'])->where([
                 ['base_requests_id', '=', 3],
                 ['token', '=', $data['token']],
@@ -288,7 +288,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
                 ]);
 
                 // User data
-                $user = $datas->belongsToUser;
+                $user = $datas->user;
 
                 // Update password date
                 $user->update([

@@ -19,12 +19,12 @@ class BaseRequest extends Model{
     ];
 
     // Belong to base module
-    public function belongsToBaseModule(){
+    public function baseModule(){
         return $this->belongsTo(BaseModule::class, 'base_modules_id', 'id')->select('id', 'name');
     }
 
     // Has many user requests
-    public function hasManyUserRequests(){
+    public function userRequests(){
         return $this->hasMany(UserRequest::class, 'base_requests_id', 'id');
     }
 }

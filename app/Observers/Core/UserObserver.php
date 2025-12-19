@@ -23,7 +23,7 @@ class UserObserver{
         // Implementing db transaction
         DB::transaction(function() use($user){
             // Create token request
-            $request = $user->hasManyUserRequests()->create([
+            $request = $user->userRequests()->create([
                 'base_requests_id'  => 1,
                 'users_id'          => $user->id,
                 'token'             => GeneralHelper::randomToken(),

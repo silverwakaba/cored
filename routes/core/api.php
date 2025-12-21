@@ -15,34 +15,34 @@ Route::prefix('/')->name('be.')->group(function(){
     // Core
     Route::prefix('core')->name('core.')->group(function(){
         // CTA
-        Route::prefix('cta')->name('cta.')->controller(CallToActionController::class)->group(function(){
-            // Messages
-            Route::post('message', 'message')->name('message');
+        Route::prefix('cta')->name('cta.')->middleware(['throttle:general'])->controller(CallToActionController::class)->group(function(){
+            // Messages - 10 attempts per 5 minutes to prevent spam
+            Route::post('message', 'message')->name('message')->middleware(['throttle:10,5']);
         });
 
         // Auth
         Route::prefix('auth')->name('auth.')->group(function(){
             // JWT Auth
             Route::prefix('jwt')->name('jwt.')->controller(JwtController::class)->group(function(){
-                // Register
-                Route::post('register', 'register')->name('register');
+                // Register - 3 attempts per 15 minutes
+                Route::post('register', 'register')->name('register')->middleware(['throttle:3,15']);
 
-                // Login
-                Route::post('login', 'login')->name('login');
+                // Login - 5 attempts per 15 minutes
+                Route::post('login', 'login')->name('login')->middleware(['throttle:5,15']);
 
                 // Logout
-                Route::post('logout', 'logout')->name('logout')->middleware(['jwt.be']);
+                Route::post('logout', 'logout')->name('logout')->middleware(['jwt.be', 'throttle:api']);
 
-                // Verify account
-                Route::post('verify-account', 'verifyAccount')->name('verify-account');
-                Route::post('verify-account/{token}', 'verifyAccountTokenized')->name('verify-account-tokenized');
+                // Verify account - 3 attempts per 10 minutes
+                Route::post('verify-account', 'verifyAccount')->name('verify-account')->middleware(['throttle:3,10']);
+                Route::post('verify-account/{token}', 'verifyAccountTokenized')->name('verify-account-tokenized')->middleware(['throttle:3,10']);
 
-                // Reset password
-                Route::post('reset-password', 'resetPassword')->name('reset-password');
-                Route::post('reset-password/{token}', 'resetPasswordTokenized')->name('reset-password-tokenized');
+                // Reset password - 3 attempts per 10 minutes
+                Route::post('reset-password', 'resetPassword')->name('reset-password')->middleware(['throttle:3,10']);
+                Route::post('reset-password/{token}', 'resetPasswordTokenized')->name('reset-password-tokenized')->middleware(['throttle:3,10']);
 
                 // JWT Token
-                Route::prefix('token')->name('token.')->middleware(['jwt.be'])->group(function(){
+                Route::prefix('token')->name('token.')->middleware(['jwt.be', 'throttle:api'])->group(function(){
                     // Validate
                     Route::get('validate', 'validateToken')->name('validate');
 
@@ -53,7 +53,7 @@ Route::prefix('/')->name('be.')->group(function(){
         });
 
         // Menu
-        Route::prefix('menu')->name('menu.')->controller(MenuController::class)->group(function(){
+        Route::prefix('menu')->name('menu.')->middleware(['throttle:api'])->controller(MenuController::class)->group(function(){
             // Index
             Route::get('/', 'index')->name('index');
 
@@ -62,7 +62,7 @@ Route::prefix('/')->name('be.')->group(function(){
         });
 
         // Role-based access control
-        Route::prefix('rbac')->name('rbac.')->middleware(['jwt.be', 'role:Root|Admin|Moderator'])->group(function(){
+        Route::prefix('rbac')->name('rbac.')->middleware(['jwt.be', 'role:Root|Admin|Moderator', 'throttle:sensitive'])->group(function(){
             // Role
             Route::prefix('role')->name('role.')->controller(RoleController::class)->group(function(){
                 // List
@@ -123,9 +123,4 @@ Route::prefix('/')->name('be.')->group(function(){
             });
         });
     });
-
-    // // Feature outside core component (e.g: new project under cored branch as monorepo)
-    // Route::prefix('feature')->name('feature.')->group(function(){
-    //     // 
-    // });
 });

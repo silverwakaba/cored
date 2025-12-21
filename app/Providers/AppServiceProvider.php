@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AppServiceProvider extends ServiceProvider{
     /**
@@ -47,5 +50,68 @@ class AppServiceProvider extends ServiceProvider{
             database_path('migrations/core'),
             database_path('migrations/project'),
         ]);
+
+        // Configure Rate Limiters
+        $this->configureRateLimiters();
+    }
+
+    /**
+     * Configure rate limiters for API
+     * 
+     * Best Practice: Use named rate limiters with Laravel's throttle middleware
+     * Format: ->middleware('throttle:limiter') or ->middleware('throttle:attempts,decayMinutes')
+     */
+    protected function configureRateLimiters() : void{
+        // Rate limiter for general API endpoints
+        RateLimiter::for('api', function (Request $request) {
+            // Authenticated: 120 requests/minute, Guests: 60 requests/minute
+            return Limit::perMinute($request->user() ? 120 : 60)
+                ->by($request->user() ? $request->user()->id : $request->ip())
+                ->response(function (Request $request, array $headers) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You reached request limit. Please try again later.',
+                    ], 429)->withHeaders($headers);
+                });
+        });
+
+        // Rate limiter for authentication endpoints (stricter)
+        RateLimiter::for('auth', function (Request $request) {
+            // 5 attempts per minute per IP
+            return Limit::perMinute(5)
+                ->by($request->ip())
+                ->response(function (Request $request, array $headers) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many authentication attempts. Please try again later.',
+                    ], 429)->withHeaders($headers);
+                });
+        });
+
+        // Rate limiter for sensitive operations (RBAC, etc.)
+        RateLimiter::for('sensitive', function (Request $request) {
+            // 30 requests per minute
+            return Limit::perMinute(30)
+                ->by($request->user() ? $request->user()->id : $request->ip())
+                ->response(function (Request $request, array $headers) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Too many requests for this operation. Please slow down.',
+                    ], 429)->withHeaders($headers);
+                });
+        });
+
+        // Rate limiter for general/public endpoints
+        RateLimiter::for('general', function (Request $request) {
+            // Authenticated: 100 requests/minute, Guests: 30 requests/minute
+            return Limit::perMinute($request->user() ? 100 : 30)
+                ->by($request->user() ? $request->user()->id : $request->ip())
+                ->response(function (Request $request, array $headers) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You reached request limit. Please try again later.',
+                    ], 429)->withHeaders($headers);
+                });
+        });
     }
 }

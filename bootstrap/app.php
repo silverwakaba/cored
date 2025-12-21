@@ -34,8 +34,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'jwt.global'            => \App\Http\Middleware\Core\JwtAuthGlobalMiddleware::class,
             'jwt.guest'             => \App\Http\Middleware\Core\JwtAuthGuestMiddleware::class,
 
-            // Custom rate limiter
-            'request.limiter'       => \App\Http\Middleware\Core\RateLimitMiddleware::class,
+            // Rate limit headers (optional, untuk menambahkan headers ke response)
+            'rate.limit.headers'    => \App\Http\Middleware\Core\RateLimitHeadersMiddleware::class,
+            
+            // Bypass rate limit untuk internal requests (optional)
+            'rate.limit.bypass'     => \App\Http\Middleware\Core\BypassRateLimitMiddleware::class,
 
             // Blade minify
             'minify.blade'          => \App\Http\Middleware\Core\MinifyBladeMiddleware::class,

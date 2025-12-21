@@ -81,11 +81,6 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
         // Page apps
         Route::get('/', [PageController::class, 'app'])->name('index');
 
-        // // Feature outside core component (e.g: new project under cored branch as monorepo)
-        // Route::prefix('feature')->name('feature.')->group(function(){
-        //     // 
-        // });
-
         // Role-Based Access Control (core - do not touch)
         Route::prefix('rbac')->name('rbac.')->middleware(['role:Root|Admin|Moderator'])->group(function(){
             // Index

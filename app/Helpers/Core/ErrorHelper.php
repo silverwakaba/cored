@@ -37,10 +37,16 @@ class ErrorHelper{
     }
 
     // Throw default rate-limiter for API
-    public static function apiErrorLimiterResult(){
+    public static function apiErrorLimiterResult(array $headers = []){
+        $defaultHeaders = [
+            'X-RateLimit-Limit' => $headers['X-RateLimit-Limit'] ?? 60,
+            'X-RateLimit-Remaining' => $headers['X-RateLimit-Remaining'] ?? 0,
+            'Retry-After' => $headers['Retry-After'] ?? 60,
+        ];
+
         return response()->json([
             'success'   => false,
-            'message'   => "You reached request limit.",
-        ], 429);
+            'message'   => "You reached request limit. Please try again later.",
+        ], 429)->withHeaders(array_merge($defaultHeaders, $headers));
     }
 }

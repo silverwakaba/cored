@@ -20,8 +20,8 @@ class UserRequestResource extends JsonResource{
                 'base_request_id'   => $this->whenNotNull($this->base_request_id),
             ],
             'relation'  => [
-                'user'      => new \App\Http\Resources\Core\UserResource($this->whenLoaded('belongsToUser')),
-                'request'   => new \App\Http\Resources\Core\BaseRequestResource($this->whenLoaded('belongsToBaseRequest')),
+                'user'      => new \App\Http\Resources\Core\UserResource($this->whenLoaded('user')),
+                'request'   => new \App\Http\Resources\Core\BaseRequestResource($this->whenLoaded('baseRequest')),
             ],
         ];
     }

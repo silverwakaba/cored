@@ -20,7 +20,7 @@ class UserCtaMessage extends Model{
         'attachment' => 'array',
     ];
 
-    public function belongsToUser(){
+    public function user(){
         return $this->belongsTo(User::class, 'users_id', 'id')->select('id', 'name', 'email');
     }
 }

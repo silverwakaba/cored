@@ -3,12 +3,23 @@ $('#{{ $id }}').DataTable({
     ordering: false,
     processing: true,
     serverSide: true,
-    searchDelay: 1500,
+    searchDelay: 1500, // (1500ms delay)
     ajax: {
         type: '{{ $method }}',
         data: function(d){
-            // Pass parameter
+            // Pass parameter type
             d.type = 'datatable';
+            
+            // Pass all filter parameters (filter, filter-name, filter-role, filter2, etc.)
+            // Selector akan cocok dengan semua input yang name-nya dimulai dengan "filter"
+            $('input[name^="filter"]').each(function(){
+                let filterName = $(this).attr('name');
+                let filterValue = $(this).val();
+
+                if(filterValue && filterValue.trim() !== ''){
+                    d[filterName] = filterValue.trim();
+                }
+            });
         },
         url: '{{ $tableUrl }}',
         error: function(response){
@@ -37,7 +48,9 @@ $('#{{ $id }}').DataTable({
                     <div class="btn-group btn-block" role="group">
                         <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Action</button>
                         <div class="dropdown-menu btn-block">
-                            <button id="btn-upsert" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-pen-to-square mr-2"></i>Edit</button>
+                            @if($deleteUrl)
+                                <button id="btn-upsert" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-pen-to-square mr-2"></i>Edit</button>
+                            @endif
                             @if($deleteUrl)
                                 <button id="btn-delete-{{ $id }}" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-trash mr-2"></i>Delete</button>
                             @endif
@@ -126,3 +139,22 @@ $('#{{ $id }}').DataTable({
         });
     });
 @endif
+
+// Init filter for datatable
+(function(){
+    // Handle filter input with debounce
+    let filterTimeout;
+    
+    // Listen to all input fields that name starts with 'filter' (filter, filter-name, filter-role, etc.)
+    // Use event delegation to handle dynamically added inputs
+    $(document).on('keyup', 'input[name^="filter"]', function(){
+        // Clear previous timeout
+        clearTimeout(filterTimeout);
+        
+        // Set new timeout for debounce (1500ms delay)
+        filterTimeout = setTimeout(function(){
+            // Reload datatable with filter parameters
+            $('#{{ $id }}').DataTable().ajax.reload(null, false);
+        }, 1500);
+    });
+})();

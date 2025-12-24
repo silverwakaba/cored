@@ -51,6 +51,34 @@ class PermissionController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
+            // Apply all filters if provided
+            $filters = $request->only(array_filter(array_keys($request->all()), function($key){
+                return strpos($key, 'filter') === 0;
+            }));
+
+            // Run filter sub-query
+            if(!empty($filters)){
+                $datas->query->where(function($query) use($filters){
+                    foreach($filters as $filterKey => $filterValue){
+                        if(!empty(trim($filterValue))){
+                            $filterValue = trim($filterValue);
+                            
+                            // Filter by permission name
+                            if(in_array($filterKey, ['filter-name'])){
+                                $query->where('name', 'LIKE', '%' . $filterValue . '%');
+                            }
+                            
+                            // Filter by role name
+                            elseif(in_array($filterKey, ['filter-role'])){
+                                $query->whereHas('roles', function($q) use($filterValue){
+                                    $q->where('name', 'LIKE', '%' . $filterValue . '%');
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
         }, ['status' => 409, 'message' => false]);

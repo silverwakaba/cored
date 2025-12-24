@@ -14,16 +14,25 @@ class BaseModuleSeeder extends Seeder{
     public function run() : void{
         BaseModule::insert([
             // 3
-            ['name' => "Project"],
+            ['name' => "Payment Status"],
             
             // 4
-            ['name' => "Business"],
-
+            ['name' => "Business Entity"],
+            
             // 5
-            ['name' => "Finance"],
+            ['name' => "Bank"],
 
             // 6
-            ['name' => "Settings"],
+            ['name' => "Currency"],
+
+            // 7
+            ['name' => "Qualification"],
+            
+            // 8
+            ['name' => "Work Type"],
+            
+            // 9
+            ['name' => "Tax Type"],
         ]);
     }
 }

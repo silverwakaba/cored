@@ -53,7 +53,7 @@ Route::prefix('/')->name('be.')->group(function(){
         });
 
         // Menu
-        Route::prefix('menu')->name('menu.')->middleware(['throttle:api'])->controller(MenuController::class)->group(function(){
+        Route::prefix('menu')->name('menu.')->middleware(['jwt.global'])->controller(MenuController::class)->group(function(){
             // Index
             Route::get('/', 'index')->name('index');
 

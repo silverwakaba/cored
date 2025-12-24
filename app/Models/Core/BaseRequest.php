@@ -12,6 +12,7 @@ class BaseRequest extends Model{
     protected $fillable = [
         'base_modules_id',
         'name',
+        'detail',
         'is_active',
     ];
 

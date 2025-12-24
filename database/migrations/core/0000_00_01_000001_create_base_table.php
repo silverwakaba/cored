@@ -13,13 +13,15 @@ return new class extends Migration{
         Schema::create('base_modules', function (Blueprint $table){
             $table->id();
             $table->string('name');
+            $table->boolean('is_active')->default(true);
         });
 
         // Request
         Schema::create('base_requests', function (Blueprint $table){
             $table->id();
-            $table->foreignId('base_modules_id')->references('id')->on('base_modules')->onDelete('cascade');
+            $table->foreignId('base_modules_id')->references('id')->on('base_modules');
             $table->string('name');
+            $table->json('detail')->nullable();
             $table->boolean('is_active')->default(true);
         });
     }

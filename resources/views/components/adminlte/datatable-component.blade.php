@@ -11,8 +11,8 @@ $('#{{ $id }}').DataTable({
             d.type = 'datatable';
             
             // Pass all filter parameters (filter, filter-name, filter-role, filter2, etc.)
-            // Selector akan cocok dengan semua input yang name-nya dimulai dengan "filter"
-            $('input[name^="filter"]').each(function(){
+            // Selector akan cocok dengan semua input dan select yang name-nya dimulai dengan "filter"
+            $('input[name^="filter"], select[name^="filter"]').each(function(){
                 let filterName = $(this).attr('name');
                 let filterValue = $(this).val();
 
@@ -140,21 +140,24 @@ $('#{{ $id }}').DataTable({
     });
 @endif
 
-// Init filter for datatable
-(function(){
-    // Handle filter input with debounce
-    let filterTimeout;
-    
-    // Listen to all input fields that name starts with 'filter' (filter, filter-name, filter-role, etc.)
-    // Use event delegation to handle dynamically added inputs
-    $(document).on('keyup', 'input[name^="filter"]', function(){
-        // Clear previous timeout
-        clearTimeout(filterTimeout);
+@if($filterable)
+    // Init filter for datatable
+    (function(){
+        // Handle filter with debounce
+        let filterTimeout;
         
-        // Set new timeout for debounce (1500ms delay)
-        filterTimeout = setTimeout(function(){
-            // Reload datatable with filter parameters
-            $('#{{ $id }}').DataTable().ajax.reload(null, false);
-        }, 1500);
-    });
-})();
+        // Debounce function to reload datatable
+        function debounceReload(){
+            clearTimeout(filterTimeout);
+
+            filterTimeout = setTimeout(function(){
+                $('#{{ $id }}').DataTable().ajax.reload(null, false);
+            }, 1500);
+        }
+        
+        // Listen to all filter fields (input and select) that name starts with 'filter'
+        // Use event delegation to handle dynamically added inputs
+        $(document).on('keyup', 'input[name^="filter"]', debounceReload); // Suitable for input form
+        $(document).on('change', 'select[name^="filter"]', debounceReload); // Suitable for select form
+    })();
+@endif

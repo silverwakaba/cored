@@ -21,11 +21,11 @@ class BasedataController extends Controller{
         $this->apiRepository = $apiRepository;
     }
 
-    // Menu
-    public function menu(){
+    // Boolean
+    public function boolean(){
         try{
             // Make http call
-            $http = $this->apiRepository->withToken()->get('be.core.menu.index');
+            $http = $this->apiRepository->withToken()->get('be.core.base.general.boolean');
 
             // Response
             return response()->json($http->json(), $http->status());

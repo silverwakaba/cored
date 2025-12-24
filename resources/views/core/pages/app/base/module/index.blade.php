@@ -1,21 +1,18 @@
 @extends('layouts.adminlte')
-@section('title', 'Permission')
+@section('title', 'Module')
 @section('content')
     <x-Adminlte.ContentWrapperComponent breadcrumb="apps.rbac.permission">
-        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="false" title="Filter Permission">
+        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="false" title="Filter Module">
             <div class="row my-2">
-                <div class="col-md-6">
-                    <x-Form.InputForm name="filter-name" type="text" text="Permission Name" :required="false" />
-                </div>
-                <div class="col-md-6">
-                    <x-Form.InputForm name="filter-role" type="text" text="Role Name" :required="false" />
+                <div class="col-md-12">
+                    <x-Form.SelectForm name="filter-active" text="Filter Active" :required="false" :multiple="false" />
                 </div>
             </div>
         </x-Adminlte.CardComponent>
-        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Permission">
+        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Module">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
-        <x-Adminlte.ModalComponent id="theModal" :asForm="true" :withCaptcha="false" title="Manage Permission">
+        <x-Adminlte.ModalComponent id="theModal" :asForm="true" :withCaptcha="false" title="Manage Module">
             <x-Form.InputForm name="name" type="text" text="Name" :required="true" />
         </x-Adminlte.ModalComponent>
     </x-Adminlte.ContentWrapperComponent>
@@ -32,6 +29,7 @@
             initDatatable();
             initUpsert();
             initWebsocket();
+            loadBoolean();
         });
 
         // Init websocket
@@ -51,21 +49,9 @@
         // Init datatable
         function initDatatable(){
             // Server-side Datatable from API Endpoint
-            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')" :deleteUrl="route('fe.apps.rbac.permission.destroy', ['id' => '::ID::'])" :filterable="true" method="GET">
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.base.module.list')" :deleteUrl="route('fe.apps.rbac.permission.destroy', ['id' => '::ID::'])" :filterable="true" method="GET">
                 {
                     title: 'Name', data: 'name',
-                },
-                {
-                    title: 'Roles', data: 'roles',
-                    render: function(data, type, row, meta){
-                        if(Array.isArray(row.roles) && row.roles.length > 0){
-                            return row.roles.map(function(data){
-                                return `<span class="badge badge-pill badge-secondary">${ data.name }</span>`;
-                            }).join(' ');
-                        }
-
-                        return '-';
-                    },
                 },
             </x-Adminlte.DatatableComponent>
         }
@@ -90,6 +76,7 @@
                 // Handle insert
                 if(!dataID){
                     // Define null varPermission
+                    // varBoolean = null;
                     varPermission = [];
 
                     // Rename modal title
@@ -139,6 +126,35 @@
                     // Init form action
                     <x-Adminlte.FormComponent id="theModal" :asModal="true" />
                 }
+            });
+        }
+
+        // Load boolean
+        function loadBoolean(){
+            // Handle role list
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: `{{ route('fe.apps.base.general.boolean') }}`,
+                success: function(response){
+                    // Select input
+                    const select = $('[name="filter-active"');
+
+                    // Clear existing options first
+                    select.empty().append('<option value="">Select an Option</option>');
+
+                    // Map data
+                    response.forEach(function(data){
+                        // Append data
+                        select.append($('<option>', {
+                            value: data.value,
+                            text: data.text,
+                        }));
+                    });
+                },
+                error: function(){
+                    $('#filter-active').html('<option value="">Error loading data...</option>');
+                },
             });
         }
     </script>

@@ -8,12 +8,36 @@ use App\Http\Controllers\Core\API\Access\MenuController;
 use App\Http\Controllers\Core\API\Access\PermissionController;
 use App\Http\Controllers\Core\API\Access\RoleController;
 use App\Http\Controllers\Core\API\Access\UserAccessController;
+use App\Http\Controllers\Core\API\Shared\BasedataController;
+use App\Http\Controllers\Core\API\Shared\BaseModuleController;
+use App\Http\Controllers\Core\API\Shared\BaseRequestController;
 use App\Http\Controllers\Core\API\Shared\CallToActionController;
 
 // API routing
 Route::prefix('/')->name('be.')->group(function(){
     // Core
     Route::prefix('core')->name('core.')->group(function(){
+        // Base-related-thing
+        Route::prefix('base')->name('base.')->group(function(){
+            // General
+            Route::prefix('general')->name('general.')->controller(BasedataController::class)->group(function(){
+                // Boolean
+                Route::get('boolean', 'boolean')->name('boolean');
+            });
+
+            // Module
+            Route::prefix('module')->name('module.')->controller(BaseModuleController::class)->group(function(){
+                // Index
+                Route::get('/', 'list')->name('index');
+            });
+
+            // Request
+            Route::prefix('request')->name('request.')->controller(BaseRequestController::class)->group(function(){
+                // Index
+                Route::get('/', 'list')->name('index');
+            });
+        });
+
         // CTA
         Route::prefix('cta')->name('cta.')->middleware(['throttle:general'])->controller(CallToActionController::class)->group(function(){
             // Messages - 10 attempts per 5 minutes to prevent spam

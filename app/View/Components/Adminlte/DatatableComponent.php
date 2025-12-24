@@ -12,16 +12,18 @@ class DatatableComponent extends Component{
     public $tableUrl;
     public $editUrl;
     public $deleteUrl;
+    public $filterable;
 
     /**
      * Create a new component instance.
      */
-    public function __construct($id, $tableUrl, $editUrl = true, $deleteUrl = null, $method = 'GET'){
+    public function __construct($id, $tableUrl, $editUrl = true, $deleteUrl = null, $filterable = false, $method = 'GET'){
         $this->id = $id;
         $this->method = $method;
         $this->tableUrl = $tableUrl;
         $this->editUrl = $editUrl;
         $this->deleteUrl = $deleteUrl;
+        $this->filterable = $filterable;
     }
 
     /**

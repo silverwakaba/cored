@@ -7,7 +7,10 @@ use App\Http\Controllers\Core\FE\Access\PermissionController;
 use App\Http\Controllers\Core\FE\Access\RoleController;
 use App\Http\Controllers\Core\FE\Access\UserAccessController;
 use App\Http\Controllers\Core\FE\Auth\GeneralAuthController;
+
 use App\Http\Controllers\Core\FE\Shared\BasedataController;
+use App\Http\Controllers\Core\FE\Shared\BaseModuleController;
+use App\Http\Controllers\Core\FE\Shared\BaseRequestController;
 use App\Http\Controllers\Core\FE\Shared\CallToActionController;
 
 // General Controller
@@ -15,12 +18,6 @@ use App\Http\Controllers\Core\FE\PageController;
 
 // FE routing
 Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->group(function(){
-    // Base-related-thing
-    Route::prefix('base')->name('base.')->controller(BasedataController::class)->group(function(){
-        // Menu
-        Route::get('menu', 'menu')->name('menu');
-    });
-
     // Root page without any logic (reserved: /base, /auth, /apps, /cta)
     Route::prefix('/')->name('page.')->group(function(){
         // PageController
@@ -77,6 +74,33 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
     Route::prefix('apps')->name('apps.')->middleware(['jwt.fe'])->group(function(){
         // Page apps
         Route::get('/', [PageController::class, 'app'])->name('index');
+
+        // Base-related-thing
+        Route::prefix('base')->name('base.')->group(function(){
+            // General
+            Route::prefix('general')->name('general.')->controller(BasedataController::class)->group(function(){
+                // Boolean
+                Route::get('boolean', 'boolean')->name('boolean')->withoutMiddleware(['jwt.fe']);
+            });
+
+            // Module
+            Route::prefix('module')->name('module.')->controller(BaseModuleController::class)->group(function(){
+                // Index
+                Route::get('/', 'index')->name('index');
+
+                // List
+                Route::get('list', 'list')->name('list')->withoutMiddleware(['jwt.fe']);
+            });
+
+            // Request
+            Route::prefix('request')->name('request.')->controller(BaseRequestController::class)->group(function(){
+                // Index
+                Route::get('/', 'index')->name('index');
+                
+                // List
+                Route::get('list', 'list')->name('list')->withoutMiddleware(['jwt.fe']);
+            });
+        });
 
         // Role-Based Access Control (core - do not touch)
         Route::prefix('rbac')->name('rbac.')->middleware(['role:Root|Admin|Moderator'])->group(function(){

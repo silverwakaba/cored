@@ -2,6 +2,16 @@
 @section('title', 'Permission')
 @section('content')
     <x-Adminlte.ContentWrapperComponent breadcrumb="apps.rbac.permission">
+        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="false" title="Filter Permission">
+            <div class="row my-2">
+                <div class="col-md-6">
+                    <x-Form.InputForm name="filter-name" type="text" text="Permission Name" :required="false" />
+                </div>
+                <div class="col-md-6">
+                    <x-Form.InputForm name="filter-role" type="text" text="Role Name" :required="false" />
+                </div>
+            </div>
+        </x-Adminlte.CardComponent>
         <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Permission">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>

@@ -63,11 +63,11 @@ class AppServiceProvider extends ServiceProvider{
      */
     protected function configureRateLimiters() : void{
         // Rate limiter for general API endpoints
-        RateLimiter::for('api', function (Request $request) {
+        RateLimiter::for('api', function (Request $request){
             // Authenticated: 120 requests/minute, Guests: 60 requests/minute
             return Limit::perMinute($request->user() ? 120 : 60)
                 ->by($request->user() ? $request->user()->id : $request->ip())
-                ->response(function (Request $request, array $headers) {
+                ->response(function (Request $request, array $headers){
                     return response()->json([
                         'success' => false,
                         'message' => 'You reached request limit. Please try again later.',
@@ -76,11 +76,11 @@ class AppServiceProvider extends ServiceProvider{
         });
 
         // Rate limiter for authentication endpoints (stricter)
-        RateLimiter::for('auth', function (Request $request) {
+        RateLimiter::for('auth', function (Request $request){
             // 5 attempts per minute per IP
             return Limit::perMinute(5)
                 ->by($request->ip())
-                ->response(function (Request $request, array $headers) {
+                ->response(function (Request $request, array $headers){
                     return response()->json([
                         'success' => false,
                         'message' => 'Too many authentication attempts. Please try again later.',
@@ -89,11 +89,11 @@ class AppServiceProvider extends ServiceProvider{
         });
 
         // Rate limiter for sensitive operations (RBAC, etc.)
-        RateLimiter::for('sensitive', function (Request $request) {
+        RateLimiter::for('sensitive', function (Request $request){
             // 30 requests per minute
             return Limit::perMinute(30)
                 ->by($request->user() ? $request->user()->id : $request->ip())
-                ->response(function (Request $request, array $headers) {
+                ->response(function (Request $request, array $headers){
                     return response()->json([
                         'success' => false,
                         'message' => 'Too many requests for this operation. Please slow down.',
@@ -102,11 +102,11 @@ class AppServiceProvider extends ServiceProvider{
         });
 
         // Rate limiter for general/public endpoints
-        RateLimiter::for('general', function (Request $request) {
+        RateLimiter::for('general', function (Request $request){
             // Authenticated: 100 requests/minute, Guests: 30 requests/minute
             return Limit::perMinute($request->user() ? 100 : 30)
                 ->by($request->user() ? $request->user()->id : $request->ip())
-                ->response(function (Request $request, array $headers) {
+                ->response(function (Request $request, array $headers){
                     return response()->json([
                         'success' => false,
                         'message' => 'You reached request limit. Please try again later.',

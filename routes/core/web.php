@@ -21,7 +21,7 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
         Route::get('menu', 'menu')->name('menu');
     });
 
-    // Page without any logic
+    // Root page without any logic (reserved: /base, /auth, /apps, /cta)
     Route::prefix('/')->name('page.')->group(function(){
         // PageController
         Route::controller(PageController::class)->group(function(){
@@ -34,9 +34,6 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
             // Index cta
             Route::get('cta', 'cta')->name('cta'); // => this one is masking as /cta root
         });
-
-        // Root page (reserved: /base, /auth, /apps, /cta)
-        // => Add something
     });
 
     // CTA

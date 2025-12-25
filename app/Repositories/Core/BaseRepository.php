@@ -314,8 +314,14 @@ abstract class BaseRepository{
                 $this->broadcasterExecute($datas);
             }
 
-            // Return response
-            return $datas;
+            // Determine action performed
+            $action = $newStatus ? 'activated' : 'deactivated';
+
+            // Return response with action info
+            return [
+                'data'      => $datas,
+                'action'    => $action,
+            ];
         });
     }
 }

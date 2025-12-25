@@ -39,50 +39,49 @@ class BaseModuleController extends Controller{
         return response()->json($http->json(), $http->status());
     }
 
-    // // Create
-    // public function create(Request $request){
-    //     // Create permission
-    //     $http = $this->apiRepository->withToken()->post('be.core.rbac.permission.store', [
-    //         'name' => $request->name,
-    //     ]);
+    // Create
+    public function create(Request $request){
+        // Create permission
+        $http = $this->apiRepository->withToken()->post('be.core.base.module.store', [
+            'name' => $request->name,
+        ]);
         
-    //     // Response for $create action
-    //     return response()->json($http->json(), $http->status());
-    // }
+        // Response for $create action
+        return response()->json($http->json(), $http->status());
+    }
 
-    // // Read
-    // public function read($id){
-    //     // Make http call
-    //     $http = $this->apiRepository->withToken()->get('be.core.rbac.permission.show', [
-    //         'id'        => $id,
-    //         'relation'  => ['roles:id,name'],
-    //     ]);
+    // Read
+    public function read($id){
+        // Make http call
+        $http = $this->apiRepository->withToken()->get('be.core.base.module.show', [
+            'id' => $id,
+        ]);
 
-    //     // Response
-    //     return response()->json($http->json(), $http->status());
-    // }
+        // Response
+        return response()->json($http->json(), $http->status());
+    }
 
-    // // Update
-    // public function update($id, Request $request){
-    //     // Update permission
-    //     $http = $this->apiRepository->withToken()->put('be.core.rbac.permission.update', [
-    //         'id'    => $id,
-    //         'name'  => $request->name,
-    //     ]);
+    // Update
+    public function update($id, Request $request){
+        // Update permission
+        $http = $this->apiRepository->withToken()->put('be.core.base.module.update', [
+            'id'    => $id,
+            'name'  => $request->name,
+        ]);
         
-    //     // Response for $update action
-    //     return response()->json($http->json(), $http->status());
-    // }
+        // Response for $update action
+        return response()->json($http->json(), $http->status());
+    }
 
-    // // Delete
-    // public function delete($id, Request $request){
-    //     // Delete permission
-    //     $http = $this->apiRepository->withToken()->delete('be.core.rbac.permission.destroy', [
-    //         'id'    => $id,
-    //         'name'  => $request->name,
-    //     ]);
+    // Delete
+    public function delete($id, Request $request){
+        // Delete permission
+        $http = $this->apiRepository->withToken()->delete('be.core.base.module.destroy', [
+            'id'    => $id,
+            'name'  => $request->name,
+        ]);
         
-    //     // Response for $delete action
-    //     return response()->json($http->json(), $http->status());
-    // }
+        // Response for $delete action
+        return response()->json($http->json(), $http->status());
+    }
 }

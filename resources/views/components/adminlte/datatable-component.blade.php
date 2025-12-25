@@ -1,9 +1,10 @@
 // Datatable
 $('#{{ $id }}').DataTable({
     ordering: false,
+    searching: {{ $searchable }},
     processing: true,
     serverSide: true,
-    searchDelay: 1500, // (1500ms delay)
+    searchDelay: {{ $debounce }},
     ajax: {
         type: '{{ $method }}',
         data: function(d){
@@ -11,7 +12,7 @@ $('#{{ $id }}').DataTable({
             d.type = 'datatable';
             
             // Pass all filter parameters (filter, filter-name, filter-role, filter2, etc.)
-            // Selector akan cocok dengan semua input dan select yang name-nya dimulai dengan "filter"
+            // Selector will match the input and the select with name starts with "filter" prefix
             $('input[name^="filter"], select[name^="filter"]').each(function(){
                 let filterName = $(this).attr('name');
                 let filterValue = $(this).val();
@@ -48,11 +49,14 @@ $('#{{ $id }}').DataTable({
                     <div class="btn-group btn-block" role="group">
                         <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Action</button>
                         <div class="dropdown-menu btn-block">
-                            @if($deleteUrl)
+                            @if($editable)
                                 <button id="btn-upsert" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-pen-to-square mr-2"></i>Edit</button>
                             @endif
+                            
                             @if($deleteUrl)
-                                <button id="btn-delete-{{ $id }}" class="dropdown-item" data-id="${ row.id }"><i class="fas fa-trash mr-2"></i>Delete</button>
+                                <button id="btn-delete-{{ $id }}" class="dropdown-item" data-id="${ row.id }">
+                                    <i class="fas ${ (row.is_active !== undefined && row.is_active == false) || (row.deleted_at !== undefined && row.deleted_at !== null) ? 'fa-history' : 'fa-trash' } mr-2"></i> ${ row.is_active == true ? 'Deactivate' : row.is_active == false ? 'Activate' : 'Delete' }
+                                </button>
                             @endif
                         </div>
                     </div>
@@ -71,7 +75,7 @@ $('#{{ $id }}').DataTable({
         // Show confirmation
         Swal.fire({
             icon: 'warning',
-            text: 'Are you sure? This action cannot be undone.',
+            text: 'Are you sure? This action may not be reversible.',
             focusDeny: true,
             showConfirmButton: true,
             showDenyButton: true,
@@ -152,7 +156,7 @@ $('#{{ $id }}').DataTable({
 
             filterTimeout = setTimeout(function(){
                 $('#{{ $id }}').DataTable().ajax.reload(null, false);
-            }, 1500);
+            }, {{ $debounce }});
         }
         
         // Listen to all filter fields (input and select) that name starts with 'filter'

@@ -49,9 +49,9 @@
         // Init datatable
         function initDatatable(){
             // Server-side Datatable from API Endpoint
-            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.base.module.list')" :deleteUrl="route('fe.apps.rbac.permission.destroy', ['id' => '::ID::'])" :filterable="true" method="GET">
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.base.module.list')" :deleteUrl="route('fe.apps.base.module.destroy', ['id' => '::ID::'])" :editable="true" :filterable="true" method="GET">
                 {
-                    title: 'Active', width: '5%', class: 'text-center', data: 'is_active',
+                    title: 'Active', width: '5%', class: 'text-center',
                     render: function(data, type, row, meta){
                         return `<i class="fas fa-circle ${ row.is_active == true ? 'text-success' : 'text-danger' }"></i>`;
                     },
@@ -85,7 +85,7 @@
                     $('#theModalLabel').text('Add Module');
 
                     // Set route action
-                    routeAction = `{{ route('fe.apps.rbac.permission.store') }}`;
+                    routeAction = `{{ route('fe.apps.base.module.store') }}`;
                     
                     // Set HTTP method for create (default POST)
                     routeMethod = 'POST';
@@ -100,7 +100,7 @@
                     $('#theModalLabel').text('Edit Module');
 
                     // Get route with id placeholder
-                    let readRouteBase = `{{ route('fe.apps.rbac.permission.show', ['id' => '::ID::']) }}`;
+                    let readRouteBase = `{{ route('fe.apps.base.module.show', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     readRoute = readRouteBase.replace('::ID::', dataID);
@@ -117,7 +117,7 @@
                     });
 
                     // Get route with id placeholder
-                    let routeBase = `{{ route('fe.apps.rbac.permission.update', ['id' => '::ID::']) }}`;
+                    let routeBase = `{{ route('fe.apps.base.module.update', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     routeAction = routeBase.replace('::ID::', dataID);

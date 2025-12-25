@@ -162,7 +162,7 @@ class BaseModuleController extends Controller{
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
                 'data'      => $datas,
-                'message'   => 'Base module successfully.',
+                'message'   => 'Base module updated successfully.',
             ]);
         }, ['status' => 409, 'message' => true]);
     }
@@ -170,13 +170,18 @@ class BaseModuleController extends Controller{
     // Delete
     public function delete($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
-            // Delete base module data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($id);
+            // Delete base module data (actually toggles activation status)
+            $result = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($id);
+
+            // Get action and data from result
+            $action = $result['action'];
+            $datas = $result['data'];
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'message'   => 'Base module deleted successfully.',
+                'data'      => $datas,
+                'message'   => "Base module {$action} successfully.",
             ]);
         }, ['status' => 409, 'message' => true]);
     }

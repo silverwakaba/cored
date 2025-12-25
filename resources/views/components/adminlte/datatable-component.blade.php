@@ -5,6 +5,20 @@ $('#{{ $id }}').DataTable({
     processing: true,
     serverSide: true,
     searchDelay: {{ $debounce }},
+    lengthChange: true,
+    @if($upsert)
+        dom: '<"row"<"col-sm-12 col-md-6 mb-md-3"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
+        buttons: [
+            {
+                text: 'Create New',
+                className: 'btn btn-sm btn-secondary',
+                attr: {
+                    id: 'btn-upsert',
+                    href: 'javascript:void(0)',
+                }
+            },
+        ],
+    @endif
     ajax: {
         type: '{{ $method }}',
         data: function(d){

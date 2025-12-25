@@ -11,8 +11,8 @@ class DatatableComponent extends Component{
     public $method;
     public $debounce; // (in ms)
     public $tableUrl;
-    public $editUrl;
     public $deleteUrl;
+    public $upsert;
     public $editable;
     public $filterable;
     public $searchable;
@@ -20,15 +20,15 @@ class DatatableComponent extends Component{
     /**
      * Create a new component instance.
      */
-    public function __construct($id, $tableUrl, $debounce = 1500, $editUrl = true, $deleteUrl = null, $editable = true, $filterable = false, $searchable = true, $method = 'GET'){
+    public function __construct($id, $tableUrl, $debounce = 1500, $deleteUrl = null, $upsert = false, $editable = true, $filterable = false, $searchable = true, $method = 'GET'){
         $this->id = $id;
         $this->method = $method;
         $this->debounce = $debounce;
         $this->tableUrl = $tableUrl;
-        $this->editUrl = $editUrl;
         $this->deleteUrl = $deleteUrl;
-        $this->editable = $editable;
-        $this->filterable = $filterable;
+        $this->upsert = (bool) $upsert;
+        $this->editable = (bool) $editable;
+        $this->filterable = (bool) $filterable;
         $this->searchable = (bool) $searchable;
     }
 

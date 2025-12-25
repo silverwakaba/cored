@@ -5,7 +5,7 @@
         <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="false" title="Filter Module">
             <div class="row my-2">
                 <div class="col-md-12">
-                    <x-Form.SelectForm name="filter-active" text="Filter Active" :required="false" :multiple="false" />
+                    <x-Form.SelectForm name="filter-active" text="Active Status" :required="false" :multiple="false" />
                 </div>
             </div>
         </x-Adminlte.CardComponent>
@@ -51,6 +51,12 @@
             // Server-side Datatable from API Endpoint
             <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.base.module.list')" :deleteUrl="route('fe.apps.rbac.permission.destroy', ['id' => '::ID::'])" :filterable="true" method="GET">
                 {
+                    title: 'Active', width: '5%', class: 'text-center', data: 'is_active',
+                    render: function(data, type, row, meta){
+                        return `<i class="fas fa-circle ${ row.is_active == true ? 'text-success' : 'text-danger' }"></i>`;
+                    },
+                },
+                {
                     title: 'Name', data: 'name',
                 },
             </x-Adminlte.DatatableComponent>
@@ -75,12 +81,8 @@
 
                 // Handle insert
                 if(!dataID){
-                    // Define null varPermission
-                    // varBoolean = null;
-                    varPermission = [];
-
                     // Rename modal title
-                    $('#theModalLabel').text('Add Permission');
+                    $('#theModalLabel').text('Add Module');
 
                     // Set route action
                     routeAction = `{{ route('fe.apps.rbac.permission.store') }}`;
@@ -95,7 +97,7 @@
                 // Handle update
                 else{
                     // Rename modal title
-                    $('#theModalLabel').text('Edit Permission');
+                    $('#theModalLabel').text('Edit Module');
 
                     // Get route with id placeholder
                     let readRouteBase = `{{ route('fe.apps.rbac.permission.show', ['id' => '::ID::']) }}`;
@@ -145,10 +147,18 @@
 
                     // Map data
                     response.forEach(function(data){
+                        // Format text with description
+                        let optionText = data.text;
+                        if(data.text === 'Yes' || data.value === true || data.value === 'true' || data.value === 1){
+                            optionText = 'Yes (Active Data)';
+                        } else if(data.text === 'No' || data.value === false || data.value === 'false' || data.value === 0){
+                            optionText = 'No (Inactive Data)';
+                        }
+                        
                         // Append data
                         select.append($('<option>', {
                             value: data.value,
-                            text: data.text,
+                            text: optionText,
                         }));
                     });
                 },

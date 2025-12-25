@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 // Repository interface
 use App\Contracts\Core\BaseModuleRepositoryInterface;
 
+// Event
+use App\Events\Core\GeneralEventHandler;
+
 // Helper
 use App\Helpers\Core\GeneralHelper;
 
 // Request
-// use App\Http\Requests\Core\CTAMessageRequest;
+use App\Http\Requests\Core\BaseModuleRequest;
 
 // Internal
 use Illuminate\Http\Request;
@@ -28,7 +31,7 @@ class BaseModuleController extends Controller{
     // List
     public function list(Request $request){
         return GeneralHelper::safe(function() use($request){
-            // Get data while sorting
+            // Get data
             $datas = $this->repositoryInterface;
 
             // Sort data
@@ -46,12 +49,12 @@ class BaseModuleController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
-            // Apply all filters if provided
+            // Apply filters if provided
             $filters = $request->only(array_filter(array_keys($request->all()), function($key){
                 return strpos($key, 'filter') === 0;
             }));
 
-            // Run filter sub-query
+            // Run filter as sub-query
             if(!empty($filters)){
                 $datas->query->where(function($query) use($filters){
                     foreach($filters as $filterKey => $filterValue){
@@ -85,5 +88,96 @@ class BaseModuleController extends Controller{
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
         }, ['status' => 409, 'message' => false]);
+    }
+
+    // Create
+    public function create(Request $request){
+        return GeneralHelper::safe(function() use($request){
+            // Validate input
+            $validated = GeneralHelper::validate($request->all(), (new BaseModuleRequest())->rules());
+
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
+            }
+
+            // Create base module
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
+                'name' => $request['name'],
+            ]);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 201,
+                'data'      => $datas,
+                'message'   => 'Base module created successfully.',
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
+
+    // Read
+    public function read($id, Request $request){
+        return GeneralHelper::safe(function() use($id, $request){
+            // Get base module data
+            $datas = $this->repositoryInterface;
+            
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
+
+            // Load relation
+            if(isset($request->relation)){
+                $datas->withRelation($request->relation);
+            }
+            
+            // Continue variable
+            $datas = $datas->find($id);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas,
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
+
+    // Update
+    public function update($id, Request $request){
+        return GeneralHelper::safe(function() use($id, $request){
+            // Validate input
+            $validated = GeneralHelper::validate($request->all(), (new BaseModuleRequest())->rules());
+
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
+            }
+
+            // Update base module data
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
+                'name' => $request['name'],
+            ]);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas,
+                'message'   => 'Base module successfully.',
+            ]);
+        }, ['status' => 409, 'message' => true]);
+    }
+
+    // Delete
+    public function delete($id, Request $request){
+        return GeneralHelper::safe(function() use($id, $request){
+            // Delete base module data
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($id);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'message'   => 'Base module deleted successfully.',
+            ]);
+        }, ['status' => 409, 'message' => true]);
     }
 }

@@ -96,7 +96,7 @@ class PermissionController extends Controller{
             }
 
             // Create permission
-            $datas = $this->repositoryInterface->broadcaster(\App\Events\Core\GeneralEventHandler::class, 'create')->create([
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
                 'name' => $request['name'],
             ]);
 
@@ -165,7 +165,7 @@ class PermissionController extends Controller{
     public function delete($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Delete permission data
-            $datas = $this->repositoryInterface->broadcaster(\App\Events\Core\GeneralEventHandler::class, 'delete')->delete($id);
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->delete($id);
 
             // Return response
             return GeneralHelper::jsonResponse([

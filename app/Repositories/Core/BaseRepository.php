@@ -293,16 +293,20 @@ abstract class BaseRepository{
     }
 
     // Activation data
-    public function activation($id, bool $status){
+    public function activation($id, bool $status = null){
         // Implementing db transaction
         return DB::transaction(function() use($id, $status){
             // Start find query
             $datas = $this->find($id);
 
+            // Get current status or toggle if not provided
+            $currentStatus = $status ?? (bool) $datas->is_active;
+            $newStatus = !$currentStatus;
+
             // Update status
             // Boolean column is identified with "is_" prefixes
             $datas = $datas->update([
-                'is_active' => $status,
+                'is_active' => $newStatus,
             ]);
 
             // Call broadcaster if set

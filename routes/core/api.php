@@ -18,7 +18,7 @@ Route::prefix('/')->name('be.')->group(function(){
     // Core
     Route::prefix('core')->name('core.')->group(function(){
         // Base-related-thing
-        Route::prefix('base')->name('base.')->group(function(){
+        Route::prefix('base')->name('base.')->middleware(['jwt.be'])->group(function(){
             // General
             Route::prefix('general')->name('general.')->controller(BasedataController::class)->group(function(){
                 // Boolean
@@ -29,6 +29,19 @@ Route::prefix('/')->name('be.')->group(function(){
             Route::prefix('module')->name('module.')->controller(BaseModuleController::class)->group(function(){
                 // Index
                 Route::get('/', 'list')->name('index');
+
+                // Create
+                Route::post('/', 'create')->name('store');
+
+                // Read
+                Route::get('/{id}', 'read')->name('show');
+
+                // Update
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+
+                // Delete
+                Route::delete('/{id}', 'delete')->name('destroy');
             });
 
             // Request

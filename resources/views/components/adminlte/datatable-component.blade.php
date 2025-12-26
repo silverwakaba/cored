@@ -6,19 +6,27 @@ $('#{{ $id }}').DataTable({
     serverSide: true,
     searchDelay: {{ $debounce }},
     lengthChange: true,
-    @if($upsert)
-        dom: '<"row"<"col-sm-12 col-md-6 mb-md-3"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
-        buttons: [
+    lengthMenu: [[5, 10, 25, 50, 100, -1], [5, 10, 25, 50, 100, "All"]],
+    dom: '<"row"<"col-sm-12 col-md-6 mb-md-3"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
+    buttons: [
+        {
+            text: '<i class="fas fa-sync-alt"></i>',
+            className: 'btn btn-sm btn-primary',
+            action: function(e, dt, node, config){
+                dt.ajax.reload(null, false);
+            }
+        },
+        @if($upsert)
             {
-                text: 'Create New',
+                text: '<i class="fas fa-plus"></i>',
                 className: 'btn btn-sm btn-secondary',
                 attr: {
                     id: 'btn-upsert',
                     href: 'javascript:void(0)',
                 }
             },
-        ],
-    @endif
+        @endif
+    ],
     ajax: {
         type: '{{ $method }}',
         data: function(d){

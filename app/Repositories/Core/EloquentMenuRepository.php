@@ -41,11 +41,11 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
                 // Apply both role-based and authentication filtering for children
                 $this->applyQueryFilters($query, $user, $isAuthenticated);
                 
-                // Load grandchildren with the same filtering
+                // Load grandchildren with the same filtering and relationships
                 $query->with(['children' => function($subQuery) use($user, $isAuthenticated){
                     $this->applyQueryFilters($subQuery, $user, $isAuthenticated);
-                }]);
-            }])
+                }, 'includedUsers:id', 'excludedUsers:id']);
+            }, 'includedUsers:id', 'excludedUsers:id'])
             ->where(function($query) use($user, $isAuthenticated){
                 $this->applyQueryFilters($query, $user, $isAuthenticated);
             })
@@ -61,6 +61,15 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
     // Apply both role-based and authentication filtering to query
     private function applyQueryFilters($query, $user, $isAuthenticated){
         $query->where(function($q) use($user, $isAuthenticated){
+            // Apply guest-only filtering
+            // If authenticated, hide menus that are guest-only
+            if($isAuthenticated){
+                $q->where(function($guestQuery){
+                    $guestQuery->where('is_guest_only', 0)->orWhereNull('is_guest_only');
+                });
+            }
+            // If not authenticated, no guest-only restriction needed (guests can see all menus, is_authenticate will filter further)
+
             // Apply authentication filtering
             // If authenticated, no authentication restriction (regardless, all is_authenticate values allowed)
             if(!$isAuthenticated){
@@ -69,26 +78,47 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
                 });
             }
 
-            // Apply role-based filtering
+            // Apply role-based filtering with include/exclude logic
             if($user){
-                // For authenticated users: show menus that have matching roles OR no roles
-                $q->whereHas('roles', function($roleQuery) use($user){
-                    $roleQuery->whereIn('name', $user->roles->pluck('name'));
-                })->orWhereDoesntHave('roles');
-            } else {
-                // For unauthenticated users: show menus that have no roles OR roles with null menu_id
-                $q->whereDoesntHave('roles')->orWhereHas('roles', function($roleQuery){
-                    $roleQuery->whereNull('menu_id');
+                // Exclude menus where user is in excludes
+                $q->whereDoesntHave('excludedUsers', function($excludeQuery) use($user){
+                    $excludeQuery->where('user_id', $user->id);
                 });
+
+                // For authenticated users: show menus that have matching roles OR no roles OR user is included
+                $q->where(function($roleQuery) use($user){
+                    $roleQuery->whereHas('roles', function($rQuery) use($user){
+                        $rQuery->whereIn('name', $user->roles->pluck('name'));
+                    })
+                    ->orWhereDoesntHave('roles')
+                    ->orWhereHas('includedUsers', function($includeQuery) use($user){
+                        $includeQuery->where('user_id', $user->id);
+                    });
+                });
+            } else {
+                // For unauthenticated users: show menus that have no roles assigned
+                $q->whereDoesntHave('roles');
             }
         });
     }
 
-    // Filter menus hierarchically based on is_authenticate (final cleanup)
+    // Filter menus hierarchically based on is_authenticate and is_guest_only (final cleanup)
     private function filterByHierarchicalAuthentication($menus, $isAuthenticated){
-        return $menus->filter(function($menu) use($isAuthenticated){
+        $user = auth()->guard('api')->user();
+        
+        return $menus->filter(function($menu) use($isAuthenticated, $user){
             // Check if this menu should be visible based on authentication
             if($menu->is_authenticate && !$isAuthenticated){
+                return false;
+            }
+
+            // Check if this menu should be visible based on guest-only
+            if($menu->is_guest_only && $isAuthenticated){
+                return false;
+            }
+
+            // Check exclude logic: if user is in excludes, hide menu even if they have role
+            if($user && $menu->excludedUsers->pluck('id')->contains($user->id)){
                 return false;
             }
 

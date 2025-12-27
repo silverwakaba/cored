@@ -2,7 +2,14 @@
 @section('title', 'Role')
 @section('content')
     <x-Adminlte.ContentWrapperComponent breadcrumb="apps.rbac.role">
-        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Role">
+        <x-Adminlte.CardComponent id="theFilter" :asForm="false" title="Filter Request">
+            <div class="row my-2">
+                <div class="col-md-12">
+                    <x-Form.SelectForm name="filter-permission[]" text="Permission" :required="false" :multiple="true" />
+                </div>
+            </div>
+        </x-Adminlte.CardComponent>
+        <x-Adminlte.CardComponent id="theForm" :asForm="false" title="Manage Role">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
         <x-Adminlte.ModalComponent id="theModal" :asForm="true" title="Manage Role">
@@ -13,15 +20,16 @@
 @endsection
 @push('script')
     <script>
+        // Define usable variable
+        let varPermission;
+        let routeAction;
+
         // Init jquery
         $(document).ready(function(){
-            // Define usable variable
-            let varPermission;
-            let routeAction;
-
             // Load init function
             initDatatable();
             initUpsert();
+            loadPermission();
         });
 
         // Handle overlay class for form processing state
@@ -30,7 +38,7 @@
         // Init datatable
         function initDatatable(){
             // Server-side Datatable from API Endpoint
-            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.role.list')" method="GET">
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.role.list')" :upsert="true" :editable="true" :filterable="true" method="GET">
                 {
                     title: 'Name', data: 'name',
                 },
@@ -75,7 +83,7 @@
                     $('#name').prop('readonly', false);
 
                     // Populate list
-                    loadPermission();
+                    loadPermission('permission[]', true);
 
                     // Rename modal title
                     $('#theModalLabel').text('Add Role');
@@ -117,7 +125,7 @@
                             $('#name').prop('readonly', true);
 
                             // Populate list
-                            loadPermission();
+                            loadPermission('permission[]', true);
                         }
                     });
 
@@ -137,9 +145,11 @@
         }
 
         // Load permission
-        function loadPermission(){
+        function loadPermission(targetSelector = 'filter-permission[]', useProcessingState = false){
             // By default when loading the permission, the state of form processing is set as true
-            setProcessingState(true);
+            if(useProcessingState){
+                setProcessingState(true);
+            }
 
             // Handle permission list
             $.ajax({
@@ -148,7 +158,7 @@
                 url: `{{ route('fe.apps.rbac.permission.list') }}`,
                 success: function(response){
                     // Select input
-                    const select = $('[name="permission[]"');
+                    const select = $(`[name="${targetSelector}"]`);
 
                     // Clear existing options first
                     select.empty().append('<option value="">Select an Option</option>');
@@ -162,15 +172,17 @@
                         select.append($('<option>', {
                             value: data.name,
                             text: data.name,
-                            selected: selectedPermissions.includes(data.name),
+                            selected: Array.isArray(selectedPermissions) && selectedPermissions.includes(data.name),
                         }));
                     });
 
-                    // After the permission is loaded, the state of form processing is set as true
-                    setProcessingState(false);
+                    // After the permission is loaded, the state of form processing is set as false
+                    if(useProcessingState){
+                        setProcessingState(false);
+                    }
                 },
                 error: function(){
-                    $('#permission').html('<option value="">Error loading data...</option>');
+                    $(`[name="${targetSelector}"]`).html('<option value="">Error loading data...</option>');
                 },
             });
         }

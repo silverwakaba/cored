@@ -15,7 +15,6 @@ use App\Http\Requests\Core\CTAMessageRequest;
 
 // Internal
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class CallToActionController extends Controller{
     // Property

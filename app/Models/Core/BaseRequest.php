@@ -12,12 +12,13 @@ class BaseRequest extends Model{
     protected $fillable = [
         'base_modules_id',
         'name',
+        'detail',
         'is_active',
     ];
 
     // Belong to base module
     public function baseModule(){
-        return $this->belongsTo(BaseModule::class, 'base_modules_id', 'id')->select('id', 'name');
+        return $this->belongsTo(BaseModule::class, 'base_modules_id', 'id');
     }
 
     // Has many user requests

@@ -15,15 +15,13 @@ class CardComponent extends Component{
     public string $button;
     public string $sitekeyCaptcha;
     public bool $asForm;
-    public bool $upsert;
     public bool $withCaptcha;
 
     /**
      * Create a new component instance.
      */
-    public function __construct(bool $asForm = false, bool $upsert = false, bool $withCaptcha = false, string $id = '', string $method = 'POST', string $enctype = 'application/x-www-form-urlencoded', string $title = '', string $button = ''){
+    public function __construct(bool $asForm = false, bool $withCaptcha = false, string $id = '', string $method = 'POST', string $enctype = 'application/x-www-form-urlencoded', string $title = '', string $button = ''){
         $this->asForm = $asForm;
-        $this->upsert = $upsert;
         $this->withCaptcha = $withCaptcha;
         $this->sitekeyCaptcha = $withCaptcha ? env('HCAPTCHA_SITEKEY') : '10000000-ffff-ffff-ffff-000000000001';
         $this->tag = $asForm ? 'form' : 'div';

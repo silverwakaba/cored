@@ -70,7 +70,7 @@ Breadcrumbs::for('cta.message', function (BreadcrumbTrail $trail){
 });
 
 /**
- * Apps (Core)
+ * Apps
 */
 
 // Apps
@@ -80,7 +80,29 @@ Breadcrumbs::for('apps', function (BreadcrumbTrail $trail){
 });
 
 /**
- * Apps RBAC (Core)
+ * Apps Base
+*/
+
+// Apps-Base
+Breadcrumbs::for('apps.base', function (BreadcrumbTrail $trail){
+    $trail->parent('apps');
+    $trail->push('Base', route('fe.apps.base.index'));
+});
+
+// Apps-Base-Module
+Breadcrumbs::for('apps.base.module', function (BreadcrumbTrail $trail){
+    $trail->parent('apps.base');
+    $trail->push('Module', route('fe.apps.base.module.index'));
+});
+
+// Apps-Base-Request
+Breadcrumbs::for('apps.base.request', function (BreadcrumbTrail $trail){
+    $trail->parent('apps.base');
+    $trail->push('Request', route('fe.apps.base.request.index'));
+});
+
+/**
+ * Apps RBAC
 */
 
 // Apps-RBAC

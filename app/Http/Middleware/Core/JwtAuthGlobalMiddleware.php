@@ -29,9 +29,3 @@ class JwtAuthGlobalMiddleware{
         return $next($request);
     }
 }
-
-
-
-
-
-

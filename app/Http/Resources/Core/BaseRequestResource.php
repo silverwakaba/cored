@@ -18,9 +18,3 @@ class BaseRequestResource extends JsonResource{
         ];
     }
 }
-
-
-
-
-
-

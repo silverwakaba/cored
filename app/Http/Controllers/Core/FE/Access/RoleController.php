@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 // Repository interface
 use App\Contracts\Core\ApiRepositoryInterface;
 
-// Helper
-use App\Helpers\Core\ErrorHelper;
-
 // Internal
 use Illuminate\Http\Request;
 
@@ -79,8 +76,7 @@ class RoleController extends Controller{
     public function syncToPermission($id, Request $request){
         // Make http call
         $http = $this->apiRepository->withToken()->post('be.core.rbac.role.sync_to_permission', [
-            'id'            => $id,
-            'permission'    => $request->permission,
+            'id' => $id,
         ]);
 
         // Response

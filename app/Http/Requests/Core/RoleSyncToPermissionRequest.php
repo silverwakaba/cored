@@ -23,9 +23,3 @@ class RoleSyncToPermissionRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

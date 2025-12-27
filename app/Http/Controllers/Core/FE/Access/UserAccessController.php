@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Contracts\Core\ApiRepositoryInterface;
 
 // Helper
-use App\Helpers\Core\ErrorHelper;
 use App\Helpers\Core\RBACHelper;
 
 // Internal
@@ -47,6 +46,7 @@ class UserAccessController extends Controller{
         $create = $this->apiRepository->withToken()->post('be.core.rbac.uac.store', [
             'name'  => $request->name,
             'email' => $request->email,
+            'role'  => $request->role,
         ]);
 
         // Sync role to user if create is success
@@ -79,11 +79,12 @@ class UserAccessController extends Controller{
 
     // Update
     public function update($id, Request $request){
-        // Update user | withAttachment()
+        // Update user
         $update = $this->apiRepository->withToken()->put('be.core.rbac.uac.update', [
             'id'    => $id,
             'name'  => $request->name,
             'email' => $request->email,
+            'role'  => $request->role,
         ]);
 
         // Sync role to user if update is success
@@ -103,20 +104,10 @@ class UserAccessController extends Controller{
     }
 
     // Activation
-    public function activation($id, Request $request){
-        // Activation
-        if($request->is_active == true){
-            // If activated then deactivate
-            $is_active = false;
-        } else{
-            // If deactivated then activate
-            $is_active = true;
-        }
-
-        // Make http call
-        $http = $this->apiRepository->withToken()->post('be.core.rbac.uac.activation', [
-            'id'            => $id,
-            'activation'    => $is_active,
+    public function delete($id, Request $request){
+        // Delete user
+        $http = $this->apiRepository->withToken()->delete('be.core.rbac.uac.destroy', [
+            'id' => $id,
         ]);
 
         // Response

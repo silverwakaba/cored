@@ -35,9 +35,3 @@ class AppLocaleMiddleware{
         return $next($request);
     }
 }
-
-
-
-
-
-

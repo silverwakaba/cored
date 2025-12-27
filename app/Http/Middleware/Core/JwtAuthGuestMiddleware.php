@@ -6,28 +6,15 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-// Repository interface
-use App\Contracts\Core\ApiRepositoryInterface;
-
 // Helper
 use App\Helpers\Core\CookiesHelper;
 
-// Internal
-use Illuminate\Support\Facades\Cookie;
-
 // External
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 // This middleware is created to restrict access to frontend auth routes for ALREADY authorized user
 class JwtAuthGuestMiddleware{
-    // Property
-    protected $apiRepository;
-
-    // Constructor
-    public function __construct(ApiRepositoryInterface $apiRepository){
-        $this->apiRepository = $apiRepository;
-    }
-
     /**
      * Handle an incoming request.
      *
@@ -35,35 +22,24 @@ class JwtAuthGuestMiddleware{
      */
     public function handle(Request $request, Closure $next) : Response{
         try{
-            // Check the session
-            JWTAuth::setToken(CookiesHelper::jwtToken())->authenticate();
-    
-            // If the user is authenticated, redirect to the index page
-            return redirect()->route('fe.page.index');
-        }
-        catch(\Throwable $th){
-            // For some unknown reason authenticated user can't be redirected
-            // So we force them to logout and grant access to the request
-            $http = $this->apiRepository->withToken()->post('be.core.auth.jwt.logout');
+            // Get token from cookie
+            $token = CookiesHelper::jwtToken();
 
-            // Delete JWT-related cookie
-            Cookie::expire('jwt_token');
-
-            Cookie::expire('jwt_ttl');
-
-            if(CookiesHelper::jwtRemember() == true){
-                Cookie::expire('jwt_remember');
-
-                Cookie::expire('jwt_user_id');
+            // If token exists, try to authenticate
+            if($token){
+                JWTAuth::setToken($token)->authenticate();
+                
+                // If authentication succeeds, user is already logged in
+                // Redirect to index page to prevent access to auth pages
+                return redirect()->route('fe.page.index');
             }
-
-            return $next($request);
         }
+        catch(JWTException $th){
+            // Token is invalid, expired, or missing
+            // This is expected for guest users, so allow access to auth pages
+        }
+
+        // Allow guest users to access auth pages
+        return $next($request);
     }
 }
-
-
-
-
-
-

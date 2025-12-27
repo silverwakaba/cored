@@ -24,9 +24,3 @@ class PermissionCreateRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

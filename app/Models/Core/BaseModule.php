@@ -11,6 +11,7 @@ class BaseModule extends Model{
 
     protected $fillable = [
         'name',
+        'is_active',
     ];
 
     // Has many base requests

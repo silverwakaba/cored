@@ -68,6 +68,11 @@ class EloquentRoleRepository extends BaseRepository implements RoleRepositoryInt
                 $datas->syncPermissions($this->permissionToSync);
             }
 
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($datas);
+            }
+
             // Return response
             return $datas;
         });
@@ -86,6 +91,11 @@ class EloquentRoleRepository extends BaseRepository implements RoleRepositoryInt
             // Assign role
             if(isset($this->roleToSync) && ($rbacCheck == true)){
                 $datas->syncRoles($this->roleToSync);
+            }
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($datas);
             }
 
             // Return response

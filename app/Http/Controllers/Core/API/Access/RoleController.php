@@ -6,12 +6,11 @@ use App\Http\Controllers\Controller;
 // Repository interface
 use App\Contracts\Core\RoleRepositoryInterface;
 
+// Event
+use App\Events\Core\GeneralEventHandler;
+
 // Helper
 use App\Helpers\Core\GeneralHelper;
-
-// Model
-use App\Models\Core\User;
-use Spatie\Permission\Models\Role;
 
 // Request
 use App\Http\Requests\Core\RoleCreateRequest;
@@ -51,9 +50,28 @@ class RoleController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
+            // Apply filters if provided
+            $filters = $request->only(array_filter(array_keys($request->all()), function($key){
+                return strpos($key, 'filter') === 0;
+            }));
+
+            // Run filter as sub-query
+            if(!empty($filters)){
+                $datas->query->where(function($query) use($filters){
+                    foreach($filters as $filterKey => $filterValue){
+                        // Permission filters
+                        if(in_array($filterKey, ['filter-permission'])){
+                            $query->whereHas('permissions', function($q) use($filterValue){
+                                $q->whereIn('name', $filterValue);
+                            });
+                        }
+                    }
+                });
+            }
+
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Create
@@ -68,8 +86,8 @@ class RoleController extends Controller{
             }
 
             // Create role
-            $datas = $this->repositoryInterface->create([
-                'name' => $request['name'],
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
+                'name' => $request->name,
             ]);
 
             // Return response
@@ -78,7 +96,7 @@ class RoleController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Role created successfully.',
             ]);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Read
@@ -105,7 +123,7 @@ class RoleController extends Controller{
                 'status'    => 200,
                 'data'      => $datas,
             ]);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Sync role to Permission
@@ -120,7 +138,7 @@ class RoleController extends Controller{
             }
 
             // Sync permission to role (id from role)
-            $datas = $this->repositoryInterface->permission($request['permission'])->syncToPermission($id);
+            $datas = $this->repositoryInterface->permission($request->permission)->broadcaster(GeneralEventHandler::class, 'stp')->syncToPermission($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -128,7 +146,7 @@ class RoleController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Role successfully synchronized with permission.',
             ]);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Sync role to user
@@ -143,7 +161,7 @@ class RoleController extends Controller{
             }
 
             // Sync role to user (id from user)
-            $datas = $this->repositoryInterface->withRelation('roles')->role($request['role'])->syncToUser($id);
+            $datas = $this->repositoryInterface->withRelation('roles')->role($request->role)->broadcaster(GeneralEventHandler::class, 'stu')->syncToUser($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -151,6 +169,6 @@ class RoleController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Role successfully synchronized to user.',
             ]);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 }

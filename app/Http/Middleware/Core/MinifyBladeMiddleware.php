@@ -89,8 +89,3 @@ class MinifyBladeMiddleware{
         return trim($html);
     }
 }
-
-
-
-
-

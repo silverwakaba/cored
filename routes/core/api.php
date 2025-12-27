@@ -48,12 +48,25 @@ Route::prefix('/')->name('be.')->group(function(){
             Route::prefix('request')->name('request.')->controller(BaseRequestController::class)->group(function(){
                 // Index
                 Route::get('/', 'list')->name('index');
+
+                // Create
+                Route::post('/', 'create')->name('store');
+
+                // Read
+                Route::get('/{id}', 'read')->name('show');
+
+                // Update
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+
+                // Delete
+                Route::delete('/{id}', 'delete')->name('destroy');
             });
         });
 
         // CTA
         Route::prefix('cta')->name('cta.')->middleware(['throttle:general'])->controller(CallToActionController::class)->group(function(){
-            // Messages - 10 attempts per 5 minutes to prevent spam
+            // Messages (10 attempts per 5 minutes)
             Route::post('message', 'message')->name('message')->middleware(['throttle:10,5']);
         });
 
@@ -61,20 +74,20 @@ Route::prefix('/')->name('be.')->group(function(){
         Route::prefix('auth')->name('auth.')->group(function(){
             // JWT Auth
             Route::prefix('jwt')->name('jwt.')->controller(JwtController::class)->group(function(){
-                // Register - 3 attempts per 15 minutes
+                // Register (3 attempts per 15 minutes)
                 Route::post('register', 'register')->name('register')->middleware(['throttle:3,15']);
 
-                // Login - 5 attempts per 15 minutes
+                // Login (5 attempts per 15 minutes)
                 Route::post('login', 'login')->name('login')->middleware(['throttle:5,15']);
 
                 // Logout
                 Route::post('logout', 'logout')->name('logout')->middleware(['jwt.be', 'throttle:api']);
 
-                // Verify account - 3 attempts per 10 minutes
+                // Verify account (3 attempts per 10 minutes)
                 Route::post('verify-account', 'verifyAccount')->name('verify-account')->middleware(['throttle:3,10']);
                 Route::post('verify-account/{token}', 'verifyAccountTokenized')->name('verify-account-tokenized')->middleware(['throttle:3,10']);
 
-                // Reset password - 3 attempts per 10 minutes
+                // Reset password (3 attempts per 10 minutes)
                 Route::post('reset-password', 'resetPassword')->name('reset-password')->middleware(['throttle:3,10']);
                 Route::post('reset-password/{token}', 'resetPasswordTokenized')->name('reset-password-tokenized')->middleware(['throttle:3,10']);
 

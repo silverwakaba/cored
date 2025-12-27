@@ -2,7 +2,7 @@
 @section('title', 'Role')
 @section('content')
     <x-Adminlte.ContentWrapperComponent breadcrumb="apps.rbac.role">
-        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Role">
+        <x-Adminlte.CardComponent id="theForm" :asForm="false" title="Manage Role">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
         <x-Adminlte.ModalComponent id="theModal" :asForm="true" title="Manage Role">
@@ -13,12 +13,12 @@
 @endsection
 @push('script')
     <script>
+        // Define usable variable
+        let varPermission;
+        let routeAction;
+
         // Init jquery
         $(document).ready(function(){
-            // Define usable variable
-            let varPermission;
-            let routeAction;
-
             // Load init function
             initDatatable();
             initUpsert();
@@ -30,7 +30,7 @@
         // Init datatable
         function initDatatable(){
             // Server-side Datatable from API Endpoint
-            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.role.list')" method="GET">
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.role.list')" :upsert="true" :editable="true" :filterable="true" method="GET">
                 {
                     title: 'Name', data: 'name',
                 },

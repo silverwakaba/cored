@@ -77,6 +77,9 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
 
         // Base-related-thing
         Route::prefix('base')->name('base.')->group(function(){
+            // Index
+            Route::get('/', [PageController::class, 'appBase'])->name('index');
+
             // General
             Route::prefix('general')->name('general.')->controller(BasedataController::class)->group(function(){
                 // Boolean
@@ -112,6 +115,19 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
                 
                 // List
                 Route::get('list', 'list')->name('list')->withoutMiddleware(['jwt.fe']);
+
+                // Create
+                Route::post('/', 'create')->name('store');
+
+                // Read
+                Route::get('/{id}', 'read')->name('show');
+
+                // Update
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+
+                // Delete
+                Route::delete('/{id}', 'delete')->name('destroy');
             });
         });
 

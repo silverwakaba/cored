@@ -63,6 +63,34 @@ $('#{{ $id }}').DataTable({
                 return `${ meta.row + meta.settings._iDisplayStart + 1 }`;
             },
         },
+        {
+            title: 'Active', width: '5%', class: 'text-center',
+            visible: false,
+            render: function(data, type, row, meta){
+                // Determine active status based on available columns
+                let isActive = null;
+                
+                // If both columns exist, combine the logic: active if is_active is true AND deleted_at is null
+                if(row.is_active !== undefined && row.deleted_at !== undefined){
+                    isActive = (row.is_active == true && row.deleted_at == null);
+                }
+                // If only is_active exists, use it
+                else if(row.is_active !== undefined){
+                    isActive = (row.is_active == true);
+                }
+                // If only deleted_at exists, use it (null = active, not null = inactive)
+                else if(row.deleted_at !== undefined){
+                    isActive = (row.deleted_at == null);
+                }
+                // If neither exists, return empty
+                else{
+                    return '';
+                }
+                
+                // Return icon based on active status
+                return `<i class="fas fa-circle ${ isActive ? 'text-success' : 'text-danger' }"></i>`;
+            },
+        },
         {{ $slot }}
         {
             title: 'Action', width: '10%', class: 'text-center',
@@ -86,6 +114,47 @@ $('#{{ $id }}').DataTable({
             },
         },
     ],
+    initComplete: function(settings, json){
+        // Check if data has is_active or deleted_at column
+        let hasActiveColumn = false;
+        
+        if(json && json.data && json.data.length > 0){
+            // Check all rows for is_active or deleted_at (check up to first 10 rows for performance)
+            let rowsToCheck = Math.min(json.data.length, 10);
+            for(let i = 0; i < rowsToCheck; i++){
+                let row = json.data[i];
+                if(row && (row.hasOwnProperty('is_active') || row.hasOwnProperty('deleted_at'))){
+                    hasActiveColumn = true;
+                    break;
+                }
+            }
+        }
+        
+        // Show/hide Active column (index 1, after No. column)
+        let table = $('#{{ $id }}').DataTable();
+        table.column(1).visible(hasActiveColumn);
+    },
+    drawCallback: function(settings){
+        // Re-check column visibility on each draw (for reload/filter scenarios)
+        let table = $('#{{ $id }}').DataTable();
+        let api = this.api();
+        let hasActiveColumn = false;
+        
+        // Check first few rows from the current page
+        let rows = api.rows({page: 'current'}).data();
+        let rowsToCheck = Math.min(rows.length, 10);
+        
+        for(let i = 0; i < rowsToCheck; i++){
+            let row = rows[i];
+            if(row && (row.hasOwnProperty('is_active') || row.hasOwnProperty('deleted_at'))){
+                hasActiveColumn = true;
+                break;
+            }
+        }
+        
+        // Update column visibility
+        table.column(1).visible(hasActiveColumn);
+    },
 });
 
 @if($deleteUrl)

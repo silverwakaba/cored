@@ -17,7 +17,6 @@ use App\Http\Requests\Core\BaseModuleRequest;
 
 // Internal
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class BaseModuleController extends Controller{
     // Property
@@ -58,25 +57,20 @@ class BaseModuleController extends Controller{
             if(!empty($filters)){
                 $datas->query->where(function($query) use($filters){
                     foreach($filters as $filterKey => $filterValue){
-                        // Handle boolean filters (filter-active, etc.)
+                        // Status active filters
                         if(in_array($filterKey, ['filter-active'])){
-                            // Skip if value is empty string or null (but allow "0" and false)
+                            // Skip if value is empty string or null, but allow "0" and false
                             if(in_array($filterValue, [null, ''])){
                                 continue;
                             }
                             
                             // Convert to boolean if needed
-                            // Handles: string "0"/"1", string "true"/"false", boolean true/false
                             if(is_string($filterValue)){
                                 // Convert string to boolean
-                                // "0", "false", "off", "no" -> false
-                                // "1", "true", "on", "yes" -> true
-                                // invalid string -> null
                                 $filterValue = filter_var($filterValue, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
                             }
                             
-                            // Only apply filter if value is valid boolean (not null after conversion)
-                            // This allows both true and false values
+                            // Only apply filter if value is valid boolean, not null after conversion
                             if($filterValue !== null){
                                 $query->where('is_active', $filterValue);
                             }
@@ -175,12 +169,10 @@ class BaseModuleController extends Controller{
 
             // Get action and data from result
             $action = $result['action'];
-            $datas = $result['data'];
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'data'      => $datas,
                 'message'   => "Base module {$action} successfully.",
             ]);
         }, ['status' => 409, 'message' => true]);

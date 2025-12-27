@@ -2,7 +2,7 @@
 @section('title', 'Permission')
 @section('content')
     <x-Adminlte.ContentWrapperComponent breadcrumb="apps.rbac.permission">
-        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="false" title="Filter Permission">
+        <x-Adminlte.CardComponent id="theForm" :asForm="false" title="Filter Permission">
             <div class="row my-2">
                 <div class="col-md-6">
                     <x-Form.InputForm name="filter-name" type="text" text="Permission Name" :required="false" />
@@ -12,7 +12,7 @@
                 </div>
             </div>
         </x-Adminlte.CardComponent>
-        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Permission">
+        <x-Adminlte.CardComponent id="theForm" :asForm="false" title="Manage Permission">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
         <x-Adminlte.ModalComponent id="theModal" :asForm="true" :withCaptcha="false" title="Manage Permission">
@@ -22,12 +22,12 @@
 @endsection
 @push('script')
     <script>
+        // Define usable variable
+        let varPermission;
+        let routeAction;
+        
         // Init jquery
         $(document).ready(function(){
-            // Define usable variable
-            let varPermission;
-            let routeAction;
-
             // Load init function
             initDatatable();
             initUpsert();
@@ -51,7 +51,7 @@
         // Init datatable
         function initDatatable(){
             // Server-side Datatable from API Endpoint
-            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')" :deleteUrl="route('fe.apps.rbac.permission.destroy', ['id' => '::ID::'])" :filterable="true" method="GET">
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')" :deleteUrl="route('fe.apps.rbac.permission.destroy', ['id' => '::ID::'])" :upsert="true" :editable="true" :filterable="true" method="GET">
                 {
                     title: 'Name', data: 'name',
                 },

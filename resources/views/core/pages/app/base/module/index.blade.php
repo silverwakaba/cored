@@ -1,7 +1,7 @@
 @extends('layouts.adminlte')
 @section('title', 'Module')
 @section('content')
-    <x-Adminlte.ContentWrapperComponent breadcrumb="apps.rbac.permission">
+    <x-Adminlte.ContentWrapperComponent breadcrumb="apps.base.module">
         <x-Adminlte.CardComponent id="theFilter" :asForm="false" title="Filter Module">
             <div class="row my-2">
                 <div class="col-md-12">
@@ -9,11 +9,9 @@
                 </div>
             </div>
         </x-Adminlte.CardComponent>
-
         <x-Adminlte.CardComponent id="theForm" :asForm="false" title="Manage Module">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
-
         <x-Adminlte.ModalComponent id="theModal" :asForm="true" :withCaptcha="false" title="Manage Module">
             <x-Form.InputForm name="name" type="text" text="Name" :required="true" />
         </x-Adminlte.ModalComponent>
@@ -21,12 +19,12 @@
 @endsection
 @push('script')
     <script>
+        // Define usable variable
+        let varPermission;
+        let routeAction;
+        
         // Init jquery
         $(document).ready(function(){
-            // Define usable variable
-            let varPermission;
-            let routeAction;
-
             // Load init function
             initDatatable();
             initUpsert();
@@ -52,12 +50,6 @@
         function initDatatable(){
             // Server-side Datatable from API Endpoint
             <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.base.module.list')" :deleteUrl="route('fe.apps.base.module.destroy', ['id' => '::ID::'])" :upsert="true" :editable="true" :filterable="true" method="GET">
-                {
-                    title: 'Active', width: '5%', class: 'text-center',
-                    render: function(data, type, row, meta){
-                        return `<i class="fas fa-circle ${ row.is_active == true ? 'text-success' : 'text-danger' }"></i>`;
-                    },
-                },
                 {
                     title: 'Name', data: 'name',
                 },

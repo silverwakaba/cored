@@ -58,6 +58,41 @@ class MenuSeeder extends Seeder{
             'order'     => 1,
         ]);
 
+        /**
+         * Apps - Base
+        */
+
+        // Create parent - Base
+        $parentAppsBase = Menu::create([
+            'name'      => 'Base',
+            'icon'      => 'fas fa-database',
+            'type'      => 'p',
+            'parent_id' => $headerApps->id,
+            'order'     => 999998,
+        ]);
+
+        // Create child - Base - Module
+        $childAppsBaseModule = Menu::create([
+            'name'      => 'Module',
+            'route'     => 'fe.apps.base.module.index',
+            'type'      => 'c',
+            'parent_id' => $parentAppsBase->id,
+            'order'     => 1,
+        ]);
+
+        // Create child - Base - Request
+        $childAppsBaseRequest = Menu::create([
+            'name'      => 'Request',
+            'route'     => 'fe.apps.base.request.index',
+            'type'      => 'c',
+            'parent_id' => $parentAppsBase->id,
+            'order'     => $childAppsBaseModule->id + 1,
+        ]);
+
+        /**
+         * Apps - RBAC
+        */
+
         // Create parent - RBAC
         $parentAppsRBAC = Menu::create([
             'name'      => 'RBAC',
@@ -98,7 +133,8 @@ class MenuSeeder extends Seeder{
          * Assign roles to menu items
         */
 
-        // App - RBAC
+        // App
+        $parentAppsBase->roles()->attach([1, 2, 3]);
         $parentAppsRBAC->roles()->attach([1, 2, 3]);
     }
 }

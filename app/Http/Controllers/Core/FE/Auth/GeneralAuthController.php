@@ -82,8 +82,16 @@ class GeneralAuthController extends Controller{
                 }
             }
 
+            // Get response data
+            $responseData = $http->json();
+
+            // Add intended redirect URL if exists in session
+            if($http->successful() && session()->has('url.intended')){
+                $responseData['redirect_url'] = session()->pull('url.intended');
+            }
+
             // Response
-            return response()->json($http->json(), $http->status());
+            return response()->json($responseData, $http->status());
         }
         catch(\Throwable $th){
             return GeneralHelper::jsonResponse([

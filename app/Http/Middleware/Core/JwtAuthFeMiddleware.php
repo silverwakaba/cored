@@ -38,6 +38,11 @@ class JwtAuthFeMiddleware{
                 Cookie::expire('jwt_user_id');
             }
 
+            // Save intended URL to session for redirect after login
+            if(!$request->expectsJson()){
+                session()->put('url.intended', $request->fullUrl());
+            }
+
             // Redirect to login page
             return redirect()->route('fe.auth.login')->with('class', 'warning')->with('message', "Session expired and/or invalid. Please try to login again.");
         }

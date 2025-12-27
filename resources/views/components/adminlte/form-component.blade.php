@@ -53,8 +53,9 @@ $('#{{ $id }}').off('submit').on('submit', function(e){
                     @endif
 
                     @if($redirect)
-                        // Redirect
-                        window.location.href = "{{ $redirect }}";
+                        // Redirect - use intended URL from response if available, otherwise use default redirect
+                        let redirectUrl = response.redirect_url || "{{ $redirect }}";
+                        window.location.href = redirectUrl;
                     @endif
 
                     @if($isReset)

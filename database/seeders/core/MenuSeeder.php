@@ -3,6 +3,7 @@
 namespace Database\Seeders\Core;
 
 use App\Models\Core\Menu;
+use App\Models\Core\User;
 use Illuminate\Database\Seeder;
 
 class MenuSeeder extends Seeder{
@@ -39,12 +40,13 @@ class MenuSeeder extends Seeder{
 
         // Create child - Auth Index
         $childAuth = Menu::create([
-            'name'      => 'Auth',
-            'icon'      => 'fas fa-key',
-            'route'     => 'fe.page.auth',
-            'type'      => 'c',
-            'parent_id' => $parentGeneral->id,
-            'order'     => $childGeneral->order + 1,
+            'name'          => 'Auth',
+            'icon'          => 'fas fa-key',
+            'route'         => 'fe.page.auth',
+            'type'          => 'c',
+            'parent_id'     => $parentGeneral->id,
+            'order'         => $childGeneral->order + 1,
+            'is_guest_only' => true,
         ]);
 
         // Create child - CTA Index
@@ -157,5 +159,12 @@ class MenuSeeder extends Seeder{
         // App
         $parentAppsBase->roles()->attach([1, 2, 3]);
         $parentAppsRBAC->roles()->attach([1, 2, 3]);
+
+        /**
+         * Exclude user from menu items regarding roles (inclusion have the similar application)
+        */
+
+        // $excludeUser = User::where('email', 'a@a.a')->first();
+        // $parentAppsBase->excludedUsers()->attach($excludeUser);
     }
 }

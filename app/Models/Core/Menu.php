@@ -19,10 +19,12 @@ class Menu extends Model{
         'type',
         'order',
         'is_authenticate',
+        'is_guest_only',
     ];
 
     protected $casts = [
         'is_authenticate'   => 'boolean',
+        'is_guest_only'     => 'boolean',
         'order'             => 'integer',
     ];
 
@@ -39,6 +41,16 @@ class Menu extends Model{
     // Belong to role
     public function roles(){
         return $this->belongsToMany(Role::class, 'menu_roles');
+    }
+
+    // Belong to user includes (users who can see menu even without role)
+    public function includedUsers(){
+        return $this->belongsToMany(User::class, 'menu_user_includes');
+    }
+
+    // Belong to user excludes (users who cannot see menu even with role)
+    public function excludedUsers(){
+        return $this->belongsToMany(User::class, 'menu_user_excludes');
     }
 
     // User has access

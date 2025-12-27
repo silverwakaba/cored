@@ -25,9 +25,3 @@ class UserAuthResetPasswordRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

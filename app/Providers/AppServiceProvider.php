@@ -16,6 +16,8 @@ class AppServiceProvider extends ServiceProvider{
         $bindings = [
             // Core
             \App\Contracts\Core\ApiRepositoryInterface::class            => \App\Repositories\Core\ApiRepository::class,
+            \App\Contracts\Core\BaseModuleRepositoryInterface::class     => \App\Repositories\Core\EloquentBaseModuleRepository::class,
+            \App\Contracts\Core\BaseRequestRepositoryInterface::class    => \App\Repositories\Core\EloquentBaseRequestRepository::class,
             \App\Contracts\Core\CallToActionRepositoryInterface::class   => \App\Repositories\Core\EloquentCallToActionRepository::class,
             \App\Contracts\Core\MenuRepositoryInterface::class           => \App\Repositories\Core\EloquentMenuRepository::class,
             \App\Contracts\Core\PermissionRepositoryInterface::class     => \App\Repositories\Core\EloquentPermissionRepository::class,

@@ -98,6 +98,35 @@ class PageController extends Controller{
         return view('pages/app/index');
     }
 
+    // Index app/base
+    public function appBase(){
+        // Data option
+        $datas = [
+            'breadcrumb'    => 'apps.base',
+            'title'         => 'Base',
+            'navigation'    => [
+                // Module
+                [
+                    'icon'      => 'fas fa-layer-group',
+                    'title'     => 'Module',
+                    'link'      => route('fe.apps.base.module.index'),
+                ],
+
+                // Request
+                [
+                    'icon'      => 'fas fa-clipboard-check',
+                    'title'     => 'Request',
+                    'link'      => route('fe.apps.base.request.index'),
+                ],
+            ],
+        ];
+
+        // View
+        return view('pages/app/index-standardized', [
+            'datas' => $datas,
+        ]);
+    }
+
     // Index app/rbac
     public function appRBAC(){
         // Data option

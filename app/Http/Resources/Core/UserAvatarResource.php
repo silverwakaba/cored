@@ -19,9 +19,3 @@ class UserAvatarResource extends JsonResource{
         ];
     }
 }
-
-
-
-
-
-

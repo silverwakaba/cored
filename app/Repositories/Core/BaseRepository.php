@@ -36,7 +36,7 @@ abstract class BaseRepository{
     }
 
     // Execute broadcaster
-    private function broadcasterExecute($data = null){
+    protected function broadcasterExecute($data = null){
         // Handle broadcast if available
         if(isset($this->broadcastClass) && class_exists($this->broadcastClass)){
             try{
@@ -292,26 +292,74 @@ abstract class BaseRepository{
         });
     }
 
-    // Activation data
-    public function activation($id, bool $status){
-        // Implementing db transaction
-        return DB::transaction(function() use($id, $status){
-            // Start find query
-            $datas = $this->find($id);
+    // Activation data (multiple data available through $ids)
+    public function activation($id, bool $status = null){
+        // Get data type and its data, then convert it as array
+        $ids = GeneralHelper::getType($id);
 
-            // Update status
-            // Boolean column is identified with "is_" prefixes
-            $datas = $datas->update([
-                'is_active' => $status,
-            ]);
+        // Implementing db transaction
+        return DB::transaction(function() use($ids, $status){
+            // Start find query
+            $datas = $this->query->select('id', 'is_active')->whereIn('id', $ids)->get();
+
+            // If status is provided, set all to that status
+            if($status !== null){
+                // Update all data to the provided status
+                $this->query->whereIn('id', $ids)->update([
+                    'is_active' => $status,
+                ]);
+
+                // Determine action performed
+                $action = $status ? 'activated' : 'deactivated';
+
+                // Return response with action info
+                return [
+                    'data'      => $datas->count(),
+                    'action'    => $action,
+                ];
+            }
+
+            // If status is not provided, toggle each data individually
+            $activatedCount = 0;
+            $deactivatedCount = 0;
+
+            foreach($datas as $data){
+                $newStatus = !$data->is_active;
+                
+                // Update individual data
+                $data->update([
+                    'is_active' => $newStatus,
+                ]);
+
+                // Count actions
+                if($newStatus){
+                    $activatedCount++;
+                } else {
+                    $deactivatedCount++;
+                }
+            }
+
+            // Determine action performed (mixed if both actions occurred)
+            if($activatedCount > 0 && $deactivatedCount > 0){
+                $action = 'toggled';
+            } elseif($activatedCount > 0){
+                $action = 'activated';
+            } else {
+                $action = 'deactivated';
+            }
 
             // Call broadcaster if set
             if($this->broadcastClass){
                 $this->broadcasterExecute($datas);
             }
 
-            // Return response
-            return $datas;
+            // Return response with action info
+            return [
+                'data'              => $datas->count(),
+                'action'            => $action,
+                'activated_count'   => $activatedCount,
+                'deactivated_count' => $deactivatedCount,
+            ];
         });
     }
 }

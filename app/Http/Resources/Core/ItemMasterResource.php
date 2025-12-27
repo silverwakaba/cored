@@ -22,9 +22,3 @@ class ItemMasterResource extends JsonResource{
         ];
     }
 }
-
-
-
-
-
-

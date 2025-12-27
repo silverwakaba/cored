@@ -13,6 +13,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/fontawesome.min.css" integrity="sha256-TBe0l9PhFaVR3DwHmA2jQbUf1y6yQ22RBgJKKkNkC50=" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/icheck-bootstrap@3.0.1/icheck-bootstrap.min.css" integrity="sha256-fxxvNo/vOD88AQfrGh88D74wgYex47k9+sa3bWmCelI=" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.11.5/css/dataTables.bootstrap4.min.css" integrity="sha256-lDWLG10paq84N0F/7818mEj3YW5d6LCSBmIj2LirkYo=" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-buttons-bs4@2.2.3/css/buttons.bootstrap4.min.css" integrity="sha256-jnnqUbo9hgB8E3VRnDU4QCEm1QhPABkW08ie9/RyezI=" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.9.1/dist/sweetalert2.min.css" integrity="sha256-VJuwjrIWHWsPSEvQV4DiPfnZi7axOaiWwKfXaJnR5tA=" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" integrity="sha256-FdatTf20PQr/rWg+cAKfl6j4/IY3oohFAJ7gVC3M34E=" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css" integrity="sha256-h7vy42BP4MtLE0udIyBuOEoB8nJI2iLaiOJEgO5Ykp0=" crossorigin="anonymous">
@@ -29,8 +30,12 @@
         <script src="https://cdn.jsdelivr.net/npm/jscroll@2.4.1/jquery.jscroll.min.js" integrity="sha256-sJRx4f+y7jaXUs1JgAMhYQujFu+g3+MMPjVzluCRGm8=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/js/all.min.js" integrity="sha256-BAR0H3Qu2PCfoVr6CtZrcnbK3VKenmUF9C6IqgsNsNU=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/datatables@1.10.18/media/js/jquery.dataTables.min.js" integrity="sha256-3aHVku6TxTRUkkiibvwTz5k8wc7xuEr1QqTB+Oo5Q7I=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.11.5/js/jquery.dataTables.min.js" integrity="sha256-lpQbyCSrPqrv7IZbdk1u4zJ3Ft/DUAIfZElc0Zi25Kw=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.11.5/js/dataTables.bootstrap4.min.js" integrity="sha256-2MzaecCGkwO775PvRJkqMTd4sR6cuRiQlkT2iUeCsSU=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" integrity="sha256-rMfkFFWoB2W1/Zx+4bgHim0WC7vKRVrq6FTeZclH1Z4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons@2.2.3/js/dataTables.buttons.min.js" integrity="sha256-MdJguZUuNQK/uxtpZOo/x7/m5Q7IQjPvVXg+3oE9FyU=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons-bs4@2.2.3/js/buttons.bootstrap4.min.js" integrity="sha256-Gni95o1kaIGc3D0rtfl6b1uXbMvak3As3D+WXLVa5s0=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/datatables.net-buttons@2.2.3/js/buttons.html5.min.js" integrity="sha256-7qyrLeWl1Of12MDXai8GM92HPio7scZkDCt5kmHxz7Y=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.9.1/dist/sweetalert2.all.min.js" integrity="sha256-rTFZb1sYZydw8G8qAnFZ0aCxLsRoUNSR38mzRI1/OX4=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js" integrity="sha256-AFAYEOkzB6iIKnTYZOdUf9FFje6lOTYdwRJKwTN5mks=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2.0/dist/js/adminlte.min.js" integrity="sha256-u2yoem2HtOCQCnsp3fO9sj5kUrL+7hOAfm8es18AFjw=" crossorigin="anonymous"></script>

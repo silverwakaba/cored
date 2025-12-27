@@ -2,17 +2,14 @@
 @section('title', 'Permission')
 @section('content')
     <x-Adminlte.ContentWrapperComponent breadcrumb="apps.rbac.permission">
-        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="false" title="Filter Permission">
+        <x-Adminlte.CardComponent id="theFilter" :asForm="false" title="Filter Permission">
             <div class="row my-2">
-                <div class="col-md-6">
-                    <x-Form.InputForm name="filter-name" type="text" text="Permission Name" :required="false" />
-                </div>
-                <div class="col-md-6">
-                    <x-Form.InputForm name="filter-role" type="text" text="Role Name" :required="false" />
+                <div class="col-md-12">
+                    <x-Form.SelectForm name="filter-role[]" text="Role" :required="false" :multiple="true" />
                 </div>
             </div>
         </x-Adminlte.CardComponent>
-        <x-Adminlte.CardComponent id="theForm" :asForm="false" :upsert="true" title="Manage Permission">
+        <x-Adminlte.CardComponent id="theForm" :asForm="false" title="Manage Permission">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
         <x-Adminlte.ModalComponent id="theModal" :asForm="true" :withCaptcha="false" title="Manage Permission">
@@ -22,16 +19,17 @@
 @endsection
 @push('script')
     <script>
+        // Define usable variable
+        let varPermission;
+        let routeAction;
+        
         // Init jquery
         $(document).ready(function(){
-            // Define usable variable
-            let varPermission;
-            let routeAction;
-
             // Load init function
             initDatatable();
             initUpsert();
             initWebsocket();
+            loadRole();
         });
 
         // Init websocket
@@ -51,7 +49,7 @@
         // Init datatable
         function initDatatable(){
             // Server-side Datatable from API Endpoint
-            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')" :deleteUrl="route('fe.apps.rbac.permission.destroy', ['id' => '::ID::'])" method="GET">
+            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.rbac.permission.list')" :deleteUrl="route('fe.apps.rbac.permission.destroy', ['id' => '::ID::'])" :upsert="true" :editable="true" :filterable="true" method="GET">
                 {
                     title: 'Name', data: 'name',
                 },
@@ -139,6 +137,35 @@
                     // Init form action
                     <x-Adminlte.FormComponent id="theModal" :asModal="true" />
                 }
+            });
+        }
+
+        // Load role
+        function loadRole(){
+            // Handle permission list
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: `{{ route('fe.apps.rbac.role.list') }}`,
+                success: function(response){
+                    // Select input
+                    const select = $(`[name="filter-role[]"]`);
+
+                    // Clear existing options first
+                    select.empty().append('<option value="">Select an Option</option>');
+
+                    // Map data
+                    response.forEach(function(data){
+                        // Append data
+                        select.append($('<option>', {
+                            value: data.name,
+                            text: data.name,
+                        }));
+                    });
+                },
+                error: function(){
+                    $(`[name="filter-role[]"]`).html('<option value="">Error loading data...</option>');
+                },
             });
         }
     </script>

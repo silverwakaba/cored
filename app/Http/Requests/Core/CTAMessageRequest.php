@@ -28,9 +28,3 @@ class CTAMessageRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

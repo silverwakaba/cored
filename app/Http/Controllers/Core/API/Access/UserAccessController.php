@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 // Repository interface
 use App\Contracts\Core\UserRepositoryInterface;
 
+// Event
+use App\Events\Core\GeneralEventHandler;
+
 // Helper
-use App\Helpers\Core\FileHelper;
 use App\Helpers\Core\GeneralHelper;
 
 // Request
@@ -48,9 +50,28 @@ class UserAccessController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
+            // Apply all filters if provided
+            $filters = $request->only(array_filter(array_keys($request->all()), function($key){
+                return strpos($key, 'filter') === 0;
+            }));
+
+            // Run filter sub-query
+            if(!empty($filters)){
+                $datas->query->where(function($query) use($filters){
+                    foreach($filters as $filterKey => $filterValue){
+                        // Role filters
+                        if(in_array($filterKey, ['filter-role'])){
+                            $query->whereHas('roles', function($q) use($filterValue){
+                                $q->whereIn('name', $filterValue);
+                            });
+                        }
+                    }
+                });
+            }
+
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Create
@@ -65,11 +86,11 @@ class UserAccessController extends Controller{
             }
 
             // Create registered user
-            $datas = $this->repositoryInterface->prepare([
-                'name'      => $request['name'],
-                'email'     => $request['email'],
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->prepare([
+                'name'      => $request->name,
+                'email'     => $request->email,
                 'password'  => bcrypt(GeneralHelper::randomPassword()),
-            ])->role($request['role'])->register();
+            ])->role($request->role)->register();
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -77,7 +98,7 @@ class UserAccessController extends Controller{
                 'data'      => $datas,
                 'message'   => 'User created successfully.',
             ]);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Read
@@ -99,7 +120,7 @@ class UserAccessController extends Controller{
                 'success'   => true,
                 'data'      => $datas,
             ], 200);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Update
@@ -114,9 +135,9 @@ class UserAccessController extends Controller{
             }
 
             // Update registered user
-            $datas = $this->repositoryInterface->modify($id, [
-                'name'  => $request['name'],
-                'email' => $request['email'],
+            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->modify($id, [
+                'name'  => $request->name,
+                'email' => $request->email,
             ]);
 
             // Return response
@@ -125,35 +146,23 @@ class UserAccessController extends Controller{
                 'data'      => $datas,
                 'message'   => 'User updated successfully.',
             ]);
-        });
+        }, ['status' => 409, 'message' => false]);
     }
 
-    // Activation
-    public function activation($id, Request $request){
+    // Delete
+    public function delete($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
-            // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new UserActivationRequest())->rules());
+            // Delete base module data (actually toggles activation status)
+            $result = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($id);
 
-            // Stop if validation failed
-            if(!is_array($validated)){
-                return $validated;
-            }
-
-            // Init activation
-            $activation = (bool) $request['activation'];
-
-            // Read user account
-            $datas = $this->repositoryInterface->activate($id, $activation);
-
-            // State message
-            $state = ($activation == true) ? 'activated' : 'deactivated';
+            // Get action and data from result
+            $action = $result['action'];
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'data'      => $datas,
-                'message'   => "User $state successfully.",
+                'message'   => "User {$action} successfully.",
             ]);
-        });
+        }, ['status' => 409, 'message' => true]);
     }
 }

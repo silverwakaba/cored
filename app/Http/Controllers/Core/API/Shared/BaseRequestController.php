@@ -88,7 +88,7 @@ class BaseRequestController extends Controller{
 
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
-        }, ['status' => 409, 'message' => true]);
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Create
@@ -104,9 +104,9 @@ class BaseRequestController extends Controller{
 
             // Create base request
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
-                'base_modules_id'   => $request['module'],
-                'name'              => $request['name'],
-                'detail'            => $request['detail'],
+                'base_modules_id'   => $request->module,
+                'name'              => $request->name,
+                'detail'            => $request->detail,
             ]);
 
             // Return response
@@ -115,7 +115,7 @@ class BaseRequestController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Base request created successfully.',
             ]);
-        }, ['status' => 409, 'message' => true]);
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Read
@@ -158,9 +158,9 @@ class BaseRequestController extends Controller{
 
             // Update base request data
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
-                'base_modules_id'   => $request['module'],
-                'name'              => $request['name'],
-                'detail'            => $request['detail'],
+                'base_modules_id'   => $request->module,
+                'name'              => $request->name,
+                'detail'            => $request->detail,
             ]);
 
             // Return response

@@ -2,7 +2,7 @@
 @section('title', 'Request')
 @section('content')
     <x-Adminlte.ContentWrapperComponent breadcrumb="apps.base.request">
-        <x-Adminlte.CardComponent id="theForm" :asForm="false" title="Filter Request">
+        <x-Adminlte.CardComponent id="theFilter" :asForm="false" title="Filter Request">
             <div class="row my-2">
                 <div class="col-md-6">
                     <x-Form.SelectForm name="filter-active" text="Active Status" :required="false" :multiple="false" />

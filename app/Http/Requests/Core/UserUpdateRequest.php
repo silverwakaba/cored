@@ -24,12 +24,7 @@ class UserUpdateRequest extends FormRequest{
         return [
             'name'  => ['required', 'string'],
             // 'email' => ['required', 'email', Rule::unique('users')->ignore(AuthHelper::authID())],
+            'role'  => ['required'],
         ];
     }
 }
-
-
-
-
-
-

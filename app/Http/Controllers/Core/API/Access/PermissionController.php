@@ -12,9 +12,6 @@ use App\Events\Core\GeneralEventHandler;
 // Helper
 use App\Helpers\Core\GeneralHelper;
 
-// Model
-use Spatie\Permission\Models\Permission;
-
 // Request
 use App\Http\Requests\Core\PermissionCreateRequest;
 
@@ -60,20 +57,11 @@ class PermissionController extends Controller{
             if(!empty($filters)){
                 $datas->query->where(function($query) use($filters){
                     foreach($filters as $filterKey => $filterValue){
-                        if(!empty(trim($filterValue))){
-                            $filterValue = trim($filterValue);
-                            
-                            // Filter by permission name
-                            if(in_array($filterKey, ['filter-name'])){
-                                $query->where('name', 'LIKE', '%' . $filterValue . '%');
-                            }
-                            
-                            // Filter by role name
-                            elseif(in_array($filterKey, ['filter-role'])){
-                                $query->whereHas('roles', function($q) use($filterValue){
-                                    $q->where('name', 'LIKE', '%' . $filterValue . '%');
-                                });
-                            }
+                        // Role filters
+                        if(in_array($filterKey, ['filter-role'])){
+                            $query->whereHas('roles', function($q) use($filterValue){
+                                $q->whereIn('name', $filterValue);
+                            });
                         }
                     }
                 });
@@ -97,7 +85,7 @@ class PermissionController extends Controller{
 
             // Create permission
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
-                'name' => $request['name'],
+                'name' => $request->name,
             ]);
 
             // Return response
@@ -149,7 +137,7 @@ class PermissionController extends Controller{
 
             // Update permission data
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
-                'name' => $request['name'],
+                'name' => $request->name,
             ]);
 
             // Return response

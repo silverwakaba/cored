@@ -106,11 +106,33 @@ $('#{{ $id }}').off('submit').on('submit', function(e){
                 let errors = response.responseJSON.errors;
                 
                 $.each(errors, function(key, value){
+                    // Try to find input with original key first (for single value)
                     let input = $('[name="' + key + '"]');
+                    
+                    // If not found, try with [] suffix (for multiple value)
+                    if(input.length === 0){
+                        input = $('[name="' + key + '[]"]');
+                    }
+                    
+                    // Try to find error element with original key first
                     let errorElement = $('#' + key + '-error');
                     
-                    input.addClass('is-invalid');
-                    errorElement.text(value);
+                    // If not found, try with [] suffix (for multiple value)
+                    // Use attribute selector to handle [] characters in ID
+                    if(errorElement.length === 0){
+                        errorElement = $('[id="' + key + '[]-error"]');
+                    }
+                    
+                    // Apply error styling and message if elements found
+                    if(input.length > 0){
+                        input.addClass('is-invalid');
+                    }
+                    
+                    if(errorElement.length > 0){
+                        // Handle array of error messages (for multiple validation errors)
+                        let errorMessage = Array.isArray(value) ? value.join(', ') : value;
+                        errorElement.text(errorMessage);
+                    }
                 });
 
                 // If error, form processing state is set as false

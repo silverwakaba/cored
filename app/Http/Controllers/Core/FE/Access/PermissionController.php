@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 // Repository interface
 use App\Contracts\Core\ApiRepositoryInterface;
 
-// Helper
-use App\Helpers\Core\ErrorHelper;
-
 // Internal
 use Illuminate\Http\Request;
 
@@ -79,8 +76,7 @@ class PermissionController extends Controller{
     public function delete($id, Request $request){
         // Delete permission
         $http = $this->apiRepository->withToken()->delete('be.core.rbac.permission.destroy', [
-            'id'    => $id,
-            'name'  => $request->name,
+            'id' => $id,
         ]);
         
         // Response for $delete action

@@ -194,8 +194,8 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
                 Route::put('/{id}', 'update')->name('update');
                 Route::patch('/{id}', 'update')->name('update');
 
-                // Activation
-                Route::post('/{id}/activation', 'activation')->name('activation');
+                // Delete
+                Route::delete('/{id}', 'delete')->name('destroy');
             });
         });
     });

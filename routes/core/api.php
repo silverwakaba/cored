@@ -167,8 +167,8 @@ Route::prefix('/')->name('be.')->group(function(){
                     Route::put('/{id}', 'update')->name('update');
                     Route::patch('/{id}', 'update')->name('update');
 
-                    // Activation
-                    Route::post('/{id}/activation', 'activation')->name('activation')->middleware(['role:Root|Admin']);
+                    // Delete
+                    Route::delete('/{id}', 'delete')->name('destroy')->middleware(['role:Root|Admin']);
                 });
             });
         });

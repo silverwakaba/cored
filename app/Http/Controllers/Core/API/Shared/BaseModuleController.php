@@ -97,7 +97,7 @@ class BaseModuleController extends Controller{
 
             // Create base module
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
-                'name' => $request['name'],
+                'name' => $request->name,
             ]);
 
             // Return response
@@ -149,7 +149,7 @@ class BaseModuleController extends Controller{
 
             // Update base module data
             $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
-                'name' => $request['name'],
+                'name' => $request->name,
             ]);
 
             // Return response
@@ -158,7 +158,7 @@ class BaseModuleController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Base module updated successfully.',
             ]);
-        }, ['status' => 409, 'message' => true]);
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Delete
@@ -175,6 +175,6 @@ class BaseModuleController extends Controller{
                 'status'    => 200,
                 'message'   => "Base module {$action} successfully.",
             ]);
-        }, ['status' => 409, 'message' => true]);
+        }, ['status' => 409, 'message' => false]);
     }
 }

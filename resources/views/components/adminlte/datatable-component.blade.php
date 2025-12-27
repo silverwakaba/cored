@@ -39,8 +39,19 @@ $('#{{ $id }}').DataTable({
                 let filterName = $(this).attr('name');
                 let filterValue = $(this).val();
 
-                if(filterValue && filterValue.trim() !== ''){
-                    d[filterName] = filterValue.trim();
+                // Handle array (from multiple select) and string (from single select/input)
+                if(Array.isArray(filterValue)){
+                    // For multiple select, check if array has at least one non-empty value
+                    let hasValue = filterValue.some(function(val){
+                        return val && val.toString().trim() !== '';
+                    });
+                    
+                    if(hasValue){
+                        d[filterName] = filterValue;
+                    }
+                } else if(filterValue && filterValue.toString().trim() !== ''){
+                    // For single select/input, trim and check if not empty
+                    d[filterName] = filterValue.toString().trim();
                 }
             });
         },

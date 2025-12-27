@@ -24,9 +24,3 @@ class UserLostPasswordRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

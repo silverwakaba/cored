@@ -23,9 +23,3 @@ class UserActivationRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

@@ -25,9 +25,3 @@ class UserAuthLoginRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

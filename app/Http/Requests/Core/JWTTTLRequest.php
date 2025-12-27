@@ -23,9 +23,3 @@ class JWTTTLRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

@@ -23,9 +23,3 @@ class UserAvatarRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

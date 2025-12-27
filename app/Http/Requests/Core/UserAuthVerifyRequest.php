@@ -24,9 +24,3 @@ class UserAuthVerifyRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

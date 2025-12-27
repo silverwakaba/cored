@@ -27,9 +27,3 @@ class UserAuthRegisterRequest extends FormRequest{
         ];
     }
 }
-
-
-
-
-
-

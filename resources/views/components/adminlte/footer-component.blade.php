@@ -1,3 +1,3 @@
 <footer class="main-footer">
-    <strong>Copyright &copy; 2025 <span class="text-muted">{{ config('app.organization', 'Cored') }}</span>. All rights reserved.</strong>
+    <strong><small>Copyright &copy; 2025. <abbr title="&copy; {{ config('app.maintainer', 'Silverspoon') }}" class="text-muted">{{ config('app.organization', 'Cored') }}</abbr>. All rights reserved.</small></strong>
 </footer>

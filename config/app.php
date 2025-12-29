@@ -13,8 +13,10 @@ return [
     |
     */
 
-    'name'          => env('APP_NAME', 'Laravel'),
-    'organization'  => env('APP_ORGANIZATION', 'Laravel'),
+    'name'          => env('APP_NAME', 'Cored'),
+    'version'       => env('APP_VERSION', 'v.0.0.1'),
+    'maintainer'    => env('APP_MAINTAINER', 'Azhar Fahrurazi'),
+    'organization'  => env('APP_ORGANIZATION', 'Silverspoon Media'),
 
     /*
     |--------------------------------------------------------------------------

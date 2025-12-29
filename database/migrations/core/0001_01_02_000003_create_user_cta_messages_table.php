@@ -12,7 +12,7 @@ return new class extends Migration{
         Schema::create('user_cta_messages', function (Blueprint $table){
             $table->id();
             $table->ulid('users_id');
-            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('users_id')->references('id')->on('users');
             $table->string('subject');
             $table->longText('message');
             $table->json('attachment')->nullable();

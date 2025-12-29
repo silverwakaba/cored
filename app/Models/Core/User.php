@@ -82,6 +82,10 @@ class User extends Authenticatable implements JWTSubject{
         return $this->hasMany(UserCtaMessage::class, 'users_id');
     }
 
+    public function notifications(){
+        return $this->hasMany(Notification::class, 'users_id', 'id');
+    }
+
     // Menus that this user can access even without role (included)
     public function includedMenus(){
         return $this->belongsToMany(Menu::class, 'menu_user_includes');

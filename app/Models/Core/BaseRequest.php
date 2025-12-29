@@ -25,4 +25,9 @@ class BaseRequest extends Model{
     public function userRequests(){
         return $this->hasMany(UserRequest::class, 'base_requests_id', 'id');
     }
+
+    // Has many notifications
+    public function notifications(){
+        return $this->hasMany(Notification::class, 'base_requests_id', 'id');
+    }
 }

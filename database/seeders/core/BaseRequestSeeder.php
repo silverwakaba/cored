@@ -16,22 +16,30 @@ class BaseRequestSeeder extends Seeder{
         // Get module IDs
         $authenticationModule = BaseModule::where('name', 'Authentication')->first();
         $accountManagementModule = BaseModule::where('name', 'Account Management')->first();
+        $notificationModule = BaseModule::where('name', 'Notification')->first();
 
         BaseRequest::insert([
             [
-                'base_modules_id' => $authenticationModule->id,
-                'name' => "Email Verification"
+                'base_modules_id'   => $authenticationModule->id,
+                'name'              => "Email Verification",
+                'detail'            => json_encode([
+                    'notifications_class'    => 'App\Notifications\Core\OrderCreatedNotification',
+                ]),
             ],
             [
-                'base_modules_id' => $accountManagementModule->id,
-                'name' => "Email Change"
+                'base_modules_id'   => $accountManagementModule->id,
+                'name'              => "Email Change",
+                'detail'            => json_encode([
+                    'notifications_class'    => null,
+                ]),
             ],
             [
-                'base_modules_id' => $authenticationModule->id,
-                'name' => "Password Reset"
+                'base_modules_id'   => $authenticationModule->id,
+                'name'              => "Password Reset",
+                'detail'            => json_encode([
+                    'notifications_class'    => null,
+                ]),
             ],
         ]);
     }
 }
-
-

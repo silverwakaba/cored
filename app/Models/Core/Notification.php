@@ -11,6 +11,7 @@ class Notification extends Model{
 
     protected $fillable = [
         'base_requests_id',
+        'base_statuses_id',
         'users_id',
         'data',
         'read_at',
@@ -31,6 +32,11 @@ class Notification extends Model{
     // Belong to base request
     public function baseRequest(){
         return $this->belongsTo(BaseRequest::class, 'base_requests_id', 'id');
+    }
+
+    // Belong to base request
+    public function baseStatus(){
+        return $this->belongsTo(BaseRequest::class, 'base_statuses_id', 'id');
     }
 
     // Belong to user

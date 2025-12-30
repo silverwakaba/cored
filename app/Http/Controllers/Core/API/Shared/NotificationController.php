@@ -64,20 +64,10 @@ class NotificationController extends Controller{
     // Create
     public function create(Request $request){
         return GeneralHelper::safe(function() use($request){
-            // Search for BaseRequest by name
-            $baseRequest = BaseRequest::select(['id', 'name'])->where('name', $request->input('request'))->first();
-
-            // If BaseRequest not found, return error
-            if(!$baseRequest){
-                return GeneralHelper::jsonResponse([
-                    'status'    => 404,
-                    'message'   => 'Request type not found.',
-                ]);
-            }
-
             // Create notification
             $datas = $this->repositoryInterface->create([
-                'base_requests_id'  => $baseRequest->id,
+                'base_requests_id'  => $request->input('request'),
+                'base_statuses_id'  => $request->input('status'),
                 'users_id'          => $request->input('user'),
                 'data'              => $request->input('data'),
             ]);

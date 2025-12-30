@@ -17,11 +17,11 @@ class BaseRequestSeeder extends Seeder{
      */
     public function run() : void{
         // Get module IDs
-        $authenticationModule = BaseModule::where('name', 'Authentication')->first();
-        $accountManagementModule = BaseModule::where('name', 'Account Management')->first();
-        $progressModule = BaseModule::where('name', 'Progress')->first();
-        $approvalModule = BaseModule::where('name', 'Approval')->first();
-        $paymentModule = BaseModule::where('name', 'Payment')->first();
+        $authenticationModule = BaseModule::select(['id', 'name'])->where('name', 'Authentication')->first();
+        $accountManagementModule = BaseModule::select(['id', 'name'])->where('name', 'Account Management')->first();
+        $progressModule = BaseModule::select(['id', 'name'])->where('name', 'Progress')->first();
+        $approvalModule = BaseModule::select(['id', 'name'])->where('name', 'Approval')->first();
+        $paymentModule = BaseModule::select(['id', 'name'])->where('name', 'Payment')->first();
 
         BaseRequest::insert([
             // Authentication Module - Verification

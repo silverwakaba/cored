@@ -14,7 +14,7 @@ return new class extends Migration{
             $table->foreignId('base_requests_id')->references('id')->on('base_requests');
             $table->ulid('users_id');
             $table->foreign('users_id')->references('id')->on('users');
-            $table->json('data')->comment('JSON payload containing the content');
+            $table->json('data')->nullable()->comment('JSON payload containing the content');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });

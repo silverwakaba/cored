@@ -22,23 +22,23 @@ class BaseRequestSeeder extends Seeder{
             [
                 'base_modules_id'   => $authenticationModule->id,
                 'name'              => "Email Verification",
-                'detail'            => json_encode([
-                    'notifications_class'    => 'App\Notifications\Core\OrderCreatedNotification',
-                ]),
+                // 'detail'            => json_encode([
+                //     'notifications_class'   => 'App\Notifications\Core\OrderCreatedNotification',
+                // ]),
             ],
             [
                 'base_modules_id'   => $accountManagementModule->id,
                 'name'              => "Email Change",
-                'detail'            => json_encode([
-                    'notifications_class'    => null,
-                ]),
+                // 'detail'            => json_encode([
+                //     'notifications_class'   => null,
+                // ]),
             ],
             [
                 'base_modules_id'   => $authenticationModule->id,
                 'name'              => "Password Reset",
-                'detail'            => json_encode([
-                    'notifications_class'    => null,
-                ]),
+                // 'detail'            => json_encode([
+                //     'notifications_class'    => null,
+                // ]),
             ],
         ]);
     }

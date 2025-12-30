@@ -11,11 +11,11 @@ return new class extends Migration{
     public function up() : void{
         Schema::create('notifications', function (Blueprint $table){
             $table->id();
-            $table->foreignId('base_requests_id')->references('id')->on('base_requests')->onDelete('cascade');
+            $table->foreignId('base_requests_id')->references('id')->on('base_requests');
             $table->ulid('users_id');
-            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
-            $table->json('data')->comment('JSON payload containing notification content (title, message, action_url, etc.)');
-            $table->timestamp('read_at')->nullable()->comment('Timestamp when the notification was read by the user (null if unread)');
+            $table->foreign('users_id')->references('id')->on('users');
+            $table->json('data')->comment('JSON payload containing the content');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }

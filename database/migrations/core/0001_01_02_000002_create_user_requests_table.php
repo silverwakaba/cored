@@ -11,9 +11,9 @@ return new class extends Migration{
     public function up() : void{
         Schema::create('user_requests', function (Blueprint $table){
             $table->id();
-            $table->foreignId('base_requests_id')->references('id')->on('base_requests')->onDelete('cascade');
+            $table->foreignId('base_requests_id')->references('id')->on('base_requests');
             $table->ulid('users_id');
-            $table->foreign('users_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('users_id')->references('id')->on('users');
             $table->string('token')->nullable();
             $table->timestamps();
         });

@@ -15,7 +15,7 @@ return new class extends Migration{
             $table->string('email')->unique();
             $table->string('password');
             $table->mediumText('token')->nullable();
-            $table->dateTime('token_expire_at')->nullable();
+            $table->timestamp('token_expire_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();

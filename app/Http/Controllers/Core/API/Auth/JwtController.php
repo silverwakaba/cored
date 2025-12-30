@@ -208,7 +208,7 @@ class JwtController extends Controller{
             $eligibility = $this->userRepository->search([
                 'id'    => $request['id'],
                 'email' => $request['email'],
-            ])->requestEligibility(1)->getData(true); // get data as array
+            ])->requestEligibility('Email Verification')->getData(true); // get data as array
 
             // If account is not found and/or not eligible
             if($eligibility['success'] == false){
@@ -265,7 +265,7 @@ class JwtController extends Controller{
             $eligibility = $this->userRepository->search([
                 'id'    => $request['id'],
                 'email' => $request['email'],
-            ])->requestEligibility(3)->getData(true); // get data as array
+            ])->requestEligibility('Password Reset')->getData(true); // get data as array
 
             // If account is not found and/or not eligible
             if($eligibility['success'] == false){

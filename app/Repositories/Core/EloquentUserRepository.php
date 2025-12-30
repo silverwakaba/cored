@@ -7,6 +7,7 @@ use App\Helpers\Core\GeneralHelper;
 use App\Helpers\Core\RBACHelper;
 
 // Model
+use App\Models\Core\BaseRequest;
 use App\Models\Core\User;
 use App\Models\Core\UserRequest;
 use Spatie\Permission\Models\Role;
@@ -123,11 +124,14 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
     public function verifyAccount($id){
         // Implementing db transaction
         return DB::transaction(function() use($id){
+            // Search for "Email Verification" from Base Request
+            $baseRequest = BaseRequest::select(['id', 'name'])->where('name', 'Email Verification')->first();
+
             // Search the token
             $datas = UserRequest::with([
                 'user',
             ])->select(['id', 'users_id', 'token'])->where([
-                ['base_requests_id', '=', 1],
+                ['base_requests_id', '=', $baseRequest->id],
                 ['token', '=', $id],
             ])->whereNotNull('token')->first();
 
@@ -193,17 +197,27 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
     }
 
     // Check eligibility for specific request
-    public function requestEligibility($request){
+    public function requestEligibility($requestName){
+        // Search for BaseRequest by name
+        $baseRequest = BaseRequest::select(['id', 'name'])->where('name', $requestName)->first();
+
+        // If BaseRequest not found, return error
+        if(!$baseRequest){
+            return GeneralHelper::jsonResponse([
+                'status'    => 404,
+                'message'   => 'Request type not found.',
+            ]);
+        }
+
         // Complete the search query
         // Only active user is eligible for every eligibility check
         $datas = $this->searchUser->where([
             ['is_active', '=', true],
         ]);
 
-        // Do eligibility check based on $request type
-        if($request == 1){
-            // $request 1 = Email Verification
-            // Column "email_verified_at" must be null
+        // Do eligibility check based on $requestName type
+        if($requestName == 'Email Verification'){
+            // Email Verification: Column "email_verified_at" must be null
             $datas = $datas->whereNull('email_verified_at')->first();
         } else {
             // Only get the user
@@ -214,7 +228,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         if($datas){
             // Include the request to the logic
             $requests = $datas->userRequests()->where([
-                ['base_requests_id', '=', $request],
+                ['base_requests_id', '=', $baseRequest->id],
                 ['users_id', '=', $datas['id']],
             ])->whereNotNull('token');
             
@@ -224,7 +238,7 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
             // If the request doesn't exist then create new
             if(!$getRequests){
                 $newRequests = $requests->create([
-                    'base_requests_id'  => $request,
+                    'base_requests_id'  => $baseRequest->id,
                     'users_id'          => $datas['id'],
                     'token'             => GeneralHelper::randomToken(),
                 ]);
@@ -269,11 +283,14 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
     public function resetPassword($data){
         // Implementing db transaction
         return DB::transaction(function() use($data){
+            // Search for "Password Reset" from Base Request
+            $baseRequest = BaseRequest::select(['id', 'name'])->where('name', 'Password Reset')->first();
+
             // Search the token
             $datas = UserRequest::with([
                 'user',
             ])->select(['id', 'users_id', 'token'])->where([
-                ['base_requests_id', '=', 3],
+                ['base_requests_id', '=', $baseRequest->id],
                 ['token', '=', $data['token']],
             ])->whereNotNull('token')->first();
 

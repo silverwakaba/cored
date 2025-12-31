@@ -8,6 +8,7 @@ use Illuminate\View\Component;
 
 class FormComponent extends Component{
     public $id;
+    public $table;
     public $asModal;
     public $isReset;
     public $redirect;
@@ -15,8 +16,9 @@ class FormComponent extends Component{
     /**
      * Create a new component instance.
      */
-    public function __construct($id, $asModal = false, $isReset = true, $redirect = null){
+    public function __construct($id, $table = null, $asModal = false, $isReset = true, $redirect = null){
         $this->id = $id;
+        $this->table = $table;
         $this->asModal = $asModal;
         $this->isReset = $isReset;
         $this->redirect = $redirect;

@@ -15,12 +15,13 @@ class DatatableComponent extends Component{
     public $upsert;
     public $editable;
     public $filterable;
+    public $reloadable;
     public $searchable;
 
     /**
      * Create a new component instance.
      */
-    public function __construct($id, $tableUrl, $debounce = 1500, $deleteUrl = null, $upsert = false, $editable = true, $filterable = false, $searchable = true, $method = 'GET'){
+    public function __construct($id, $tableUrl, $debounce = 1500, $deleteUrl = null, $upsert = false, $editable = true, $filterable = false, $reloadable = false, $searchable = true, $method = 'GET'){
         $this->id = $id;
         $this->method = $method;
         $this->debounce = $debounce;
@@ -29,6 +30,7 @@ class DatatableComponent extends Component{
         $this->upsert = (bool) $upsert;
         $this->editable = (bool) $editable;
         $this->filterable = (bool) $filterable;
+        $this->reloadable = (bool) $reloadable;
         $this->searchable = (bool) $searchable;
     }
 

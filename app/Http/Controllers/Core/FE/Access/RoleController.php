@@ -76,7 +76,8 @@ class RoleController extends Controller{
     public function syncToPermission($id, Request $request){
         // Make http call
         $http = $this->apiRepository->withToken()->post('be.core.rbac.role.sync_to_permission', [
-            'id' => $id,
+            'id'            => $id,
+            'permission'    => $request->permission,
         ]);
 
         // Response

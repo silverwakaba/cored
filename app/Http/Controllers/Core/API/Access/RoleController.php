@@ -113,11 +113,11 @@ class RoleController extends Controller{
             }
 
             // Execute create and sync in a single database transaction
-            // Note: We do operations directly here instead of calling create() and syncToPermission()
-            // because those methods have their own transactions that commit separately
+            // Note: Using create() method with broadcaster trailing for 'create' event
+            // Laravel handles nested transactions safely using savepoints
             $datas = DB::transaction(function() use($request){
-                // Create role directly (without calling create() method to avoid nested transaction)
-                $role = $this->repositoryInterface->query->create([
+                // Create role with broadcaster trailing for 'create' event
+                $role = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
                     'name' => $request->name,
                 ]);
 
@@ -134,22 +134,14 @@ class RoleController extends Controller{
                     // Sync role to permission
                     if($rbacCheck == true){
                         $role->syncPermissions($permissions);
-                    }
-                }
 
-                // Execute broadcaster for create event
-                try{
-                    GeneralEventHandler::dispatch($role, 'create');
-                } catch(\Throwable $th) {
-                    // Handle error silently
-                }
-
-                // Execute broadcaster for sync event if permission was synced
-                if($request->permission){
-                    try{
-                        GeneralEventHandler::dispatch($role, 'stp');
-                    } catch(\Throwable $th) {
-                        // Handle error silently
+                        // Execute broadcaster for sync event
+                        // Note: Manual dispatch for 'stp' event since it's conditional
+                        try{
+                            GeneralEventHandler::dispatch($role, 'stp');
+                        } catch(\Throwable $th) {
+                            // Handle error silently
+                        }
                     }
                 }
 

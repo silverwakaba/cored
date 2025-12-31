@@ -40,6 +40,10 @@ class UserAccessController extends Controller{
                 'name' => 'ASC',
             ]);
 
+            $datas->excludeSelect([
+                'name',
+            ]);
+
             // Load column selection
             if(isset($request->select)){
                 $datas->onlySelect($request->select);
@@ -71,7 +75,7 @@ class UserAccessController extends Controller{
 
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
-        }, ['status' => 409, 'message' => false]);
+        }, ['status' => 409, 'message' => true]);
     }
 
     // Create

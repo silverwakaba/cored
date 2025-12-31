@@ -9,6 +9,7 @@ use App\Helpers\Core\GeneralHelper;
 // Internal
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 // External
 use Yajra\DataTables\Facades\DataTables;
@@ -69,7 +70,7 @@ abstract class BaseRepository{
         return $this;
     }
 
-    // Equivalent to select | Don't use alongside with excludeSelect
+    // Equivalent to select | Can be used alongside with excludeSelect
     public function onlySelect(mixed $column = null){
         // Get data type and its data
         $column = GeneralHelper::getType($column);
@@ -81,50 +82,118 @@ abstract class BaseRepository{
         return $this;
     }
 
-    // Equivalent to select certain column while ommit the rest | Don't use alongside with onlySelect | TBC: Needs to be implemented directly inside the repo since it needs to load the modal attributes directly
+    // Equivalent to select certain column while ommit the rest | Can be used alongside with onlySelect
     public function excludeSelect(mixed $column = null){
-        // TBC
-        // // Selected by default
-        // $default = [
-        //     'id',
-        // ];
-
-        // // Selected only if timestamp is set to true
-        // if(isset($data['timestamps']) && ($data['timestamps'] == true)){
-        //     $default[] = 'created_at';
-        //     $default[] = 'updated_at';
-        // }
-
-        // // Init model
-        // $model = new $data['model'];
-
-        // // Get model fillable attributes
-        // $fillable = $model->getFillable();
-
-        // // Get model hidden attributes
-        // $hidden = $model->getHidden();
-
-        // // Get included column
-        // $include = isset($data['include']) ? (array) $data['include'] : [];
-
-        // // Selected column by default
-        // $selected = array_values(array_diff(
-        //     array_merge($default, $fillable, $include), $hidden,
-        // ));
-
-        // // Select column via custom properties
-        // if(isset($data['exclude']) && ($data['exclude'] != null)){
-        //     $exclude = array_values(array_diff(
-        //         $selected, $data['exclude'],
-        //     ));
-
-        //     // Return column
-        //     return $exclude;
-        // }
-
-        // // Return column
-        // return $selected;
-        // TBC
+        // Get data type and its data (convert to array)
+        $excludeColumns = GeneralHelper::getType($column);
+        
+        // Get currently selected columns from query builder (if any)
+        $currentColumns = null;
+        if(isset($this->query)){
+            try {
+                $reflection = new \ReflectionClass($this->query);
+                if($reflection->hasProperty('columns')){
+                    $columnsProperty = $reflection->getProperty('columns');
+                    $columnsProperty->setAccessible(true);
+                    $currentColumns = $columnsProperty->getValue($this->query);
+                    // Filter out null values and normalize
+                    if($currentColumns){
+                        $currentColumns = array_filter($currentColumns, function($col){
+                            return $col !== null && $col !== '*';
+                        });
+                        $currentColumns = array_values($currentColumns);
+                        // Remove table prefix and aliases if exists
+                        $currentColumns = array_map(function($col){
+                            // Handle "table.column" or "column as alias"
+                            $parts = preg_split('/\s+as\s+/i', $col);
+                            $col = trim($parts[0]);
+                            // Remove table prefix
+                            $dotPos = strrpos($col, '.');
+                            if($dotPos !== false){
+                                $col = substr($col, $dotPos + 1);
+                            }
+                            return $col;
+                        }, $currentColumns);
+                    }
+                }
+            } catch(\Exception $e) {
+                // Continue - will use all columns from table
+            }
+        }
+        
+        // Determine base columns to work with
+        $baseColumns = null;
+        
+        // If there are already selected columns, use those as base
+        if($currentColumns && !empty($currentColumns)){
+            $baseColumns = $currentColumns;
+        } else {
+            // Otherwise, get all columns from table
+            // Get table name - try multiple methods
+            $tableName = null;
+            
+            // Method 1: Get from model property
+            if($this->model){
+                $tableName = $this->model->getTable();
+            }
+            
+            // Method 2: Get from query builder's model
+            if(!$tableName && isset($this->query)){
+                try {
+                    $model = $this->query->getModel();
+                    if($model){
+                        $tableName = $model->getTable();
+                    }
+                } catch(\Exception $e) {
+                    // Continue to next method
+                }
+            }
+            
+            // Method 3: Get from query builder's from property using reflection
+            if(!$tableName && isset($this->query)){
+                try {
+                    $reflection = new \ReflectionClass($this->query);
+                    if($reflection->hasProperty('from')){
+                        $fromProperty = $reflection->getProperty('from');
+                        $fromProperty->setAccessible(true);
+                        $from = $fromProperty->getValue($this->query);
+                        if($from){
+                            // Handle array or string
+                            $tableName = is_array($from) ? $from[0] : $from;
+                            // Remove table prefix if exists
+                            $prefix = $this->query->getConnection()->getTablePrefix();
+                            if($prefix && strpos($tableName, $prefix) === 0){
+                                $tableName = substr($tableName, strlen($prefix));
+                            }
+                        }
+                    }
+                } catch(\Exception $e) {
+                    // Continue
+                }
+            }
+            
+            // If still no table name, throw error
+            if(!$tableName){
+                throw new \RuntimeException('Unable to determine table name for excludeSelect. Model must be properly initialized in repository constructor.');
+            }
+            
+            // Get all columns from the table
+            $baseColumns = Schema::getColumnListing($tableName);
+        }
+        
+        // Exclude specified columns from base columns
+        $selectedColumns = array_values(array_diff($baseColumns, $excludeColumns));
+        
+        // If no columns left after exclusion, at least select 'id' to avoid errors
+        if(empty($selectedColumns)){
+            $selectedColumns = ['id'];
+        }
+        
+        // Start the query with selected columns
+        $this->query->select($selectedColumns);
+        
+        // Chainable
+        return $this;
     }
 
     // Load relation

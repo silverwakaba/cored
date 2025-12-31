@@ -14,11 +14,13 @@ use App\Helpers\Core\GeneralHelper;
 
 // Request
 use App\Http\Requests\Core\RoleCreateRequest;
+use App\Http\Requests\Core\RoleCreateWithPermissionRequest;
 use App\Http\Requests\Core\RoleSyncToPermissionRequest;
 use App\Http\Requests\Core\RoleSyncToUserRequest;
 
 // Internal
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller{
     // Property
@@ -95,6 +97,70 @@ class RoleController extends Controller{
                 'status'    => 201,
                 'data'      => $datas,
                 'message'   => 'Role created successfully.',
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
+
+    // Create with Permission (atomic transaction)
+    public function createWithPermission(Request $request){
+        return GeneralHelper::safe(function() use($request){
+            // Validate input
+            $validated = GeneralHelper::validate($request->all(), (new RoleCreateWithPermissionRequest())->rules());
+
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
+            }
+
+            // Execute create and sync in a single database transaction
+            // Note: We do operations directly here instead of calling create() and syncToPermission()
+            // because those methods have their own transactions that commit separately
+            $datas = DB::transaction(function() use($request){
+                // Create role directly (without calling create() method to avoid nested transaction)
+                $role = $this->repositoryInterface->query->create([
+                    'name' => $request->name,
+                ]);
+
+                // Sync role to permission if permission is provided
+                if($request->permission){
+                    // Prepare permissions
+                    $permissions = collect(\Spatie\Permission\Models\Permission::select('name')
+                        ->whereIn('name', \App\Helpers\Core\GeneralHelper::getType($request->permission))
+                    ->get())->pluck('name');
+
+                    // Check role level
+                    $rbacCheck = \App\Helpers\Core\RBACHelper::roleLevelCompare([$role], auth()->user()->roles);
+                    
+                    // Sync role to permission
+                    if($rbacCheck == true){
+                        $role->syncPermissions($permissions);
+                    }
+                }
+
+                // Execute broadcaster for create event
+                try{
+                    GeneralEventHandler::dispatch($role, 'create');
+                } catch(\Throwable $th) {
+                    // Handle error silently
+                }
+
+                // Execute broadcaster for sync event if permission was synced
+                if($request->permission){
+                    try{
+                        GeneralEventHandler::dispatch($role, 'stp');
+                    } catch(\Throwable $th) {
+                        // Handle error silently
+                    }
+                }
+
+                return $role;
+            });
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 201,
+                'data'      => $datas,
+                'message'   => 'Role created and synchronized with permission successfully.',
             ]);
         }, ['status' => 409, 'message' => false]);
     }

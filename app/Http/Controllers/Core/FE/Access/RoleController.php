@@ -39,22 +39,22 @@ class RoleController extends Controller{
 
     // Create
     public function create(Request $request){
-        // Create role
-        $create = $this->apiRepository->withToken()->post('be.core.rbac.role.store', [
-            'name' => $request->name,
-        ]);
-
-        // Sync role to permission if create is success
-        if(($create->status() == 201) && ($request->permission)){
-            // Sync role
-            $sync = $this->apiRepository->withToken()->post('be.core.rbac.role.sync_to_permission', [
-                'id'            => $create['data']['id'],
+        // Check if permission is provided - use atomic transaction endpoint
+        if($request->permission){
+            // Create role and sync permission in a single atomic transaction
+            $response = $this->apiRepository->withToken()->post('be.core.rbac.role.store_with_permission', [
+                'name'          => $request->name,
                 'permission'    => $request->permission,
             ]);
 
-            // Response for $sync action
-            return response()->json($sync->json(), $sync->status());
+            // Response
+            return response()->json($response->json(), $response->status());
         }
+
+        // Create role only (no permission sync)
+        $create = $this->apiRepository->withToken()->post('be.core.rbac.role.store', [
+            'name' => $request->name,
+        ]);
         
         // Response for $create action
         return response()->json($create->json(), $create->status());

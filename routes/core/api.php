@@ -141,6 +141,9 @@ Route::prefix('/')->name('be.')->group(function(){
                 // Create
                 Route::post('/', 'create')->name('store');
 
+                // Create with Permission (atomic transaction)
+                Route::post('/create-with-permission', 'createWithPermission')->name('store_with_permission');
+
                 // Read
                 Route::get('/{id}', 'read')->name('show');
 

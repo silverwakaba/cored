@@ -1,7 +1,7 @@
 @extends('layouts.adminlte')
 @section('title', 'Menu')
 @section('content')
-    <x-Adminlte.ContentWrapperComponent>
+    <x-Adminlte.ContentWrapperComponent breadcrumb="apps.menu">
         <x-Adminlte.CardComponent id="theForm" :asForm="false" title="Manage Menu">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
@@ -53,7 +53,6 @@
             // Load init function
             initDatatable();
             initUpsert();
-            initWebsocket();
             loadType();
             loadParent();
             loadBoolean();
@@ -69,17 +68,6 @@
                 resetSelectForms();
             });
         });
-
-        // Init websocket
-        function initWebsocket(){
-            // Websocket channel
-            let websocket = Echo.channel('generalChannel');
-            
-            // Listen to websocket
-            websocket.listen('.generalEvent', function(data){
-                $('#theTable').DataTable().ajax.reload(null, false);
-            });
-        }
 
         // Handle overlay class for form processing state
         <x-Adminlte.ProcessingStateComponent type="modal" />
@@ -166,12 +154,8 @@
                     // Set HTTP method for create (default POST)
                     routeMethod = 'POST';
 
-                    // Show position and reference fields for create
-                    // $('#position-div').show();
-                    // $('#reference_id-div').show();
-
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
+                    <x-Adminlte.FormComponent id="theModal" table="theTable" :asModal="true" />
                 }
 
                 // Handle update
@@ -184,10 +168,6 @@
 
                     // Change id placeholder with the actual id
                     readRoute = readRouteBase.replace('::ID::', dataID);
-
-                    // Hide position and reference fields for update
-                    // $('#position-div').hide();
-                    // $('#reference_id-div').hide();
 
                     // Handle form populate
                     $.ajax({
@@ -221,7 +201,7 @@
                     routeMethod = 'PUT';
 
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
+                    <x-Adminlte.FormComponent id="theModal" table="theTable" :asModal="true" />
                 }
             });
         }
@@ -384,6 +364,5 @@
                 },
             });
         }
-
     </script>
 @endpush

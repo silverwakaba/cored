@@ -2,16 +2,6 @@
 @section('title', 'Menu')
 @section('content')
     <x-Adminlte.ContentWrapperComponent>
-        <x-Adminlte.CardComponent id="theFilter" :asForm="false" title="Filter Menu">
-            <div class="row my-2">
-                <div class="col-md-6">
-                    <x-Form.SelectForm name="filter-type[]" text="Type" :required="false" :multiple="true" />
-                </div>
-                <div class="col-md-6">
-                    <x-Form.SelectForm name="filter-parent" text="Parent" :required="false" :multiple="false" />
-                </div>
-            </div>
-        </x-Adminlte.CardComponent>
         <x-Adminlte.CardComponent id="theForm" :asForm="false" title="Manage Menu">
             <x-Adminlte.TableComponent id="theTable" />
         </x-Adminlte.CardComponent>
@@ -20,9 +10,9 @@
             <x-Form.InputForm name="icon" type="text" text="Icon" :required="false" />
             <x-Form.InputForm name="route" type="text" text="Route" :required="false" />
             <x-Form.SelectForm name="type" text="Type" :required="true" :multiple="false" />
-            <x-Form.SelectForm name="parent_id" text="Parent" :required="false" :multiple="false" />
-            <x-Form.SelectForm name="is_authenticate" text="Require Authentication" :required="false" :multiple="false" />
-            <x-Form.SelectForm name="is_guest_only" text="Guest Only" :required="false" :multiple="false" />
+            <x-Form.SelectForm name="parent" text="Parent" :required="false" :multiple="false" />
+            <x-Form.SelectForm name="authenticate" text="Require Authentication" :required="false" :multiple="false" />
+            <x-Form.SelectForm name="guest_only" text="Guest Only" :required="false" :multiple="false" />
             <x-Form.SelectForm name="position" text="Position" :required="false" :multiple="false" />
             <x-Form.SelectForm name="reference_id" text="Reference Menu" :required="false" :multiple="false" />
         </x-Adminlte.ModalComponent>
@@ -72,7 +62,7 @@
                         const typeMap = {
                             'h': '<span class="badge badge-pill badge-primary">Header</span>',
                             'p': '<span class="badge badge-pill badge-info">Parent</span>',
-                            'c': '<span class="badge badge-pill badge-secondary">Child</span>'
+                            'c': '<span class="badge badge-pill badge-secondary">Child</span>',
                         };
                         return typeMap[data] || data;
                     },
@@ -80,7 +70,7 @@
                 {
                     title: 'Icon', data: 'icon',
                     render: function(data, type, row, meta){
-                        return data ? `<i class="${data}"></i> ${data}` : '-';
+                        return data ? `<i class="${data}"></i>` : '-';
                     },
                 },
                 {
@@ -107,7 +97,7 @@
                 {
                     title: 'Guest Only', data: 'is_guest_only',
                     render: function(data, type, row, meta){
-                        return data ? '<span class="badge badge-warning">Yes</span>' : '<span class="badge badge-secondary">No</span>';
+                        return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
                     },
                 },
             </x-Adminlte.DatatableComponent>
@@ -144,7 +134,7 @@
                     // Set HTTP method for create (default POST)
                     routeMethod = 'POST';
 
-                    // Show position and reference fields for create
+                    // // Show position and reference fields for create
                     $('#position-div').show();
                     $('#reference_id-div').show();
 
@@ -163,7 +153,7 @@
                     // Change id placeholder with the actual id
                     readRoute = readRouteBase.replace('::ID::', dataID);
 
-                    // Hide position and reference fields for update
+                    // // Hide position and reference fields for update
                     $('#position-div').hide();
                     $('#reference_id-div').hide();
 
@@ -181,11 +171,11 @@
                             
                             // Load parent options and set value
                             setTimeout(function(){
-                                $('#parent_id').val(response.data.parent_id || '').trigger('change');
+                                $('#parent').val(response.data.parent_id || '').trigger('change');
                             }, 500);
                             
-                            $('#is_authenticate').val(response.data.is_authenticate ? '1' : '0').trigger('change');
-                            $('#is_guest_only').val(response.data.is_guest_only ? '1' : '0').trigger('change');
+                            $('#authenticate').val(response.data.is_authenticate ? '1' : '0').trigger('change');
+                            $('#guest_only').val(response.data.is_guest_only ? '1' : '0').trigger('change');
                         }
                     });
 
@@ -221,59 +211,86 @@
                     text: option.text
                 }));
             });
-
-            // Filter type select
-            const filterTypeSelect = $('[name="filter-type[]"]');
-            filterTypeSelect.empty().append('<option value="">Select an Option</option>');
-            typeOptions.forEach(function(option){
-                filterTypeSelect.append($('<option>', {
-                    value: option.value,
-                    text: option.text
-                }));
-            });
         }
 
         // Load parent
         function loadParent(){
-            // Handle parent list
+            // Handle parent list - filter headers and parents (type 'h' and 'p') in frontend
             $.ajax({
                 type: 'GET',
                 dataType: 'json',
                 url: `{{ route('fe.apps.menu.list') }}`,
                 success: function(response){
                     // Parent select
-                    const parentSelect = $('#parent_id');
+                    const parentSelect = $('#parent');
                     parentSelect.empty().append('<option value="">Select an Option (None for Header)</option>');
-                    
-                    // Filter parent select
-                    const filterParentSelect = $('[name="filter-parent"]');
-                    filterParentSelect.empty().append('<option value="">Select an Option</option>');
-                    filterParentSelect.append($('<option>', {
-                        value: 'null',
-                        text: 'None (Header)'
-                    }));
 
-                    // Map data
-                    if(Array.isArray(response.data)){
-                        response.data.forEach(function(data){
+                    // Helper function to process data (handle both array and object)
+                    function processData(data){
+                        if(!data) return [];
+                        
+                        // If it's already an array
+                        if(Array.isArray(data)){
+                            return data;
+                        }
+                        
+                        // If it's an object, try to extract array
+                        if(typeof data === 'object'){
+                            // Check if it has data property
+                            if(data.data && Array.isArray(data.data)){
+                                return data.data;
+                            }
+                            // Check if it's a collection-like object
+                            if(data.length !== undefined){
+                                return Array.from(data);
+                            }
+                            // Try Object.values
+                            const values = Object.values(data);
+                            if(values.length > 0 && typeof values[0] === 'object'){
+                                return values;
+                            }
+                        }
+                        
+                        return [];
+                    }
+
+                    // Get data array - handle different response formats
+                    let dataArray = [];
+                    
+                    // Check if response has data property (standard API response)
+                    if(response.data !== undefined){
+                        dataArray = processData(response.data);
+                    }
+                    // Check if response is directly an array
+                    else if(Array.isArray(response)){
+                        dataArray = response;
+                    }
+                    // Check if response has success property with data
+                    else if(response.success && response.data){
+                        dataArray = processData(response.data);
+                    }
+                    // Try to process response directly
+                    else {
+                        dataArray = processData(response);
+                    }
+
+                    // Filter and map only headers and parents
+                    if(dataArray && dataArray.length > 0){
+                        let addedCount = 0;
+                        dataArray.forEach(function(data){
                             // Only show headers and parents as parent options
-                            if(data.type === 'h' || data.type === 'p'){
+                            if(data && data.id && (data.type === 'h' || data.type === 'p')){
                                 parentSelect.append($('<option>', {
                                     value: data.id,
-                                    text: `${data.name} (${data.type === 'h' ? 'Header' : 'Parent'})`
+                                    text: `${data.name || 'Unnamed'} (${data.type === 'h' ? 'Header' : 'Parent'})`
                                 }));
-
-                                filterParentSelect.append($('<option>', {
-                                    value: data.id,
-                                    text: `${data.name} (${data.type === 'h' ? 'Header' : 'Parent'})`
-                                }));
+                                addedCount++;
                             }
                         });
                     }
                 },
-                error: function(){
-                    $('#parent_id').html('<option value="">Error loading data...</option>');
-                    $('[name="filter-parent"]').html('<option value="">Error loading data...</option>');
+                error: function(xhr, status, error){
+                    $('#parent').html('<option value="">Error loading data...</option>');
                 },
             });
         }
@@ -286,7 +303,7 @@
             ];
 
             // Is authenticate select
-            const isAuthSelect = $('#is_authenticate');
+            const isAuthSelect = $('#authenticate');
             isAuthSelect.empty().append('<option value="">Select an Option</option>');
             booleanOptions.forEach(function(option){
                 isAuthSelect.append($('<option>', {
@@ -296,7 +313,7 @@
             });
 
             // Is guest only select
-            const isGuestSelect = $('#is_guest_only');
+            const isGuestSelect = $('#guest_only');
             isGuestSelect.empty().append('<option value="">Select an Option</option>');
             booleanOptions.forEach(function(option){
                 isGuestSelect.append($('<option>', {

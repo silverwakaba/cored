@@ -4,6 +4,7 @@ namespace App\Http\Requests\Core;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Route;
 
 class MenuCreateRequest extends FormRequest{
     /**
@@ -20,17 +21,21 @@ class MenuCreateRequest extends FormRequest{
      */
     public function rules() : array{
         return [
-            'name'              => ['required', 'string', 'max:255'],
-            'icon'              => ['nullable', 'string', 'max:255'],
-            'route'             => ['nullable', 'string', 'max:255'],
+            'name'              => ['required', 'string'],
+            'icon'              => ['nullable', 'string'],
+            'route'             => ['nullable', 'string',
+                function($attribute, $value, $fail){
+                    if(!empty($value) && !Route::has($value)){
+                        $fail('The route name is invalid.');
+                    }
+                }
+            ],
             'type'              => ['required', 'string', Rule::in(['h', 'p', 'c'])],
-            'parent_id'         => ['nullable', 'integer', 'exists:menus,id'],
-            'is_authenticate'  => ['nullable', 'boolean'],
-            'is_guest_only'     => ['nullable', 'boolean'],
-            'position'           => ['nullable', 'string', Rule::in(['before', 'after'])],
+            'parent'            => ['nullable', 'integer', 'exists:menus,id'],
+            'authenticate'      => ['nullable', 'boolean'],
+            'guest_only'        => ['nullable', 'boolean'],
+            'position'          => ['nullable', 'string', Rule::in(['before', 'after'])],
             'reference_id'      => ['nullable', 'integer', 'exists:menus,id'],
         ];
     }
 }
-
-

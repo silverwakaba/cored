@@ -51,33 +51,29 @@ class MenuController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
-            // Apply all filters if provided
-            $filters = $request->only(array_filter(array_keys($request->all()), function($key){
-                return strpos($key, 'filter') === 0;
-            }));
-
-            // Run filter sub-query
-            if(!empty($filters)){
-                $datas->query->where(function($query) use($filters){
-                    foreach($filters as $filterKey => $filterValue){
-                        // Type filters
-                        if(in_array($filterKey, ['filter-type'])){
-                            $query->whereIn('type', $filterValue);
-                        }
-                        // Parent filters
-                        if(in_array($filterKey, ['filter-parent'])){
-                            if($filterValue === 'null'){
-                                $query->whereNull('parent_id');
-                            } else {
-                                $query->where('parent_id', $filterValue);
-                            }
-                        }
-                    }
+            // Filter by load_type if provided (for loading parent options - headers and parents only)
+            // Handle both load_type and load_type[] (array format)
+            $loadType = $request->load_type ?? $request->input('load_type[]');
+            if($loadType){
+                $loadTypes = is_array($loadType) ? $loadType : [$loadType];
+                $loadTypes = array_filter($loadTypes, function($val){
+                    return !empty($val) && $val !== '';
                 });
+                if(!empty($loadTypes)){
+                    $datas->query->whereIn('type', $loadTypes);
+                }
             }
 
             // Return response
-            return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
+            if($request->type === 'datatable'){
+                return $datas->useDatatable()->all();
+            } else {
+                // Return as JSON response for non-datatable requests
+                return GeneralHelper::jsonResponse([
+                    'status' => 200,
+                    'data' => $datas->all(),
+                ]);
+            }
         }, ['status' => 409, 'message' => true]);
     }
 
@@ -92,15 +88,15 @@ class MenuController extends Controller{
                 return $validated;
             }
 
-            // Prepare menu data
+            // Prepare menu data (map form field names to database column names)
             $menuData = [
                 'name'              => $request->name,
                 'icon'              => $request->icon,
                 'route'             => $request->route,
                 'type'              => $request->type,
-                'parent_id'         => $request->parent_id,
-                'is_authenticate'   => $request->is_authenticate ?? null,
-                'is_guest_only'     => $request->is_guest_only ?? null,
+                'parent_id'         => $request->parent ?? null,
+                'is_authenticate'   => $request->authenticate ?? null,
+                'is_guest_only'     => $request->guest_only ?? null,
             ];
 
             // Determine position and reference
@@ -157,15 +153,15 @@ class MenuController extends Controller{
                 return $validated;
             }
 
-            // Prepare menu data
+            // Prepare menu data (map form field names to database column names)
             $menuData = [
                 'name'              => $request->name,
                 'icon'              => $request->icon,
                 'route'             => $request->route,
                 'type'              => $request->type,
-                'parent_id'         => $request->parent_id,
-                'is_authenticate'   => $request->is_authenticate ?? null,
-                'is_guest_only'     => $request->is_guest_only ?? null,
+                'parent_id'         => $request->parent ?? null,
+                'is_authenticate'   => $request->authenticate ?? null,
+                'is_guest_only'     => $request->guest_only ?? null,
             ];
 
             // Update menu data

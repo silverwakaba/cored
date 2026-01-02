@@ -39,15 +39,15 @@ class MenuController extends Controller{
 
     // Create
     public function create(Request $request){
-        // Create menu
+        // Create menu (form field names: parent, authenticate, guest_only)
         $http = $this->apiRepository->withToken()->post('be.core.menu.store', [
             'name'              => $request->name,
             'icon'              => $request->icon,
             'route'             => $request->route,
             'type'              => $request->type,
-            'parent_id'         => $request->parent_id,
-            'is_authenticate'   => $request->is_authenticate,
-            'is_guest_only'     => $request->is_guest_only,
+            'parent'            => $request->parent,
+            'authenticate'      => $request->authenticate,
+            'guest_only'        => $request->guest_only,
             'position'          => $request->position,
             'reference_id'      => $request->reference_id,
         ]);
@@ -70,16 +70,16 @@ class MenuController extends Controller{
 
     // Update
     public function update($id, Request $request){
-        // Update menu
+        // Update menu (form field names: parent, authenticate, guest_only)
         $http = $this->apiRepository->withToken()->put('be.core.menu.update', [
             'id'                => $id,
             'name'              => $request->name,
             'icon'              => $request->icon,
             'route'             => $request->route,
             'type'              => $request->type,
-            'parent_id'         => $request->parent_id,
-            'is_authenticate'   => $request->is_authenticate,
-            'is_guest_only'     => $request->is_guest_only,
+            'parent'            => $request->parent,
+            'authenticate'      => $request->authenticate,
+            'guest_only'        => $request->guest_only,
         ]);
         
         // Response for $update action

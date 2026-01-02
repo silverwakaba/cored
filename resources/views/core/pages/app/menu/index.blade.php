@@ -24,6 +24,30 @@
         let varMenu;
         let routeAction;
         
+        // Reset select forms
+        function resetSelectForms(){
+            // Use setTimeout to ensure Select2 is ready
+            setTimeout(function(){
+                // Reset type select (Select2)
+                $('#type').val('').trigger('change.select2');
+                
+                // Reset parent select (Select2)
+                $('#parent').val('').trigger('change.select2');
+                
+                // Reset authenticate select (Select2)
+                $('#authenticate').val('').trigger('change.select2');
+                
+                // Reset guest_only select (Select2)
+                $('#guest_only').val('').trigger('change.select2');
+                
+                // Reset position select (Select2)
+                $('#position').val('').trigger('change.select2');
+                
+                // Reset reference_id select (Select2)
+                $('#reference_id').val('').trigger('change.select2');
+            }, 100);
+        }
+        
         // Init jquery
         $(document).ready(function(){
             // Load init function
@@ -33,6 +57,17 @@
             loadType();
             loadParent();
             loadBoolean();
+
+            // Listen for form success to reset select forms
+            // Listen for modal hidden event (after form success)
+            $('#theModalModal').on('hidden.bs.modal', function(){
+                resetSelectForms();
+            });
+
+            // Also reset after form reset button is clicked
+            $('body').on('click', '#buttonResetModal', function(){
+                resetSelectForms();
+            });
         });
 
         // Init websocket
@@ -86,16 +121,13 @@
                     },
                 },
                 {
-                    title: 'Order', data: 'order',
-                },
-                {
                     title: 'Auth', data: 'is_authenticate',
                     render: function(data, type, row, meta){
                         return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
                     },
                 },
                 {
-                    title: 'Guest Only', data: 'is_guest_only',
+                    title: 'Guest', data: 'is_guest_only',
                     render: function(data, type, row, meta){
                         return data ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>';
                     },
@@ -352,5 +384,6 @@
                 },
             });
         }
+
     </script>
 @endpush

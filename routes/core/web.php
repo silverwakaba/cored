@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 // Core Controller
+use App\Http\Controllers\Core\FE\Access\MenuController;
 use App\Http\Controllers\Core\FE\Access\PermissionController;
 use App\Http\Controllers\Core\FE\Access\RoleController;
 use App\Http\Controllers\Core\FE\Access\UserAccessController;
@@ -74,6 +75,32 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
     Route::prefix('apps')->name('apps.')->middleware(['jwt.fe'])->group(function(){
         // Page apps
         Route::get('/', [PageController::class, 'app'])->name('index');
+
+        // Menu
+        Route::prefix('menu')->name('menu.')->middleware(['role:Root|Admin|Moderator'])->controller(MenuController::class)->group(function(){
+            // Index
+            Route::get('/', 'index')->name('index');
+
+            // List
+            Route::get('list', 'list')->name('list');
+
+            // Create
+            Route::post('/', 'create')->name('store');
+
+            // Read
+            Route::get('/{id}', 'read')->name('show');
+
+            // Update
+            Route::put('/{id}', 'update')->name('update');
+            Route::patch('/{id}', 'update')->name('update');
+
+            // Update Position
+            Route::put('/{id}/position', 'updatePosition')->name('update_position');
+            Route::patch('/{id}/position', 'updatePosition')->name('update_position');
+
+            // Delete
+            Route::delete('/{id}', 'delete')->name('destroy');
+        });
 
         // Base-related-thing
         Route::prefix('base')->name('base.')->group(function(){

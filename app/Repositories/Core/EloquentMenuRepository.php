@@ -14,6 +14,9 @@ use App\Contracts\Core\MenuRepositoryInterface;
 // Internal
 use Illuminate\Support\Facades\DB;
 
+// External
+use Yajra\DataTables\Facades\DataTables;
+
 /*
  * Notes
  * 
@@ -56,6 +59,77 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
 
         // Response
         return response()->json($filteredMenus);
+    }
+
+    // List
+    public function list(){
+        // Get all menus - we'll sort hierarchically in all() method
+        $this->query = Menu::with([
+            'parent:id,name,type',
+            'children' => function($query){
+                $query->orderBy('order');
+            }
+        ]);
+
+        // Return chainable instance
+        return $this;
+    }
+
+    // Override all() to sort hierarchically (Header > Parent > Child)
+    public function all(){
+        // Start get query
+        $datas = $this->query->get();
+
+        // Sort hierarchically: Header > Parent > Child
+        $sortedMenus = $this->sortHierarchically($datas);
+
+        // Return response as datatable
+        if($this->shouldUseDatatable == true){
+            return DataTables::of($sortedMenus)->toJson();
+        }
+
+        // Return response
+        return $sortedMenus;
+    }
+
+    // Sort menus hierarchically: Headers first, then their Parents, then their Children
+    private function sortHierarchically($menus){
+        $sorted = collect();
+        
+        // Get all headers (parent_id is null)
+        $headers = $menus->whereNull('parent_id')->sortBy('order');
+        
+        foreach($headers as $header){
+            // Add header
+            $sorted->push($header);
+            
+            // Get parents of this header
+            $parents = $menus->where('parent_id', $header->id)->sortBy('order');
+            
+            foreach($parents as $parent){
+                // Add parent
+                $sorted->push($parent);
+                
+                // Get children of this parent
+                $children = $menus->where('parent_id', $parent->id)->sortBy('order');
+                
+                foreach($children as $child){
+                    // Add child
+                    $sorted->push($child);
+                }
+            }
+        }
+        
+        return $sorted->values();
+    }
+
+    // Read
+    public function read($id){
+        // Get menu data using query builder (supports relation and select)
+        $datas = $this->query->find($id);
+
+        // Return response
+        return $datas;
     }
 
     // Apply both role-based and authentication filtering to query
@@ -136,6 +210,44 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
         })->values();
     }
 
+    // Filter menus hierarchically but bypass all filtering (all menus visible for management)
+    private function filterByHierarchicalAuthenticationBypass($menus, $isAuthenticated){
+        // Use same structure as filterByHierarchicalAuthentication but bypass all filtering
+        // This ensures hierarchical structure is maintained but all menus are visible
+        return $menus->map(function($menu) use($isAuthenticated){
+            // Recursively process children to maintain structure
+            if($menu->children->isNotEmpty()){
+                $menu->children = $this->filterByHierarchicalAuthenticationBypass($menu->children, $isAuthenticated);
+            }
+            
+            // Return menu without filtering (all menus visible)
+            return $menu;
+        })->values();
+    }
+
+    // Flatten hierarchical menu structure to flat list for datatable
+    private function flattenMenuHierarchy($menus){
+        $flatList = collect();
+        
+        foreach($menus as $menu){
+            // Store children before removing relation
+            $children = $menu->children;
+            
+            // Remove children relation to avoid nested structure in datatable
+            $menu->unsetRelation('children');
+            
+            // Add current menu to flat list
+            $flatList->push($menu);
+            
+            // Recursively add children if they exist
+            if($children && $children->isNotEmpty()){
+                $flatList = $flatList->merge($this->flattenMenuHierarchy($children));
+            }
+        }
+        
+        return $flatList;
+    }
+
     // Create menu
     // The position can be either before or after
     public function createMenu($data, $position = 'after', $referenceId = null){
@@ -149,7 +261,35 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
             $this->shiftMenusForInsertion($data, $targetOrder);
             
             // Create the new menu
-            return Menu::create(array_merge($data, ['order' => $targetOrder]));
+            $menu = Menu::create(array_merge($data, ['order' => $targetOrder]));
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($menu);
+            }
+
+            return $menu;
+        });
+    }
+
+    // Update menu
+    public function updateMenu($id, $data){
+        return DB::transaction(function() use($id, $data){
+            $menu = Menu::findOrFail($id);
+            
+            // Update menu data (excluding order which is handled by updateMenuPosition)
+            $updateData = array_filter($data, function($key){
+                return $key !== 'order' && $key !== 'position' && $key !== 'reference_id';
+            }, ARRAY_FILTER_USE_KEY);
+            
+            $menu->update($updateData);
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($menu->fresh());
+            }
+            
+            return $menu->fresh();
         });
     }
 
@@ -175,6 +315,11 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
             // Shift menus and update
             $this->shiftMenusForMovement($menu, $currentOrder, $targetOrder);
             $menu->update(['order' => $targetOrder]);
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($menu->fresh());
+            }
             
             return $menu->fresh();
         });
@@ -193,6 +338,11 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
             
             // Reorder siblings
             $this->reorderSiblings($parentId, $type, $deletedOrder);
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute(null); // null data
+            }
         });
     }
 

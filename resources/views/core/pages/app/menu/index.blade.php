@@ -134,9 +134,9 @@
                     // Set HTTP method for create (default POST)
                     routeMethod = 'POST';
 
-                    // // Show position and reference fields for create
-                    $('#position-div').show();
-                    $('#reference_id-div').show();
+                    // Show position and reference fields for create
+                    // $('#position-div').show();
+                    // $('#reference_id-div').show();
 
                     // Init form action
                     <x-Adminlte.FormComponent id="theModal" :asModal="true" />
@@ -153,9 +153,9 @@
                     // Change id placeholder with the actual id
                     readRoute = readRouteBase.replace('::ID::', dataID);
 
-                    // // Hide position and reference fields for update
-                    $('#position-div').hide();
-                    $('#reference_id-div').hide();
+                    // Hide position and reference fields for update
+                    // $('#position-div').hide();
+                    // $('#reference_id-div').hide();
 
                     // Handle form populate
                     $.ajax({

@@ -104,7 +104,7 @@ class MenuController extends Controller{
             $referenceId = $request->reference_id ?? null;
 
             // Create menu
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->createMenu($menuData, $position, $referenceId);
+            $datas = $this->repositoryInterface->createMenu($menuData, $position, $referenceId);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -165,7 +165,12 @@ class MenuController extends Controller{
             ];
 
             // Update menu data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->updateMenu($id, $menuData);
+            $datas = $this->repositoryInterface->updateMenu($id, $menuData);
+
+            // Update menu position if position and reference_id are provided
+            if($request->filled('position') && $request->filled('reference_id')){
+                $datas = $this->repositoryInterface->updateMenuPosition($id, $request->position, $request->reference_id);
+            }
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -173,40 +178,14 @@ class MenuController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Menu updated successfully.',
             ]);
-        }, ['status' => 409, 'message' => false]);
-    }
-
-    // Update Position
-    public function updatePosition($id, Request $request){
-        return GeneralHelper::safe(function() use($id, $request){
-            // Validate input
-            $validated = GeneralHelper::validate($request->all(), [
-                'position'      => ['required', 'string', 'in:before,after'],
-                'reference_id'  => ['required', 'integer', 'exists:menus,id'],
-            ]);
-
-            // Stop if validation failed
-            if(!is_array($validated)){
-                return $validated;
-            }
-
-            // Update menu position
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->updateMenuPosition($id, $request->position, $request->reference_id);
-
-            // Return response
-            return GeneralHelper::jsonResponse([
-                'status'    => 200,
-                'data'      => $datas,
-                'message'   => 'Menu position updated successfully.',
-            ]);
-        }, ['status' => 409, 'message' => false]);
+        }, ['status' => 409, 'message' => true]);
     }
 
     // Delete
     public function delete($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Delete menu data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->deleteMenu($id);
+            $datas = $this->repositoryInterface->deleteMenu($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -263,7 +242,8 @@ class MenuController extends Controller{
         */
 
         // // Update menu order: 13 before 11
-        // $this->repositoryInterface->updateMenuPosition(13, 'before', 11);
+        // return $this->repositoryInterface->updateMenuPosition(16, 'after', 5);
+        // return $this->repositoryInterface->updateMenuPosition(5, 'after', 16);
 
         /*
          * Testing for Delete - All passed

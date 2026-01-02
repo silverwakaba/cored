@@ -80,6 +80,8 @@ class MenuController extends Controller{
             'parent'            => $request->parent,
             'authenticate'      => $request->authenticate,
             'guest_only'        => $request->guest_only,
+            'position'          => $request->position,
+            'reference_id'      => $request->reference_id,
         ]);
         
         // Response for $update action

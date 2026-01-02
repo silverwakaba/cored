@@ -140,14 +140,10 @@ Route::prefix('/')->name('be.')->group(function(){
             Route::put('/{id}', 'update')->name('update');
             Route::patch('/{id}', 'update')->name('update');
 
-            // Update Position
-            Route::put('/{id}/position', 'updatePosition')->name('update_position');
-            Route::patch('/{id}/position', 'updatePosition')->name('update_position');
-
             // Delete
             Route::delete('/{id}', 'delete')->name('destroy');
 
-            // // Test
+            // Test
             // Route::post('test', 'test')->name('test');
         });
 

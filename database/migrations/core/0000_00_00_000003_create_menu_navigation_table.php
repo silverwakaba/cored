@@ -13,10 +13,10 @@ return new class extends Migration{
             $table->string('name');
             $table->string('icon')->nullable();
             $table->string('route')->nullable();
-            $table->string('type')->comment('h = header | p = parent | c = child.');
+            $table->string('type')->comment('h = Header | p = Parent | c = Child.');
             $table->integer('order')->default(1);
-            $table->boolean('is_authenticate')->nullable();
-            $table->boolean('is_guest_only')->nullable();
+            $table->boolean('is_authenticate')->default(false)->nullable();
+            $table->boolean('is_guest_only')->default(false)->nullable();
         });
 
         // Pivot table for menu-role relationship

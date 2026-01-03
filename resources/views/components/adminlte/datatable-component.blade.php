@@ -207,13 +207,20 @@ $('#{{ $id }}').DataTable({
                         // Handle success
                         if(response.success){
                             // Success
-                            Swal.fire({
+                            let swalPromise = Swal.fire({
                                 icon: 'success',
                                 text: response.message || response.responseJSON.message || 'Something went wrong.',
                                 allowOutsideClick: () => {
                                     return false;
                                 },
                             });
+                            
+                            @if($reloadable)
+                                swalPromise.then(() => {
+                                    // Reload table
+                                    $('#{{ $id }}').DataTable().ajax.reload(null, false);
+                                });
+                            @endif
                         }
                         else{
                             // API error

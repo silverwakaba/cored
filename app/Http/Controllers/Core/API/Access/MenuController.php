@@ -6,6 +6,15 @@ use App\Http\Controllers\Controller;
 // Repository interface
 use App\Contracts\Core\MenuRepositoryInterface;
 
+// Event
+use App\Events\Core\GeneralEventHandler;
+
+// Helper
+use App\Helpers\Core\GeneralHelper;
+
+// Request
+use App\Http\Requests\Core\MenuCreateRequest;
+
 // Model
 use App\Models\Core\Menu;
 
@@ -24,6 +33,208 @@ class MenuController extends Controller{
     // Index
     public function index(){
         return $this->repositoryInterface->index();
+    }
+
+    // List
+    public function list(Request $request){
+        return GeneralHelper::safe(function() use($request){
+            // Get data with hierarchical structure (all menus visible)
+            $datas = $this->repositoryInterface->list();
+
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
+
+            // Load relation
+            if(isset($request->relation)){
+                $datas->withRelation($request->relation);
+            }
+
+            // Filter by load_type if provided (for loading parent options - headers and parents only)
+            // Handle both load_type and load_type[] (array format)
+            $loadType = $request->load_type ?? $request->input('load_type[]');
+            if($loadType){
+                $loadTypes = is_array($loadType) ? $loadType : [$loadType];
+                $loadTypes = array_filter($loadTypes, function($val){
+                    return !empty($val) && $val !== '';
+                });
+                if(!empty($loadTypes)){
+                    $datas->query->whereIn('type', $loadTypes);
+                }
+            }
+
+            // Return response
+            if($request->type === 'datatable'){
+                return $datas->useDatatable()->all();
+            } else {
+                // Return as JSON response for non-datatable requests
+                return GeneralHelper::jsonResponse([
+                    'status' => 200,
+                    'data' => $datas->all(),
+                ]);
+            }
+        }, ['status' => 409, 'message' => true]);
+    }
+
+    // Create
+    public function create(Request $request){
+        return GeneralHelper::safe(function() use($request){
+            // Validate input
+            $validated = GeneralHelper::validate($request->all(), (new MenuCreateRequest())->rules());
+
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
+            }
+
+            // Prepare menu data (map form field names to database column names)
+            $menuData = [
+                'name'              => $request->name,
+                'icon'              => $request->icon,
+                'route'             => $request->route,
+                'type'              => $request->type,
+                'parent_id'         => $request->parent ?? null,
+                'is_authenticate'   => $request->authenticate ?? null,
+                'is_guest_only'     => $request->guest_only ?? null,
+            ];
+
+            // Determine position and reference
+            $position = $request->position ?? 'after';
+            $referenceId = $request->reference_id ?? null;
+
+            // Create menu
+            $datas = $this->repositoryInterface->createMenu($menuData, $position, $referenceId);
+
+            // Sync relationships if provided
+            $this->syncMenuRelationships($datas->id, $request);
+
+            // Reload menu with relationships
+            $datas = $datas->fresh(['roles:id,name', 'includedUsers:id,name,email', 'excludedUsers:id,name,email']);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 201,
+                'data'      => $datas,
+                'message'   => 'Menu created successfully.',
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
+
+    // Read
+    public function read($id, Request $request){
+        return GeneralHelper::safe(function() use($id, $request){
+            // Get menu data
+            $datas = $this->repositoryInterface->list();
+            
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
+
+            // Load relation - always include roles, includedUsers, excludedUsers for form population
+            $relations = ['roles:id,name', 'includedUsers:id,name,email', 'excludedUsers:id,name,email'];
+            if(isset($request->relation)){
+                $requestRelations = is_array($request->relation) ? $request->relation : [$request->relation];
+                $relations = array_merge($relations, $requestRelations);
+            }
+            $datas->withRelation($relations);
+            
+            // Get menu data
+            $datas = $datas->read($id);
+
+            // Transform relationships for frontend
+            if($datas){
+                $datas->included_users = $datas->includedUsers;
+                $datas->excluded_users = $datas->excludedUsers;
+            }
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas,
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
+
+    // Update
+    public function update($id, Request $request){
+        return GeneralHelper::safe(function() use($id, $request){
+            // Validate input
+            $validated = GeneralHelper::validate($request->all(), (new MenuCreateRequest())->rules());
+
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
+            }
+
+            // Prepare menu data (map form field names to database column names)
+            $menuData = [
+                'name'              => $request->name,
+                'icon'              => $request->icon,
+                'route'             => $request->route,
+                'type'              => $request->type,
+                'parent_id'         => $request->parent ?? null,
+                'is_authenticate'   => $request->authenticate ?? null,
+                'is_guest_only'     => $request->guest_only ?? null,
+            ];
+
+            // Update menu data
+            $datas = $this->repositoryInterface->updateMenu($id, $menuData);
+
+            // Update menu position if position and reference_id are provided
+            if($request->filled('position') && $request->filled('reference_id')){
+                $datas = $this->repositoryInterface->updateMenuPosition($id, $request->position, $request->reference_id);
+            }
+
+            // Sync relationships if provided (empty array means remove all)
+            $this->syncMenuRelationships($id, $request, true);
+
+            // Reload menu with relationships
+            $datas = $datas->fresh(['roles:id,name', 'includedUsers:id,name,email', 'excludedUsers:id,name,email']);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas,
+                'message'   => 'Menu updated successfully.',
+            ]);
+        }, ['status' => 409, 'message' => true]);
+    }
+
+    // Delete
+    public function delete($id, Request $request){
+        return GeneralHelper::safe(function() use($id, $request){
+            // Delete menu data
+            $datas = $this->repositoryInterface->deleteMenu($id);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'message'   => 'Menu deleted successfully.',
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
+
+    // Helper method to sync menu relationships (reduces code duplication)
+    private function syncMenuRelationships($menuId, Request $request, $useHas = false){
+        // Sync roles
+        if($useHas ? $request->has('roles') : $request->filled('roles')){
+            $roles = is_array($request->roles) ? $request->roles : ($request->roles ? [$request->roles] : []);
+            $this->repositoryInterface->syncRoles($menuId, $roles);
+        }
+
+        // Sync user includes
+        if($useHas ? $request->has('user_includes') : $request->filled('user_includes')){
+            $userIncludes = is_array($request->user_includes) ? $request->user_includes : ($request->user_includes ? [$request->user_includes] : []);
+            $this->repositoryInterface->syncUserIncludes($menuId, $userIncludes);
+        }
+
+        // Sync user excludes
+        if($useHas ? $request->has('user_excludes') : $request->filled('user_excludes')){
+            $userExcludes = is_array($request->user_excludes) ? $request->user_excludes : ($request->user_excludes ? [$request->user_excludes] : []);
+            $this->repositoryInterface->syncUserExcludes($menuId, $userExcludes);
+        }
     }
 
     // Test
@@ -73,7 +284,8 @@ class MenuController extends Controller{
         */
 
         // // Update menu order: 13 before 11
-        // $this->repositoryInterface->updateMenuPosition(13, 'before', 11);
+        // return $this->repositoryInterface->updateMenuPosition(16, 'after', 5);
+        // return $this->repositoryInterface->updateMenuPosition(5, 'after', 16);
 
         /*
          * Testing for Delete - All passed

@@ -9,6 +9,7 @@ use App\Helpers\Core\GeneralHelper;
 use App\Mail\Core\UserVerifyEmail;
 
 // Model
+use App\Models\Core\BaseRequest;
 use App\Models\Core\User;
 
 // Internal
@@ -22,9 +23,12 @@ class UserObserver{
     public function created(User $user) : void{
         // Implementing db transaction
         DB::transaction(function() use($user){
+            // Search for "Email Verification" from Base Request
+            $baseRequest = BaseRequest::select(['id', 'name'])->where('name', 'Email Verification')->first();
+            
             // Create token request
-            $request = $user->userRequests()->create([
-                'base_requests_id'  => 1,
+            $userRequest = $user->userRequests()->create([
+                'base_requests_id'  => $baseRequest->id,
                 'users_id'          => $user->id,
                 'token'             => GeneralHelper::randomToken(),
             ]);

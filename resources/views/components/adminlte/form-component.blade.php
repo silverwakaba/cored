@@ -52,6 +52,11 @@ $('#{{ $id }}').off('submit').on('submit', function(e){
                         $('#{{ $id }}Modal').modal('hide');
                     @endif
 
+                    @if($table)
+                        // Reload table
+                        $('#{{ $table }}').DataTable().ajax.reload(null, false);
+                    @endif
+
                     @if($redirect)
                         // Redirect - use intended URL from response if available, otherwise use default redirect
                         let redirectUrl = response.redirect_url || "{{ $redirect }}";

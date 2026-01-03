@@ -9,13 +9,14 @@ return new class extends Migration{
      * Run the migrations.
      */
     public function up() : void{
-        Schema::create('user_cta_messages', function (Blueprint $table){
+        Schema::create('notifications', function (Blueprint $table){
             $table->id();
+            $table->foreignId('base_requests_id')->comment('Request module id')->references('id')->on('base_requests');
+            $table->foreignId('base_statuses_id')->comment('Request status id')->references('id')->on('base_requests');
             $table->ulid('users_id');
             $table->foreign('users_id')->references('id')->on('users');
-            $table->string('subject');
-            $table->longText('message');
-            $table->json('attachment')->nullable();
+            $table->json('data')->nullable()->comment('JSON payload containing the content');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration{
      * Reverse the migrations.
      */
     public function down() : void{
-        Schema::dropIfExists('user_cta_messages');
+        Schema::dropIfExists('notifications');
     }
 };

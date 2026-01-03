@@ -71,7 +71,7 @@ class UserAccessController extends Controller{
 
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
-        }, ['status' => 409, 'message' => false]);
+        }, ['status' => 409, 'message' => true]);
     }
 
     // Create

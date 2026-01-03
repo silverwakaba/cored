@@ -177,4 +177,33 @@ class BaseModuleController extends Controller{
             ]);
         }, ['status' => 409, 'message' => false]);
     }
+
+    // Bulk Delete
+    public function bulkDestroy(Request $request){
+        return GeneralHelper::safe(function() use($request){
+            // Validate input
+            $ids = $request->input('ids', []);
+            
+            // Check if ids is provided and is array
+            if(empty($ids) || !is_array($ids)){
+                return GeneralHelper::jsonResponse([
+                    'status'    => 400,
+                    'message'   => 'No data selected.',
+                ], 400);
+            }
+
+            // Delete base module data (actually toggles activation status)
+            $result = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($ids);
+
+            // Get action and data from result
+            $action = $result['action'];
+            $count = $result['data'];
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'message'   => "{$count} base module(s) {$action} successfully.",
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
 }

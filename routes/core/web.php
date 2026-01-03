@@ -133,6 +133,9 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
 
                 // Delete
                 Route::delete('/{id}', 'delete')->name('destroy');
+
+                // Bulk Destroy
+                Route::post('bulk-destroy', 'bulkDestroy')->name('bulk-destroy');
             });
 
             // Request

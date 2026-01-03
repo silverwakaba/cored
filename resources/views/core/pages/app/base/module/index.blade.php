@@ -49,7 +49,25 @@
         // Init datatable
         function initDatatable(){
             // Server-side Datatable from API Endpoint
-            <x-Adminlte.DatatableComponent id="theTable" :tableUrl="route('fe.apps.base.module.list')" :deleteUrl="route('fe.apps.base.module.destroy', ['id' => '::ID::'])" :upsert="true" :editable="true" :filterable="true" method="GET">
+            <x-Adminlte.DatatableComponent
+                id="theTable"
+                :tableUrl="route('fe.apps.base.module.list')"
+                :deleteUrl="route('fe.apps.base.module.destroy', ['id' => '::ID::'])"
+                :upsert="true"
+                :editable="true"
+                :filterable="true"
+                :selectable="true"
+                :selectMode="'multiple'"
+                :bulkActions="[
+                    [
+                        'text'      => 'Activate or Deactivate',
+                        'icon'      => 'fa-trash',
+                        'action'    => 'delete',
+                        'url'       => route('fe.apps.base.module.bulk-destroy'),
+                    ],
+                ]"
+                :reloadable="true"
+                method="GET">
                 {
                     title: 'Name', data: 'name',
                 },

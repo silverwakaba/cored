@@ -80,4 +80,15 @@ class BaseModuleController extends Controller{
         // Response for $delete action
         return response()->json($http->json(), $http->status());
     }
+
+    // Bulk Destroy
+    public function bulkDestroy(Request $request){
+        // Bulk delete base module
+        $http = $this->apiRepository->withToken()->post('be.core.base.module.bulk-destroy', [
+            'ids' => $request->input('ids', []),
+        ]);
+        
+        // Response for bulk delete action
+        return response()->json($http->json(), $http->status());
+    }
 }

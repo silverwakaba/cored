@@ -123,12 +123,28 @@ Route::prefix('/')->name('be.')->group(function(){
         });
 
         // Menu
-        Route::prefix('menu')->name('menu.')->middleware(['jwt.global'])->controller(MenuController::class)->group(function(){
-            // Index
-            Route::get('/', 'index')->name('index');
+        Route::prefix('menu')->name('menu.')->middleware(['jwt.be', 'role:Root|Admin|Moderator'])->controller(MenuController::class)->group(function(){
+            // Index (public menu for navigation)
+            Route::get('/', 'index')->name('index')->withoutMiddleware(['jwt.be', 'role:Root|Admin|Moderator'])->middleware(['jwt.global']);
+
+            // List
+            Route::get('/list', 'list')->name('list');
+
+            // Create
+            Route::post('/', 'create')->name('store');
+
+            // Read
+            Route::get('/{id}', 'read')->name('show');
+
+            // Update
+            Route::put('/{id}', 'update')->name('update');
+            Route::patch('/{id}', 'update')->name('update');
+
+            // Delete
+            Route::delete('/{id}', 'delete')->name('destroy');
 
             // Test
-            Route::post('test', 'test')->name('test');
+            // Route::post('test', 'test')->name('test');
         });
 
         // Role-based access control

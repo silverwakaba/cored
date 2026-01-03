@@ -40,10 +40,6 @@ class UserAccessController extends Controller{
                 'name' => 'ASC',
             ]);
 
-            $datas->excludeSelect([
-                'name',
-            ]);
-
             // Load column selection
             if(isset($request->select)){
                 $datas->onlySelect($request->select);

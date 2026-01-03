@@ -79,6 +79,12 @@ Breadcrumbs::for('apps', function (BreadcrumbTrail $trail){
     $trail->push('Apps', route('fe.apps.index'));
 });
 
+// Apps-Menu
+Breadcrumbs::for('apps.menu', function (BreadcrumbTrail $trail){
+    $trail->parent('apps');
+    $trail->push('Menu', route('fe.apps.menu.index'));
+});
+
 /**
  * Apps Base
 */

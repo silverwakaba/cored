@@ -81,6 +81,16 @@ class MenuSeeder extends Seeder{
             'order'     => 1,
         ]);
 
+        // Create parent - Menu
+        $childMenu = Menu::create([
+            'name'      => 'Menu',
+            'icon'      => 'fas fa-bars',
+            'route'     => 'fe.apps.menu.index',
+            'type'      => 'p',
+            'parent_id' => $headerApps->id,
+            'order'     => $childApps->order + 1,
+        ]);
+
         /**
          * Apps - Base
         */
@@ -157,6 +167,7 @@ class MenuSeeder extends Seeder{
         */
 
         // App
+        $childMenu->roles()->attach([1, 2, 3]);
         $parentAppsBase->roles()->attach([1, 2, 3]);
         $parentAppsRBAC->roles()->attach([1, 2, 3]);
 

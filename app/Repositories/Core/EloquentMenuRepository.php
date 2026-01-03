@@ -7,12 +7,16 @@ use App\Helpers\Core\GeneralHelper;
 
 // Model
 use App\Models\Core\Menu;
+use App\Models\Core\User;
 
 // Interface
 use App\Contracts\Core\MenuRepositoryInterface;
 
 // Internal
 use Illuminate\Support\Facades\DB;
+
+// External
+use Yajra\DataTables\Facades\DataTables;
 
 /*
  * Notes
@@ -34,6 +38,11 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
         
         // Check if user is authenticated
         $isAuthenticated = !is_null($user);
+        
+        // Eager load user roles to avoid N+1 query
+        if($user){
+            $user->load('roles:id,name');
+        }
 
         // Load menu base on auth info with hierarchical authentication filtering
         $menus = Menu::whereNull('parent_id')
@@ -52,10 +61,81 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
         ->orderBy('order')->get();
 
         // Apply final hierarchical authentication filtering to handle any edge cases
-        $filteredMenus = $this->filterByHierarchicalAuthentication($menus, $isAuthenticated);
+        $filteredMenus = $this->filterByHierarchicalAuthentication($menus, $isAuthenticated, $user);
 
         // Response
         return response()->json($filteredMenus);
+    }
+
+    // List
+    public function list(){
+        // Get all menus - we'll sort hierarchically in all() method
+        $this->query = Menu::with([
+            'parent:id,name,type',
+            'children' => function($query){
+                $query->orderBy('order');
+            }
+        ]);
+
+        // Return chainable instance
+        return $this;
+    }
+
+    // Override all() to sort hierarchically (Header > Parent > Child)
+    public function all(){
+        // Start get query
+        $datas = $this->query->get();
+
+        // Sort hierarchically: Header > Parent > Child
+        $sortedMenus = $this->sortHierarchically($datas);
+
+        // Return response as datatable
+        if($this->shouldUseDatatable === true){
+            return DataTables::of($sortedMenus)->toJson();
+        }
+
+        // Return response
+        return $sortedMenus;
+    }
+
+    // Sort menus hierarchically: Headers first, then their Parents, then their Children
+    private function sortHierarchically($menus){
+        $sorted = collect();
+        
+        // Get all headers (parent_id is null)
+        $headers = $menus->whereNull('parent_id')->sortBy('order');
+        
+        foreach($headers as $header){
+            // Add header
+            $sorted->push($header);
+            
+            // Get parents of this header
+            $parents = $menus->where('parent_id', $header->id)->sortBy('order');
+            
+            foreach($parents as $parent){
+                // Add parent
+                $sorted->push($parent);
+                
+                // Get children of this parent
+                $children = $menus->where('parent_id', $parent->id)->sortBy('order');
+                
+                foreach($children as $child){
+                    // Add child
+                    $sorted->push($child);
+                }
+            }
+        }
+        
+        return $sorted->values();
+    }
+
+    // Read
+    public function read($id){
+        // Get menu data using query builder (supports relation and select)
+        $datas = $this->query->find($id);
+
+        // Return response
+        return $datas;
     }
 
     // Apply both role-based and authentication filtering to query
@@ -103,9 +183,7 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
     }
 
     // Filter menus hierarchically based on is_authenticate and is_guest_only (final cleanup)
-    private function filterByHierarchicalAuthentication($menus, $isAuthenticated){
-        $user = auth()->guard('api')->user();
-        
+    private function filterByHierarchicalAuthentication($menus, $isAuthenticated, $user = null){
         return $menus->filter(function($menu) use($isAuthenticated, $user){
             // Check if this menu should be visible based on authentication
             if($menu->is_authenticate && !$isAuthenticated){
@@ -124,7 +202,7 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
 
             // Recursively filter children
             if($menu->children->isNotEmpty()){
-                $menu->children = $this->filterByHierarchicalAuthentication($menu->children, $isAuthenticated);
+                $menu->children = $this->filterByHierarchicalAuthentication($menu->children, $isAuthenticated, $user);
                 
                 // If after filtering, this menu has no children and it's a header/parent type, then hide it
                 if($menu->children->isEmpty() && in_array($menu->type, ['h', 'p'])){
@@ -149,7 +227,35 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
             $this->shiftMenusForInsertion($data, $targetOrder);
             
             // Create the new menu
-            return Menu::create(array_merge($data, ['order' => $targetOrder]));
+            $menu = Menu::create(array_merge($data, ['order' => $targetOrder]));
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($menu);
+            }
+
+            return $menu;
+        });
+    }
+
+    // Update menu
+    public function updateMenu($id, $data){
+        return DB::transaction(function() use($id, $data){
+            $menu = Menu::findOrFail($id);
+            
+            // Update menu data (excluding order which is handled by updateMenuPosition)
+            $updateData = array_filter($data, function($key){
+                return $key !== 'order' && $key !== 'position' && $key !== 'reference_id';
+            }, ARRAY_FILTER_USE_KEY);
+            
+            $menu->update($updateData);
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($menu->fresh());
+            }
+            
+            return $menu->fresh();
         });
     }
 
@@ -175,6 +281,11 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
             // Shift menus and update
             $this->shiftMenusForMovement($menu, $currentOrder, $targetOrder);
             $menu->update(['order' => $targetOrder]);
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute($menu->fresh());
+            }
             
             return $menu->fresh();
         });
@@ -193,6 +304,11 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
             
             // Reorder siblings
             $this->reorderSiblings($parentId, $type, $deletedOrder);
+
+            // Call broadcaster if set
+            if($this->broadcastClass){
+                $this->broadcasterExecute(null); // null data
+            }
         });
     }
 
@@ -266,5 +382,53 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
     // Get menus by parent and type for reordering
     public function getMenusByContext($parentId, $type){
         return Menu::byParent($parentId)->byType($type)->orderBy('order')->get();
+    }
+
+    // Sync roles to menu
+    public function syncRoles($menuId, $roleIds){
+        $menu = Menu::findOrFail($menuId);
+        
+        // Filter out empty values
+        $roleIds = array_filter($roleIds, function($id){
+            return !empty($id) && $id !== '';
+        });
+        
+        if(empty($roleIds)){
+            $menu->roles()->sync([]);
+            return $menu;
+        }
+        
+        // Optimize: Use whereIn to find all roles at once instead of looping
+        $roles = \Spatie\Permission\Models\Role::whereIn('id', $roleIds)
+            ->orWhereIn('name', $roleIds)
+            ->get();
+        
+        $menu->roles()->sync($roles->pluck('id')->toArray());
+        
+        return $menu;
+    }
+
+    // Sync user includes to menu
+    public function syncUserIncludes($menuId, $userIds){
+        return $this->syncUserRelation($menuId, $userIds, 'includedUsers');
+    }
+
+    // Sync user excludes to menu
+    public function syncUserExcludes($menuId, $userIds){
+        return $this->syncUserRelation($menuId, $userIds, 'excludedUsers');
+    }
+    
+    // Helper method to sync user relations (reduces code duplication)
+    private function syncUserRelation($menuId, $userIds, $relation){
+        $menu = Menu::findOrFail($menuId);
+        
+        // Filter out empty values
+        $userIds = array_filter($userIds, function($id){
+            return !empty($id) && $id !== '';
+        });
+        
+        $menu->$relation()->sync($userIds);
+        
+        return $menu;
     }
 }

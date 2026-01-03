@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 // Core Controller
+use App\Http\Controllers\Core\FE\Access\MenuController;
 use App\Http\Controllers\Core\FE\Access\PermissionController;
 use App\Http\Controllers\Core\FE\Access\RoleController;
 use App\Http\Controllers\Core\FE\Access\UserAccessController;
@@ -40,7 +41,7 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
         Route::post('message', 'messagePost');
     });
 
-    // General Auth (core - do not touch)
+    // General Auth
     Route::prefix('auth')->name('auth.')->middleware(['jwt.guest'])->controller(GeneralAuthController::class)->group(function(){
         // Register
         Route::get('register', 'register')->name('register');
@@ -75,15 +76,41 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
         // Page apps
         Route::get('/', [PageController::class, 'app'])->name('index');
 
+        // Menu
+        Route::prefix('menu')->name('menu.')->middleware(['role:Root|Admin|Moderator'])->controller(MenuController::class)->group(function(){
+            // Index
+            Route::get('/', 'index')->name('index');
+
+            // List
+            Route::get('list', 'list')->name('list');
+
+            // Create
+            Route::post('/', 'create')->name('store');
+
+            // Read
+            Route::get('/{id}', 'read')->name('show');
+
+            // Update
+            Route::put('/{id}', 'update')->name('update');
+            Route::patch('/{id}', 'update')->name('update');
+
+            // Update Position
+            Route::put('/{id}/position', 'updatePosition')->name('update_position');
+            Route::patch('/{id}/position', 'updatePosition')->name('update_position');
+
+            // Delete
+            Route::delete('/{id}', 'delete')->name('destroy');
+        });
+
         // Base-related-thing
-        Route::prefix('base')->name('base.')->group(function(){
+        Route::prefix('base')->name('base.')->middleware(['role:Root|Admin|Moderator'])->group(function(){
             // Index
             Route::get('/', [PageController::class, 'appBase'])->name('index');
 
             // General
             Route::prefix('general')->name('general.')->controller(BasedataController::class)->group(function(){
                 // Boolean
-                Route::get('boolean', 'boolean')->name('boolean')->withoutMiddleware(['jwt.fe']);
+                Route::get('boolean', 'boolean')->name('boolean')->withoutMiddleware(['jwt.fe', 'role:Root|Admin|Moderator']);
             });
 
             // Module
@@ -92,7 +119,7 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
                 Route::get('/', 'index')->name('index');
 
                 // List
-                Route::get('list', 'list')->name('list')->withoutMiddleware(['jwt.fe']);
+                Route::get('list', 'list')->name('list')->withoutMiddleware(['jwt.fe', 'role:Root|Admin|Moderator']);
 
                 // Create
                 Route::post('/', 'create')->name('store');
@@ -114,7 +141,7 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
                 Route::get('/', 'index')->name('index');
                 
                 // List
-                Route::get('list', 'list')->name('list')->withoutMiddleware(['jwt.fe']);
+                Route::get('list', 'list')->name('list')->withoutMiddleware(['jwt.fe', 'role:Root|Admin|Moderator']);
 
                 // Create
                 Route::post('/', 'create')->name('store');
@@ -131,7 +158,7 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
             });
         });
 
-        // Role-Based Access Control (core - do not touch)
+        // Role-Based Access Control
         Route::prefix('rbac')->name('rbac.')->middleware(['role:Root|Admin|Moderator'])->group(function(){
             // Index
             Route::get('/', [PageController::class, 'appRBAC'])->name('index');

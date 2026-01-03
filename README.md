@@ -123,8 +123,8 @@ But if the project is small to medium, or not really that important (e.g: a land
 - ~~Permission~~
 - ~~UAC~~
 
-2. Access => 50%
-- Dynamic Menu (~~Backend logic is done~~; No GUI / Form yet)
+2. Access => 100%
+- ~~Dynamic Menu (Backend logic is done; is GUI done)~~
 
 3. ~~Auth (Mailable via queue) => Done~~
 - ~~Register~~

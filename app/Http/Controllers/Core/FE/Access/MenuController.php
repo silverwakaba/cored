@@ -25,13 +25,17 @@ class MenuController extends Controller{
 
     // List
     public function list(){
+        // Prepare parameters - avoid redundant array_merge
+        $params = request()->all();
+        $params['relation'] = ['parent:id,name', 'children:id,name,order'];
+        
+        // Only add type if it exists to avoid overriding
+        if(request()->has('type')){
+            $params['type'] = request()->type;
+        }
+        
         // Make http call
-        $http = $this->apiRepository->withToken()->get('be.core.menu.list', array_merge(
-            request()->all(), [
-                'type'      => request()->type,
-                'relation'  => ['parent:id,name', 'children:id,name,order'],
-            ])
-        );
+        $http = $this->apiRepository->withToken()->get('be.core.menu.list', $params);
 
         // Response
         return response()->json($http->json(), $http->status());
@@ -40,20 +44,7 @@ class MenuController extends Controller{
     // Create
     public function create(Request $request){
         // Create menu (form field names: parent, authenticate, guest_only)
-        $http = $this->apiRepository->withToken()->post('be.core.menu.store', [
-            'name'              => $request->name,
-            'icon'              => $request->icon,
-            'route'             => $request->route,
-            'type'              => $request->type,
-            'parent'            => $request->parent,
-            'authenticate'      => $request->authenticate,
-            'guest_only'        => $request->guest_only,
-            'position'          => $request->position,
-            'reference_id'      => $request->reference_id,
-            'roles'             => $request->roles,
-            'user_includes'     => $request->user_includes,
-            'user_excludes'     => $request->user_excludes,
-        ]);
+        $http = $this->apiRepository->withToken()->post('be.core.menu.store', $this->prepareMenuData($request));
         
         // Response for $create action
         return response()->json($http->json(), $http->status());
@@ -74,8 +65,18 @@ class MenuController extends Controller{
     // Update
     public function update($id, Request $request){
         // Update menu (form field names: parent, authenticate, guest_only)
-        $http = $this->apiRepository->withToken()->put('be.core.menu.update', [
-            'id'                => $id,
+        $menuData = $this->prepareMenuData($request);
+        $menuData['id'] = $id;
+        
+        $http = $this->apiRepository->withToken()->put('be.core.menu.update', $menuData);
+        
+        // Response for $update action
+        return response()->json($http->json(), $http->status());
+    }
+    
+    // Helper method to prepare menu data (reduces code duplication)
+    private function prepareMenuData(Request $request){
+        return [
             'name'              => $request->name,
             'icon'              => $request->icon,
             'route'             => $request->route,
@@ -88,10 +89,7 @@ class MenuController extends Controller{
             'roles'             => $request->roles,
             'user_includes'     => $request->user_includes,
             'user_excludes'     => $request->user_excludes,
-        ]);
-        
-        // Response for $update action
-        return response()->json($http->json(), $http->status());
+        ];
     }
 
     // Update Position

@@ -263,6 +263,53 @@
             });
         }
 
+        // Helper function to process data (handle both array and object)
+        function processData(data){
+            if(!data) return [];
+            
+            // If it's already an array
+            if(Array.isArray(data)){
+                return data;
+            }
+            
+            // If it's an object, try to extract array
+            if(typeof data === 'object'){
+                // Check if it has data property
+                if(data.data && Array.isArray(data.data)){
+                    return data.data;
+                }
+                // Check if it's a collection-like object
+                if(data.length !== undefined){
+                    return Array.from(data);
+                }
+                // Try Object.values
+                const values = Object.values(data);
+                if(values.length > 0 && typeof values[0] === 'object'){
+                    return values;
+                }
+            }
+            
+            return [];
+        }
+        
+        // Helper function to extract data array from response
+        function extractDataArray(response){
+            // Check if response has data property (standard API response)
+            if(response.data !== undefined){
+                return processData(response.data);
+            }
+            // Check if response is directly an array
+            if(Array.isArray(response)){
+                return response;
+            }
+            // Check if response has success property with data
+            if(response.success && response.data){
+                return processData(response.data);
+            }
+            // Try to process response directly
+            return processData(response);
+        }
+        
         // Load parent
         function loadParent(){
             // Handle parent list - filter headers and parents (type 'h' and 'p') in frontend
@@ -275,58 +322,11 @@
                     const parentSelect = $('#parent');
                     parentSelect.empty().append('<option value="">Select an Option (None for Header)</option>');
 
-                    // Helper function to process data (handle both array and object)
-                    function processData(data){
-                        if(!data) return [];
-                        
-                        // If it's already an array
-                        if(Array.isArray(data)){
-                            return data;
-                        }
-                        
-                        // If it's an object, try to extract array
-                        if(typeof data === 'object'){
-                            // Check if it has data property
-                            if(data.data && Array.isArray(data.data)){
-                                return data.data;
-                            }
-                            // Check if it's a collection-like object
-                            if(data.length !== undefined){
-                                return Array.from(data);
-                            }
-                            // Try Object.values
-                            const values = Object.values(data);
-                            if(values.length > 0 && typeof values[0] === 'object'){
-                                return values;
-                            }
-                        }
-                        
-                        return [];
-                    }
-
                     // Get data array - handle different response formats
-                    let dataArray = [];
-                    
-                    // Check if response has data property (standard API response)
-                    if(response.data !== undefined){
-                        dataArray = processData(response.data);
-                    }
-                    // Check if response is directly an array
-                    else if(Array.isArray(response)){
-                        dataArray = response;
-                    }
-                    // Check if response has success property with data
-                    else if(response.success && response.data){
-                        dataArray = processData(response.data);
-                    }
-                    // Try to process response directly
-                    else {
-                        dataArray = processData(response);
-                    }
+                    const dataArray = extractDataArray(response);
 
                     // Filter and map only headers and parents
                     if(dataArray && dataArray.length > 0){
-                        let addedCount = 0;
                         dataArray.forEach(function(data){
                             // Only show headers and parents as parent options
                             if(data && data.id && (data.type === 'h' || data.type === 'p')){
@@ -334,7 +334,6 @@
                                     value: data.id,
                                     text: `${data.name || 'Unnamed'} (${data.type === 'h' ? 'Header' : 'Parent'})`
                                 }));
-                                addedCount++;
                             }
                         });
                     }
@@ -378,22 +377,27 @@
             positionSelect.append($('<option>', { value: 'before', text: 'Before' }));
             positionSelect.append($('<option>', { value: 'after', text: 'After' }));
 
-            // Reference menu select
+            // Reference menu select - reuse the same API call from loadParent
             const referenceSelect = $('#reference_id');
             referenceSelect.empty().append('<option value="">Select an Option (Optional)</option>');
             
-            // Load reference menu options
+            // Load reference menu options - reuse same API call to avoid duplicate request
             $.ajax({
                 type: 'GET',
                 dataType: 'json',
                 url: `{{ route('fe.apps.menu.list') }}`,
                 success: function(response){
-                    if(Array.isArray(response.data)){
-                        response.data.forEach(function(data){
-                            referenceSelect.append($('<option>', {
-                                value: data.id,
-                                text: `${data.name} (${data.type === 'h' ? 'Header' : data.type === 'p' ? 'Parent' : 'Child'})`
-                            }));
+                    const dataArray = extractDataArray(response);
+                    
+                    if(dataArray && dataArray.length > 0){
+                        dataArray.forEach(function(data){
+                            if(data && data.id){
+                                const typeLabel = data.type === 'h' ? 'Header' : data.type === 'p' ? 'Parent' : 'Child';
+                                referenceSelect.append($('<option>', {
+                                    value: data.id,
+                                    text: `${data.name || 'Unnamed'} (${typeLabel})`
+                                }));
+                            }
                         });
                     }
                 },
@@ -414,13 +418,8 @@
                     const rolesSelect = $('select[name="roles[]"]');
                     rolesSelect.empty().append('<option value="">Select Roles (Optional)</option>');
                     
-                    // Handle different response formats
-                    let dataArray = [];
-                    if(Array.isArray(response)){
-                        dataArray = response;
-                    } else if(response.data && Array.isArray(response.data)){
-                        dataArray = response.data;
-                    }
+                    // Handle different response formats using helper
+                    const dataArray = extractDataArray(response);
                     
                     // Map data
                     dataArray.forEach(function(data){
@@ -451,13 +450,8 @@
                     const userExcludesSelect = $('select[name="user_excludes[]"]');
                     userExcludesSelect.empty().append('<option value="">Select Users (Optional)</option>');
                     
-                    // Handle different response formats
-                    let dataArray = [];
-                    if(Array.isArray(response)){
-                        dataArray = response;
-                    } else if(response.data && Array.isArray(response.data)){
-                        dataArray = response.data;
-                    }
+                    // Handle different response formats using helper
+                    const dataArray = extractDataArray(response);
                     
                     // Map data
                     dataArray.forEach(function(data){

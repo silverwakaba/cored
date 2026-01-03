@@ -106,23 +106,8 @@ class MenuController extends Controller{
             // Create menu
             $datas = $this->repositoryInterface->createMenu($menuData, $position, $referenceId);
 
-            // Sync roles if provided
-            if($request->filled('roles')){
-                $roles = is_array($request->roles) ? $request->roles : [$request->roles];
-                $this->repositoryInterface->syncRoles($datas->id, $roles);
-            }
-
-            // Sync user includes if provided
-            if($request->filled('user_includes')){
-                $userIncludes = is_array($request->user_includes) ? $request->user_includes : [$request->user_includes];
-                $this->repositoryInterface->syncUserIncludes($datas->id, $userIncludes);
-            }
-
-            // Sync user excludes if provided
-            if($request->filled('user_excludes')){
-                $userExcludes = is_array($request->user_excludes) ? $request->user_excludes : [$request->user_excludes];
-                $this->repositoryInterface->syncUserExcludes($datas->id, $userExcludes);
-            }
+            // Sync relationships if provided
+            $this->syncMenuRelationships($datas->id, $request);
 
             // Reload menu with relationships
             $datas = $datas->fresh(['roles:id,name', 'includedUsers:id,name,email', 'excludedUsers:id,name,email']);
@@ -140,7 +125,7 @@ class MenuController extends Controller{
     public function read($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Get menu data
-            $datas = $this->repositoryInterface;
+            $datas = $this->repositoryInterface->list();
             
             // Load column selection
             if(isset($request->select)){
@@ -155,7 +140,7 @@ class MenuController extends Controller{
             }
             $datas->withRelation($relations);
             
-            // Continue variable
+            // Get menu data
             $datas = $datas->read($id);
 
             // Transform relationships for frontend
@@ -202,23 +187,8 @@ class MenuController extends Controller{
                 $datas = $this->repositoryInterface->updateMenuPosition($id, $request->position, $request->reference_id);
             }
 
-            // Sync roles if provided (empty array means remove all)
-            if($request->has('roles')){
-                $roles = is_array($request->roles) ? $request->roles : ($request->roles ? [$request->roles] : []);
-                $this->repositoryInterface->syncRoles($id, $roles);
-            }
-
-            // Sync user includes if provided (empty array means remove all)
-            if($request->has('user_includes')){
-                $userIncludes = is_array($request->user_includes) ? $request->user_includes : ($request->user_includes ? [$request->user_includes] : []);
-                $this->repositoryInterface->syncUserIncludes($id, $userIncludes);
-            }
-
-            // Sync user excludes if provided (empty array means remove all)
-            if($request->has('user_excludes')){
-                $userExcludes = is_array($request->user_excludes) ? $request->user_excludes : ($request->user_excludes ? [$request->user_excludes] : []);
-                $this->repositoryInterface->syncUserExcludes($id, $userExcludes);
-            }
+            // Sync relationships if provided (empty array means remove all)
+            $this->syncMenuRelationships($id, $request, true);
 
             // Reload menu with relationships
             $datas = $datas->fresh(['roles:id,name', 'includedUsers:id,name,email', 'excludedUsers:id,name,email']);
@@ -244,6 +214,27 @@ class MenuController extends Controller{
                 'message'   => 'Menu deleted successfully.',
             ]);
         }, ['status' => 409, 'message' => false]);
+    }
+
+    // Helper method to sync menu relationships (reduces code duplication)
+    private function syncMenuRelationships($menuId, Request $request, $useHas = false){
+        // Sync roles
+        if($useHas ? $request->has('roles') : $request->filled('roles')){
+            $roles = is_array($request->roles) ? $request->roles : ($request->roles ? [$request->roles] : []);
+            $this->repositoryInterface->syncRoles($menuId, $roles);
+        }
+
+        // Sync user includes
+        if($useHas ? $request->has('user_includes') : $request->filled('user_includes')){
+            $userIncludes = is_array($request->user_includes) ? $request->user_includes : ($request->user_includes ? [$request->user_includes] : []);
+            $this->repositoryInterface->syncUserIncludes($menuId, $userIncludes);
+        }
+
+        // Sync user excludes
+        if($useHas ? $request->has('user_excludes') : $request->filled('user_excludes')){
+            $userExcludes = is_array($request->user_excludes) ? $request->user_excludes : ($request->user_excludes ? [$request->user_excludes] : []);
+            $this->repositoryInterface->syncUserExcludes($menuId, $userExcludes);
+        }
     }
 
     // Test

@@ -85,7 +85,7 @@
                     routeMethod = 'POST';
 
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
+                    <x-Adminlte.FormComponent id="theModal" table="theTable" :asModal="true" />
                 }
 
                 // Handle update
@@ -130,7 +130,7 @@
                     routeMethod = 'PUT';
 
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
+                    <x-Adminlte.FormComponent id="theModal" table="theTable" :asModal="true" />
                 }
             });
         }

@@ -13,6 +13,9 @@
             <x-Form.SelectForm name="parent" text="Parent" :required="false" :multiple="false" />
             <x-Form.SelectForm name="authenticate" text="Require Authentication" :required="false" :multiple="false" />
             <x-Form.SelectForm name="guest_only" text="Guest Only" :required="false" :multiple="false" />
+            <x-Form.SelectForm name="roles[]" text="Roles" :required="false" :multiple="true" />
+            <x-Form.SelectForm name="user_includes[]" text="User Includes" :required="false" :multiple="true" />
+            <x-Form.SelectForm name="user_excludes[]" text="User Excludes" :required="false" :multiple="true" />
             <x-Form.SelectForm name="position" text="Position" :required="false" :multiple="false" />
             <x-Form.SelectForm name="reference_id" text="Reference Menu" :required="false" :multiple="false" />
         </x-Adminlte.ModalComponent>
@@ -40,6 +43,15 @@
                 // Reset guest_only select (Select2)
                 $('#guest_only').val('').trigger('change.select2');
                 
+                // Reset roles select (Select2)
+                $('select[name="roles[]"]').val(null).trigger('change.select2');
+                
+                // Reset user_includes select (Select2)
+                $('select[name="user_includes[]"]').val(null).trigger('change.select2');
+                
+                // Reset user_excludes select (Select2)
+                $('select[name="user_excludes[]"]').val(null).trigger('change.select2');
+                
                 // Reset position select (Select2)
                 $('#position').val('').trigger('change.select2');
                 
@@ -56,6 +68,8 @@
             loadType();
             loadParent();
             loadBoolean();
+            loadRoles();
+            loadUsers();
 
             // Listen for form success to reset select forms
             // Listen for modal hidden event (after form success)
@@ -188,6 +202,30 @@
                             
                             $('#authenticate').val(response.data.is_authenticate ? '1' : '0').trigger('change');
                             $('#guest_only').val(response.data.is_guest_only ? '1' : '0').trigger('change');
+                            
+                            // Load and set roles
+                            if(response.data.roles && Array.isArray(response.data.roles)){
+                                const roleIds = response.data.roles.map(role => role.id || role.name);
+                                setTimeout(function(){
+                                    $('select[name="roles[]"]').val(roleIds).trigger('change');
+                                }, 500);
+                            }
+                            
+                            // Load and set user includes
+                            if(response.data.included_users && Array.isArray(response.data.included_users)){
+                                const userIncludeIds = response.data.included_users.map(user => user.id);
+                                setTimeout(function(){
+                                    $('select[name="user_includes[]"]').val(userIncludeIds).trigger('change');
+                                }, 500);
+                            }
+                            
+                            // Load and set user excludes
+                            if(response.data.excluded_users && Array.isArray(response.data.excluded_users)){
+                                const userExcludeIds = response.data.excluded_users.map(user => user.id);
+                                setTimeout(function(){
+                                    $('select[name="user_excludes[]"]').val(userExcludeIds).trigger('change');
+                                }, 500);
+                            }
                         }
                     });
 
@@ -361,6 +399,86 @@
                 },
                 error: function(){
                     referenceSelect.html('<option value="">Error loading data...</option>');
+                },
+            });
+        }
+
+        // Load roles
+        function loadRoles(){
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: `{{ route('fe.apps.rbac.role.list') }}`,
+                success: function(response){
+                    // Roles select
+                    const rolesSelect = $('select[name="roles[]"]');
+                    rolesSelect.empty().append('<option value="">Select Roles (Optional)</option>');
+                    
+                    // Handle different response formats
+                    let dataArray = [];
+                    if(Array.isArray(response)){
+                        dataArray = response;
+                    } else if(response.data && Array.isArray(response.data)){
+                        dataArray = response.data;
+                    }
+                    
+                    // Map data
+                    dataArray.forEach(function(data){
+                        rolesSelect.append($('<option>', {
+                            value: data.id || data.name,
+                            text: data.name || data.id
+                        }));
+                    });
+                },
+                error: function(){
+                    $('select[name="roles[]"]').html('<option value="">Error loading data...</option>');
+                },
+            });
+        }
+
+        // Load users
+        function loadUsers(){
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: `{{ route('fe.apps.rbac.uac.list') }}`,
+                success: function(response){
+                    // User includes select
+                    const userIncludesSelect = $('select[name="user_includes[]"]');
+                    userIncludesSelect.empty().append('<option value="">Select Users (Optional)</option>');
+                    
+                    // User excludes select
+                    const userExcludesSelect = $('select[name="user_excludes[]"]');
+                    userExcludesSelect.empty().append('<option value="">Select Users (Optional)</option>');
+                    
+                    // Handle different response formats
+                    let dataArray = [];
+                    if(Array.isArray(response)){
+                        dataArray = response;
+                    } else if(response.data && Array.isArray(response.data)){
+                        dataArray = response.data;
+                    }
+                    
+                    // Map data
+                    dataArray.forEach(function(data){
+                        const optionText = `${data.name || 'Unnamed'} (${data.email || 'No Email'})`;
+                        const optionValue = data.id;
+                        
+                        // Add to both selects
+                        userIncludesSelect.append($('<option>', {
+                            value: optionValue,
+                            text: optionText
+                        }));
+                        
+                        userExcludesSelect.append($('<option>', {
+                            value: optionValue,
+                            text: optionText
+                        }));
+                    });
+                },
+                error: function(){
+                    $('select[name="user_includes[]"]').html('<option value="">Error loading data...</option>');
+                    $('select[name="user_excludes[]"]').html('<option value="">Error loading data...</option>');
                 },
             });
         }

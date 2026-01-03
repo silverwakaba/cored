@@ -10,4 +10,7 @@ interface MenuRepositoryInterface{
     public function updateMenu($id, $data);
     public function updateMenuPosition($menuId, $position, $referenceId);
     public function deleteMenu($menuId);
+    public function syncRoles($menuId, $roleIds);
+    public function syncUserIncludes($menuId, $userIds);
+    public function syncUserExcludes($menuId, $userIds);
 }

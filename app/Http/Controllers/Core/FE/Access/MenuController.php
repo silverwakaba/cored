@@ -50,6 +50,9 @@ class MenuController extends Controller{
             'guest_only'        => $request->guest_only,
             'position'          => $request->position,
             'reference_id'      => $request->reference_id,
+            'roles'             => $request->roles,
+            'user_includes'     => $request->user_includes,
+            'user_excludes'     => $request->user_excludes,
         ]);
         
         // Response for $create action
@@ -82,6 +85,9 @@ class MenuController extends Controller{
             'guest_only'        => $request->guest_only,
             'position'          => $request->position,
             'reference_id'      => $request->reference_id,
+            'roles'             => $request->roles,
+            'user_includes'     => $request->user_includes,
+            'user_excludes'     => $request->user_excludes,
         ]);
         
         // Response for $update action

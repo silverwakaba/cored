@@ -106,6 +106,27 @@ class MenuController extends Controller{
             // Create menu
             $datas = $this->repositoryInterface->createMenu($menuData, $position, $referenceId);
 
+            // Sync roles if provided
+            if($request->filled('roles')){
+                $roles = is_array($request->roles) ? $request->roles : [$request->roles];
+                $this->repositoryInterface->syncRoles($datas->id, $roles);
+            }
+
+            // Sync user includes if provided
+            if($request->filled('user_includes')){
+                $userIncludes = is_array($request->user_includes) ? $request->user_includes : [$request->user_includes];
+                $this->repositoryInterface->syncUserIncludes($datas->id, $userIncludes);
+            }
+
+            // Sync user excludes if provided
+            if($request->filled('user_excludes')){
+                $userExcludes = is_array($request->user_excludes) ? $request->user_excludes : [$request->user_excludes];
+                $this->repositoryInterface->syncUserExcludes($datas->id, $userExcludes);
+            }
+
+            // Reload menu with relationships
+            $datas = $datas->fresh(['roles:id,name', 'includedUsers:id,name,email', 'excludedUsers:id,name,email']);
+
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 201,
@@ -126,13 +147,22 @@ class MenuController extends Controller{
                 $datas->onlySelect($request->select);
             }
 
-            // Load relation
+            // Load relation - always include roles, includedUsers, excludedUsers for form population
+            $relations = ['roles:id,name', 'includedUsers:id,name,email', 'excludedUsers:id,name,email'];
             if(isset($request->relation)){
-                $datas->withRelation($request->relation);
+                $requestRelations = is_array($request->relation) ? $request->relation : [$request->relation];
+                $relations = array_merge($relations, $requestRelations);
             }
+            $datas->withRelation($relations);
             
             // Continue variable
             $datas = $datas->read($id);
+
+            // Transform relationships for frontend
+            if($datas){
+                $datas->included_users = $datas->includedUsers;
+                $datas->excluded_users = $datas->excludedUsers;
+            }
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -171,6 +201,27 @@ class MenuController extends Controller{
             if($request->filled('position') && $request->filled('reference_id')){
                 $datas = $this->repositoryInterface->updateMenuPosition($id, $request->position, $request->reference_id);
             }
+
+            // Sync roles if provided (empty array means remove all)
+            if($request->has('roles')){
+                $roles = is_array($request->roles) ? $request->roles : ($request->roles ? [$request->roles] : []);
+                $this->repositoryInterface->syncRoles($id, $roles);
+            }
+
+            // Sync user includes if provided (empty array means remove all)
+            if($request->has('user_includes')){
+                $userIncludes = is_array($request->user_includes) ? $request->user_includes : ($request->user_includes ? [$request->user_includes] : []);
+                $this->repositoryInterface->syncUserIncludes($id, $userIncludes);
+            }
+
+            // Sync user excludes if provided (empty array means remove all)
+            if($request->has('user_excludes')){
+                $userExcludes = is_array($request->user_excludes) ? $request->user_excludes : ($request->user_excludes ? [$request->user_excludes] : []);
+                $this->repositoryInterface->syncUserExcludes($id, $userExcludes);
+            }
+
+            // Reload menu with relationships
+            $datas = $datas->fresh(['roles:id,name', 'includedUsers:id,name,email', 'excludedUsers:id,name,email']);
 
             // Return response
             return GeneralHelper::jsonResponse([

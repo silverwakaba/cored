@@ -7,6 +7,7 @@ use App\Helpers\Core\GeneralHelper;
 
 // Model
 use App\Models\Core\Menu;
+use App\Models\Core\User;
 
 // Interface
 use App\Contracts\Core\MenuRepositoryInterface;
@@ -416,5 +417,61 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
     // Get menus by parent and type for reordering
     public function getMenusByContext($parentId, $type){
         return Menu::byParent($parentId)->byType($type)->orderBy('order')->get();
+    }
+
+    // Sync roles to menu
+    public function syncRoles($menuId, $roleIds){
+        $menu = Menu::findOrFail($menuId);
+        
+        // Filter out empty values
+        $roleIds = array_filter($roleIds, function($id){
+            return !empty($id) && $id !== '';
+        });
+        
+        // Sync roles - if roleIds contains names, we need to convert them to IDs
+        // Check if we have role names or IDs
+        $roleIdsToSync = [];
+        foreach($roleIds as $roleIdentifier){
+            // Try to find by ID first, then by name
+            $role = \Spatie\Permission\Models\Role::where('id', $roleIdentifier)
+                ->orWhere('name', $roleIdentifier)
+                ->first();
+            
+            if($role){
+                $roleIdsToSync[] = $role->id;
+            }
+        }
+        
+        $menu->roles()->sync($roleIdsToSync);
+        
+        return $menu;
+    }
+
+    // Sync user includes to menu
+    public function syncUserIncludes($menuId, $userIds){
+        $menu = Menu::findOrFail($menuId);
+        
+        // Filter out empty values
+        $userIds = array_filter($userIds, function($id){
+            return !empty($id) && $id !== '';
+        });
+        
+        $menu->includedUsers()->sync($userIds);
+        
+        return $menu;
+    }
+
+    // Sync user excludes to menu
+    public function syncUserExcludes($menuId, $userIds){
+        $menu = Menu::findOrFail($menuId);
+        
+        // Filter out empty values
+        $userIds = array_filter($userIds, function($id){
+            return !empty($id) && $id !== '';
+        });
+        
+        $menu->excludedUsers()->sync($userIds);
+        
+        return $menu;
     }
 }

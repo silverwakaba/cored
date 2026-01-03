@@ -114,11 +114,26 @@
                     // Rename modal title
                     $('#theModalLabel').text('Edit Request');
 
+                    // Set processing state to true before loading data
+                    setProcessingState(true);
+
                     // Get route with id placeholder
                     let readRouteBase = `{{ route('fe.apps.base.request.show', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     readRoute = readRouteBase.replace('::ID::', dataID);
+
+                    // Counter to track completed AJAX calls
+                    let completedCalls = 0;
+                    const totalCalls = 2; // request data, module
+
+                    // Function to check if all calls are completed
+                    function checkAllComplete(){
+                        completedCalls++;
+                        if(completedCalls >= totalCalls){
+                            setProcessingState(false);
+                        }
+                    }
 
                     // Handle form populate
                     $.ajax({
@@ -132,8 +147,18 @@
                             // Manual populate
                             $('#name').val(response.data.name);
 
-                            // Populate module list
-                            loadModule('module', true, true);
+                            // Populate module list and mark as complete after module is loaded
+                            loadModule('module', false, true, function(){
+                                $('[name="module"]').val(varModule).trigger('change');
+                                checkAllComplete();
+                            });
+
+                            // Mark request data call as complete
+                            checkAllComplete();
+                        },
+                        error: function(){
+                            // On error, still mark as complete and disable processing state
+                            checkAllComplete();
                         }
                     });
 
@@ -190,7 +215,7 @@
         }
 
         // Load module
-        function loadModule(targetSelector = 'filter-module', useProcessingState = false, onlyActive = false){
+        function loadModule(targetSelector = 'filter-module', useProcessingState = false, onlyActive = false, onComplete = null){
             // By default when loading the module, the state of form processing is set as true
             if(useProcessingState){
                 setProcessingState(true);
@@ -229,6 +254,11 @@
                         }));
                     });
 
+                    // After the module is loaded, call onComplete if provided
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
+
                     // After the module is loaded, the state of form processing is set as false
                     if(useProcessingState){
                         setProcessingState(false);
@@ -236,6 +266,11 @@
                 },
                 error: function(){
                     $(`[name="${targetSelector}"]`).html('<option value="">Error loading data...</option>');
+                    
+                    // Call onComplete even on error
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
             });
         }

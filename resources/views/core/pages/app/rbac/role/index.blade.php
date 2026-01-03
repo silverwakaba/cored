@@ -103,11 +103,26 @@
                     // Rename modal title
                     $('#theModalLabel').text('Sync Role to Permission');
 
+                    // Set processing state to true before loading data
+                    setProcessingState(true);
+
                     // Get route with id placeholder
                     const readRouteBase = `{{ route('fe.apps.rbac.role.show', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     let readRoute = readRouteBase.replace('::ID::', dataID);
+
+                    // Counter to track completed AJAX calls
+                    let completedCalls = 0;
+                    const totalCalls = 2; // role data, permission
+
+                    // Function to check if all calls are completed
+                    function checkAllComplete(){
+                        completedCalls++;
+                        if(completedCalls >= totalCalls){
+                            setProcessingState(false);
+                        }
+                    }
 
                     // Handle form populate
                     $.ajax({
@@ -124,8 +139,15 @@
                             // Role name can not be changed directly
                             $('#name').prop('readonly', true);
 
-                            // Populate list
-                            loadPermission('permission[]', true);
+                            // Populate list and mark as complete after permission is loaded
+                            loadPermission('permission[]', false, checkAllComplete);
+
+                            // Mark role data call as complete
+                            checkAllComplete();
+                        },
+                        error: function(){
+                            // On error, still mark as complete and disable processing state
+                            checkAllComplete();
                         }
                     });
 
@@ -145,7 +167,7 @@
         }
 
         // Load permission
-        function loadPermission(targetSelector = 'filter-permission[]', useProcessingState = false){
+        function loadPermission(targetSelector = 'filter-permission[]', useProcessingState = false, onComplete = null){
             // By default when loading the permission, the state of form processing is set as true
             if(useProcessingState){
                 setProcessingState(true);
@@ -176,6 +198,11 @@
                         }));
                     });
 
+                    // After the permission is loaded, call onComplete if provided
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
+
                     // After the permission is loaded, the state of form processing is set as false
                     if(useProcessingState){
                         setProcessingState(false);
@@ -183,6 +210,11 @@
                 },
                 error: function(){
                     $(`[name="${targetSelector}"]`).html('<option value="">Error loading data...</option>');
+                    
+                    // Call onComplete even on error
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
             });
         }

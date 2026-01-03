@@ -108,6 +108,9 @@
                     // Rename modal title
                     $('#theModalLabel').text('Edit Permission');
 
+                    // Set processing state to true before loading data
+                    setProcessingState(true);
+
                     // Get route with id placeholder
                     let readRouteBase = `{{ route('fe.apps.rbac.permission.show', ['id' => '::ID::']) }}`;
 
@@ -122,6 +125,13 @@
                         success: function(response){
                             // Manual populate
                             $('#name').val(response.data.name);
+
+                            // After data is loaded, disable processing state
+                            setProcessingState(false);
+                        },
+                        error: function(){
+                            // On error, disable processing state
+                            setProcessingState(false);
                         }
                     });
 

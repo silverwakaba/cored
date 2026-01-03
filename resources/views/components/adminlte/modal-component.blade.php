@@ -1,5 +1,5 @@
 <div class="modal fade" id="{{ $id }}Modal" data-backdrop="static" data-keyboard="false" aria-labelledby="{{ $id }}Label" aria-hidden="true">
-    <{{ $tag }} {{ $attributes->merge(['id' => $id, 'class' => 'modal-dialog modal-xl modal-dialog-scrollable', ...($asForm ? ['method' => $method, 'enctype' => $enctype, 'autocomplete' => 'off'] : [])]) }}>
+    <{{ $tag }} {{ $attributes->merge(['id' => $id, 'class' => 'modal-dialog modal-dialog-scrollable modal-xl', ...($asForm ? ['method' => $method, 'enctype' => $enctype, 'autocomplete' => 'off'] : [])]) }}>
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="{{ $id }}Label">{{ $title }}</h5>
@@ -19,7 +19,7 @@
                 <div class="modal-footer">
                     <input type="hidden" name="_token" class="d-none" value="{{ csrf_token() }}" readonly>
                     <button id="buttonResetModal" type="reset" class="btn btn-danger d-none">Reset</button>
-                    <button id="buttonSubmitModal" type="submit" @class(["btn btn-success", "h-captcha" => $withCaptcha ]) {{ $attributes->merge(['data-callback' => 'onSubmitVerify', ...($withCaptcha ? ['data-sitekey' => $sitekeyCaptcha] : [] )]) }}>{{ $button }}</button>
+                    <button id="buttonSubmitModal" type="submit" @class(["btn btn-outline-success", "h-captcha" => $withCaptcha ]) {{ $attributes->merge(['data-callback' => 'onSubmitVerify', ...($withCaptcha ? ['data-sitekey' => $sitekeyCaptcha] : [] )]) }}>{{ $button }}</button>
                 </div>
             @endif
         </div>

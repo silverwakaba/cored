@@ -32,16 +32,16 @@
             // Use setTimeout to ensure Select2 is ready
             setTimeout(function(){
                 // Reset type select (Select2)
-                $('#type').val('').trigger('change.select2');
+                $('#type').val(null).trigger('change.select2');
                 
                 // Reset parent select (Select2)
-                $('#parent').val('').trigger('change.select2');
+                $('#parent').val(null).trigger('change.select2');
                 
                 // Reset authenticate select (Select2)
-                $('#authenticate').val('').trigger('change.select2');
+                $('#authenticate').val(null).trigger('change.select2');
                 
                 // Reset guest_only select (Select2)
-                $('#guest_only').val('').trigger('change.select2');
+                $('#guest_only').val(null).trigger('change.select2');
                 
                 // Reset roles select (Select2)
                 $('select[name="roles[]"]').val(null).trigger('change.select2');
@@ -53,10 +53,10 @@
                 $('select[name="user_excludes[]"]').val(null).trigger('change.select2');
                 
                 // Reset position select (Select2)
-                $('#position').val('').trigger('change.select2');
+                $('#position').val(null).trigger('change.select2');
                 
                 // Reset reference_id select (Select2)
-                $('#reference_id').val('').trigger('change.select2');
+                $('#reference_id').val(null).trigger('change.select2');
             }, 100);
         }
         
@@ -162,6 +162,27 @@
                     // Rename modal title
                     $('#theModalLabel').text('Add Menu');
 
+                    // Set processing state to true before loading data
+                    setProcessingState(true);
+
+                    // Counter to track completed AJAX calls
+                    let completedCalls = 0;
+                    const totalCalls = 4; // parent, boolean (reference), roles, users
+
+                    // Function to check if all calls are completed
+                    function checkAllComplete(){
+                        completedCalls++;
+                        if(completedCalls >= totalCalls){
+                            setProcessingState(false);
+                        }
+                    }
+
+                    // Load all required data
+                    loadParent(false, checkAllComplete);
+                    loadBoolean(false, checkAllComplete);
+                    loadRoles(false, checkAllComplete);
+                    loadUsers(false, checkAllComplete);
+
                     // Set route action
                     routeAction = `{{ route('fe.apps.menu.store') }}`;
                     
@@ -177,11 +198,29 @@
                     // Rename modal title
                     $('#theModalLabel').text('Edit Menu');
 
+                    // Set processing state to true before loading data
+                    setProcessingState(true);
+
                     // Get route with id placeholder
                     let readRouteBase = `{{ route('fe.apps.menu.show', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     readRoute = readRouteBase.replace('::ID::', dataID);
+
+                    // Counter to track completed AJAX calls
+                    let completedCalls = 0;
+                    const totalCalls = 5; // menu data, parent, boolean (reference), roles, users
+
+                    // Function to check if all calls are completed
+                    function checkAllComplete(){
+                        completedCalls++;
+                        if(completedCalls >= totalCalls){
+                            setProcessingState(false);
+                        }
+                    }
+
+                    // Store response data for later use
+                    let menuResponseData = null;
 
                     // Handle form populate
                     $.ajax({
@@ -189,43 +228,57 @@
                         dataType: 'json',
                         url: readRoute,
                         success: function(response){
+                            menuResponseData = response.data;
+
                             // Manual populate
                             $('#name').val(response.data.name);
                             $('#icon').val(response.data.icon || '');
                             $('#route').val(response.data.route || '');
                             $('#type').val(response.data.type).trigger('change');
-                            
-                            // Load parent options and set value
-                            setTimeout(function(){
-                                $('#parent').val(response.data.parent_id || '').trigger('change');
-                            }, 500);
-                            
                             $('#authenticate').val(response.data.is_authenticate ? '1' : '0').trigger('change');
                             $('#guest_only').val(response.data.is_guest_only ? '1' : '0').trigger('change');
-                            
-                            // Load and set roles
+
+                            // Load parent options and set value after parent is loaded
+                            loadParent(false, function(){
+                                $('#parent').val(response.data.parent_id || '').trigger('change');
+                                checkAllComplete();
+                            });
+
+                            // Load reference menu options
+                            loadBoolean(false, checkAllComplete);
+
+                            // Load and set roles after roles are loaded
                             if(response.data.roles && Array.isArray(response.data.roles)){
                                 const roleIds = response.data.roles.map(role => role.id || role.name);
-                                setTimeout(function(){
+                                loadRoles(false, function(){
                                     $('select[name="roles[]"]').val(roleIds).trigger('change');
-                                }, 500);
+                                    checkAllComplete();
+                                });
+                            } else {
+                                loadRoles(false, checkAllComplete);
                             }
-                            
-                            // Load and set user includes
-                            if(response.data.included_users && Array.isArray(response.data.included_users)){
-                                const userIncludeIds = response.data.included_users.map(user => user.id);
-                                setTimeout(function(){
+
+                            // Load and set user includes/excludes after users are loaded
+                            loadUsers(false, function(){
+                                if(response.data.included_users && Array.isArray(response.data.included_users)){
+                                    const userIncludeIds = response.data.included_users.map(user => user.id);
                                     $('select[name="user_includes[]"]').val(userIncludeIds).trigger('change');
-                                }, 500);
-                            }
-                            
-                            // Load and set user excludes
-                            if(response.data.excluded_users && Array.isArray(response.data.excluded_users)){
-                                const userExcludeIds = response.data.excluded_users.map(user => user.id);
-                                setTimeout(function(){
+                                }
+                                
+                                if(response.data.excluded_users && Array.isArray(response.data.excluded_users)){
+                                    const userExcludeIds = response.data.excluded_users.map(user => user.id);
                                     $('select[name="user_excludes[]"]').val(userExcludeIds).trigger('change');
-                                }, 500);
-                            }
+                                }
+                                
+                                checkAllComplete();
+                            });
+
+                            // Mark menu data call as complete
+                            checkAllComplete();
+                        },
+                        error: function(){
+                            // On error, still mark as complete and disable processing state
+                            checkAllComplete();
                         }
                     });
 
@@ -311,7 +364,12 @@
         }
         
         // Load parent
-        function loadParent(){
+        function loadParent(useProcessingState = false, onComplete = null){
+            // By default when loading the parent, the state of form processing is set as true
+            if(useProcessingState){
+                setProcessingState(true);
+            }
+
             // Handle parent list - filter headers and parents (type 'h' and 'p') in frontend
             $.ajax({
                 type: 'GET',
@@ -337,15 +395,25 @@
                             }
                         });
                     }
+
+                    // After the parent is loaded, call onComplete if provided
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
                 error: function(xhr, status, error){
                     $('#parent').html('<option value="">Error loading data...</option>');
+                    
+                    // Call onComplete even on error
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
             });
         }
 
         // Load boolean
-        function loadBoolean(){
+        function loadBoolean(useProcessingState = false, onComplete = null){
             const booleanOptions = [
                 { value: '0', text: 'No' },
                 { value: '1', text: 'Yes' }
@@ -381,6 +449,11 @@
             const referenceSelect = $('#reference_id');
             referenceSelect.empty().append('<option value="">Select an Option (Optional)</option>');
             
+            // By default when loading the reference menu, the state of form processing is set as true
+            if(useProcessingState){
+                setProcessingState(true);
+            }
+            
             // Load reference menu options - reuse same API call to avoid duplicate request
             $.ajax({
                 type: 'GET',
@@ -400,15 +473,30 @@
                             }
                         });
                     }
+
+                    // After the reference menu is loaded, call onComplete if provided
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
                 error: function(){
                     referenceSelect.html('<option value="">Error loading data...</option>');
+                    
+                    // Call onComplete even on error
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
             });
         }
 
         // Load roles
-        function loadRoles(){
+        function loadRoles(useProcessingState = false, onComplete = null){
+            // By default when loading the roles, the state of form processing is set as true
+            if(useProcessingState){
+                setProcessingState(true);
+            }
+
             $.ajax({
                 type: 'GET',
                 dataType: 'json',
@@ -428,15 +516,30 @@
                             text: data.name || data.id
                         }));
                     });
+
+                    // After the roles is loaded, call onComplete if provided
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
                 error: function(){
                     $('select[name="roles[]"]').html('<option value="">Error loading data...</option>');
+                    
+                    // Call onComplete even on error
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
             });
         }
 
         // Load users
-        function loadUsers(){
+        function loadUsers(useProcessingState = false, onComplete = null){
+            // By default when loading the users, the state of form processing is set as true
+            if(useProcessingState){
+                setProcessingState(true);
+            }
+
             $.ajax({
                 type: 'GET',
                 dataType: 'json',
@@ -469,10 +572,20 @@
                             text: optionText
                         }));
                     });
+
+                    // After the users is loaded, call onComplete if provided
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
                 error: function(){
                     $('select[name="user_includes[]"]').html('<option value="">Error loading data...</option>');
                     $('select[name="user_excludes[]"]').html('<option value="">Error loading data...</option>');
+                    
+                    // Call onComplete even on error
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
             });
         }

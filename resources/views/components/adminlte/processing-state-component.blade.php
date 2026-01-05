@@ -3,6 +3,7 @@ function setProcessingState(processing){
     let reset = $('#{{ $reset }}');
     let submit = $('#{{ $submit }}');
     let overlay = $('#{{ $overlay }}');
+    let footer = $('.{{ $footer }}');
 
     // Process
     if(processing){
@@ -11,11 +12,15 @@ function setProcessingState(processing){
         submit.prop('disabled', true);
 
         overlay.addClass('overlay').removeClass('d-none');
+
+        footer.addClass('d-none');
     } else {
         reset.prop('disabled', false);
 
         submit.prop('disabled', false);
 
         overlay.addClass('d-none').removeClass('overlay');
+
+        footer.removeClass('d-none');
     }
 }

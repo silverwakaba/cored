@@ -11,6 +11,7 @@ class ProcessingStateComponent extends Component{
     public string $reset;
     public string $submit;
     public string $overlay;
+    public string $footer;
 
     /**
      * Create a new component instance.
@@ -20,6 +21,7 @@ class ProcessingStateComponent extends Component{
         $this->reset = 'buttonReset' . ucfirst($type);
         $this->submit = 'buttonSubmit' . ucfirst($type);
         $this->overlay = 'overlay-' . $type;
+        $this->footer = $type . '-footer';
     }
 
     /**

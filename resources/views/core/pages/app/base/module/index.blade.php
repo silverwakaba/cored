@@ -85,13 +85,16 @@
                     routeMethod = 'POST';
 
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
+                    <x-Adminlte.FormComponent id="theModal" table="theTable" :asModal="true" />
                 }
 
                 // Handle update
                 else{
                     // Rename modal title
                     $('#theModalLabel').text('Edit Module');
+
+                    // Set processing state to true before loading data
+                    setProcessingState(true);
 
                     // Get route with id placeholder
                     let readRouteBase = `{{ route('fe.apps.base.module.show', ['id' => '::ID::']) }}`;
@@ -107,6 +110,13 @@
                         success: function(response){
                             // Manual populate
                             $('#name').val(response.data.name);
+
+                            // After data is loaded, disable processing state
+                            setProcessingState(false);
+                        },
+                        error: function(){
+                            // On error, disable processing state
+                            setProcessingState(false);
                         }
                     });
 
@@ -120,7 +130,7 @@
                     routeMethod = 'PUT';
 
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
+                    <x-Adminlte.FormComponent id="theModal" table="theTable" :asModal="true" />
                 }
             });
         }

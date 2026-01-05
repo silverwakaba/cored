@@ -100,7 +100,7 @@
                     routeMethod = 'POST';
 
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
+                    <x-Adminlte.FormComponent id="theModal" table="theTable" :asModal="true" />
                 }
 
                 // Handle update
@@ -108,11 +108,26 @@
                     // Rename modal title
                     $('#theModalLabel').text('Edit User');
 
+                    // Set processing state to true before loading data
+                    setProcessingState(true);
+
                     // Get route with id placeholder
                     const readRouteBase = `{{ route('fe.apps.rbac.uac.show', ['id' => '::ID::']) }}`;
 
                     // Change id placeholder with the actual id
                     let readRoute = readRouteBase.replace('::ID::', dataID);
+
+                    // Counter to track completed AJAX calls
+                    let completedCalls = 0;
+                    const totalCalls = 2; // user data, role
+
+                    // Function to check if all calls are completed
+                    function checkAllComplete(){
+                        completedCalls++;
+                        if(completedCalls >= totalCalls){
+                            setProcessingState(false);
+                        }
+                    }
 
                     // Handle form populate
                     $.ajax({
@@ -130,8 +145,15 @@
                             // Email can not be changed directly
                             $('#email').prop('readonly', true);
 
-                            // Populate list
-                            loadRole('role[]', true);
+                            // Populate list and mark as complete after role is loaded
+                            loadRole('role[]', false, checkAllComplete);
+
+                            // Mark user data call as complete
+                            checkAllComplete();
+                        },
+                        error: function(){
+                            // On error, still mark as complete and disable processing state
+                            checkAllComplete();
                         }
                     });
 
@@ -145,13 +167,13 @@
                     routeMethod = 'PUT';
 
                     // Init form action
-                    <x-Adminlte.FormComponent id="theModal" :asModal="true" />
+                    <x-Adminlte.FormComponent id="theModal" table="theTable" :asModal="true" />
                 }
             });
         }
 
         // Load role
-        function loadRole(targetSelector = 'filter-role[]', useProcessingState = false){
+        function loadRole(targetSelector = 'filter-role[]', useProcessingState = false, onComplete = null){
             // By default when loading the role, the state of form processing is set as true
             if(useProcessingState){
                 setProcessingState(true);
@@ -182,13 +204,23 @@
                         }));
                     });
 
-                    // After the role is loaded, the state of form processing is set as true
+                    // After the role is loaded, call onComplete if provided
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
+
+                    // After the role is loaded, the state of form processing is set as false
                     if(useProcessingState){
                         setProcessingState(false);
                     }
                 },
                 error: function(){
-                    $('#role').html('<option value="">Error loading data...</option>');
+                    $(`[name="${targetSelector}"]`).html('<option value="">Error loading data...</option>');
+                    
+                    // Call onComplete even on error
+                    if(onComplete && typeof onComplete === 'function'){
+                        onComplete();
+                    }
                 },
             });
         }

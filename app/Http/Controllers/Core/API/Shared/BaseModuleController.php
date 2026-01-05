@@ -122,7 +122,23 @@ class BaseModuleController extends Controller{
 
             // Load relation
             if(isset($request->relation)){
-                $datas->withRelation($request->relation);
+                $relations = GeneralHelper::getType($request->relation);
+                
+                foreach($relations as $relation){
+                    // Check if this is baseRequests relation (format: "baseRequests:id,base_modules_id,name" or "baseRequests")
+                    if(is_string($relation) && strpos($relation, 'baseRequests') == 0){
+                        // Parse relation string like "baseRequests:id,base_modules_id,name"
+                        $parts = explode(':', $relation);
+                        $relationName = $parts[0];
+                        $columns = isset($parts[1]) ? explode(',', str_replace(' ', '', $parts[1])) : ['*'];
+                        
+                        // Load baseRequests relation with filter for active data only
+                        $datas->query->with([$relationName => function($query) use($columns){
+                            $query->select($columns);
+                            $query->where('is_active', true);
+                        }]);
+                    }
+                }
             }
             
             // Continue variable

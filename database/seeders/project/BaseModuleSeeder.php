@@ -13,8 +13,8 @@ class BaseModuleSeeder extends Seeder{
      */
     public function run() : void{
         BaseModule::insert([
-            // 3
-            ['name' => "Payment Status"],
+            // // 3
+            // ['name' => "Payment Status"],
             
             // 4
             ['name' => "Business Entity"],

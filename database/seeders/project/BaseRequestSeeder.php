@@ -14,7 +14,7 @@ class BaseRequestSeeder extends Seeder{
      */
     public function run() : void{
         // Get module IDs
-        $paymentStatusModule = BaseModule::where('name', 'Payment Status')->first();
+        // $paymentStatusModule = BaseModule::where('name', 'Payment Status')->first();
         $businessEntityModule = BaseModule::where('name', 'Business Entity')->first();
         $bankModule = BaseModule::where('name', 'Bank')->first();
         $currencyModule = BaseModule::where('name', 'Currency')->first();
@@ -23,51 +23,51 @@ class BaseRequestSeeder extends Seeder{
         $taxTypeModule = BaseModule::where('name', 'Tax Type')->first();
 
         BaseRequest::insert([
-            // Payment Status
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Draft",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Posted",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Revised",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Process",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Closed",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Declined",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Verified",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Canceled",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Paid",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Unpaid",
-            ],
-            [
-                'base_modules_id'   => $paymentStatusModule->id,
-                'name'              => "Pending",
-            ],
+            // // Payment Status
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Draft",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Posted",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Revised",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Process",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Closed",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Declined",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Verified",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Canceled",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Paid",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Unpaid",
+            // ],
+            // [
+            //     'base_modules_id'   => $paymentStatusModule->id,
+            //     'name'              => "Pending",
+            // ],
 
             // Business Entity
             [

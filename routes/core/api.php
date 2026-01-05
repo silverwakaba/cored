@@ -12,6 +12,7 @@ use App\Http\Controllers\Core\API\Shared\BasedataController;
 use App\Http\Controllers\Core\API\Shared\BaseModuleController;
 use App\Http\Controllers\Core\API\Shared\BaseRequestController;
 use App\Http\Controllers\Core\API\Shared\CallToActionController;
+use App\Http\Controllers\Core\API\Shared\ItemController;
 use App\Http\Controllers\Core\API\Shared\NotificationController;
 
 // API routing
@@ -65,6 +66,28 @@ Route::prefix('/')->name('be.')->group(function(){
 
                 // Delete
                 Route::delete('/{id}', 'delete')->name('destroy');
+            });
+
+            // Item
+            Route::prefix('item')->name('item.')->controller(ItemController::class)->group(function(){
+                // Index
+                Route::get('/', 'list')->name('index');
+
+                // Create
+                Route::post('/', 'create')->name('store');
+
+                // Read
+                Route::get('/{id}', 'read')->name('show');
+
+                // Update
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+
+                // Delete
+                Route::delete('/{id}', 'delete')->name('destroy');
+
+                // Bulk Destroy
+                Route::post('bulk-destroy', 'bulkDestroy')->name('bulk-destroy');
             });
 
             // Notification

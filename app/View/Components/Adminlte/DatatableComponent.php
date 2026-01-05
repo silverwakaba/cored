@@ -17,11 +17,14 @@ class DatatableComponent extends Component{
     public $filterable;
     public $reloadable;
     public $searchable;
+    public $selectable;
+    public $selectMode; // 'single' or 'multiple'
+    public $bulkActions; // Array of action configs: [['text' => 'Delete', 'icon' => 'fa-trash', 'action' => 'delete', 'url' => 'route'], ...]
 
     /**
      * Create a new component instance.
      */
-    public function __construct($id, $tableUrl, $debounce = 1500, $deleteUrl = null, $upsert = false, $editable = true, $filterable = false, $reloadable = false, $searchable = true, $method = 'GET'){
+    public function __construct($id, $tableUrl, $debounce = 1500, $deleteUrl = null, $upsert = false, $editable = true, $filterable = false, $reloadable = false, $searchable = true, $method = 'GET', $selectable = false, $selectMode = 'multiple', $bulkActions = []){
         $this->id = $id;
         $this->method = $method;
         $this->debounce = $debounce;
@@ -32,6 +35,9 @@ class DatatableComponent extends Component{
         $this->filterable = (bool) $filterable;
         $this->reloadable = (bool) $reloadable;
         $this->searchable = (bool) $searchable;
+        $this->selectable = (bool) $selectable;
+        $this->selectMode = in_array($selectMode, ['single', 'multiple']) ? $selectMode : 'multiple';
+        $this->bulkActions = is_array($bulkActions) ? $bulkActions : [];
     }
 
     /**

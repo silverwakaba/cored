@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider{
             \App\Contracts\Core\BaseModuleRepositoryInterface::class    => \App\Repositories\Core\EloquentBaseModuleRepository::class,
             \App\Contracts\Core\BaseRequestRepositoryInterface::class   => \App\Repositories\Core\EloquentBaseRequestRepository::class,
             \App\Contracts\Core\CallToActionRepositoryInterface::class  => \App\Repositories\Core\EloquentCallToActionRepository::class,
+            \App\Contracts\Core\ItemRepositoryInterface::class          => \App\Repositories\Core\EloquentItemRepository::class,
             \App\Contracts\Core\MenuRepositoryInterface::class          => \App\Repositories\Core\EloquentMenuRepository::class,
             \App\Contracts\Core\NotificationRepositoryInterface::class  => \App\Repositories\Core\EloquentNotificationRepository::class,
             \App\Contracts\Core\PermissionRepositoryInterface::class    => \App\Repositories\Core\EloquentPermissionRepository::class,

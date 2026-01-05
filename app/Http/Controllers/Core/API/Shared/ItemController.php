@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Core\API\Shared;
 use App\Http\Controllers\Controller;
 
 // Repository interface
-use App\Contracts\Core\BaseModuleRepositoryInterface;
+use App\Contracts\Core\ItemRepositoryInterface;
 
 // Event
 use App\Events\Core\GeneralEventHandler;
@@ -13,17 +13,21 @@ use App\Events\Core\GeneralEventHandler;
 use App\Helpers\Core\GeneralHelper;
 
 // Request
-use App\Http\Requests\Core\BaseModuleRequest;
+use App\Http\Requests\Core\ItemRequest;
+
+// Model
+use App\Models\Core\ItemDetail;
 
 // Internal
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class BaseModuleController extends Controller{
+class ItemController extends Controller{
     // Property
     private $repositoryInterface;
 
     // Constructor
-    public function __construct(BaseModuleRepositoryInterface $repositoryInterface){
+    public function __construct(ItemRepositoryInterface $repositoryInterface){
         $this->repositoryInterface = $repositoryInterface;
     }
 
@@ -88,23 +92,43 @@ class BaseModuleController extends Controller{
     public function create(Request $request){
         return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new BaseModuleRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new ItemRequest())->rules());
 
             // Stop if validation failed
             if(!is_array($validated)){
                 return $validated;
             }
 
-            // Create base module
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
-                'name' => $request->name,
-            ]);
+            // Create item master and details in transaction
+            $datas = DB::transaction(function() use($request){
+                // Create item master
+                $master = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
+                    'name' => $request->name_master,
+                    'description' => $request->description_master,
+                ]);
+
+                // Create multiple item details
+                if($request->has('details') && is_array($request->details)){
+                    foreach($request->details as $detailData){
+                        ItemDetail::create([
+                            'item_masters_id' => $master->id,
+                            'name' => $detailData['name'],
+                            'description' => $detailData['description'],
+                        ]);
+                    }
+                }
+
+                // Load relation
+                $master->load('details');
+
+                return $master;
+            });
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 201,
                 'data'      => $datas,
-                'message'   => 'Base module created successfully.',
+                'message'   => 'Item created successfully.',
             ]);
         }, ['status' => 409, 'message' => false]);
     }
@@ -112,7 +136,7 @@ class BaseModuleController extends Controller{
     // Read
     public function read($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
-            // Get base module data
+            // Get item data
             $datas = $this->repositoryInterface;
             
             // Load column selection
@@ -120,9 +144,18 @@ class BaseModuleController extends Controller{
                 $datas->onlySelect($request->select);
             }
 
-            // Load relation
+            // Always load details relation
+            $datas->withRelation(['details']);
+
+            // Load additional relation if provided
             if(isset($request->relation)){
-                $datas->withRelation($request->relation);
+                $relations = is_array($request->relation) ? $request->relation : explode(',', $request->relation);
+                $relations = array_filter($relations, function($rel) {
+                    return $rel !== 'details';
+                });
+                if(!empty($relations)){
+                    $datas->withRelation($relations);
+                }
             }
             
             // Continue variable
@@ -140,23 +173,46 @@ class BaseModuleController extends Controller{
     public function update($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new BaseModuleRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new ItemRequest())->rules());
 
             // Stop if validation failed
             if(!is_array($validated)){
                 return $validated;
             }
 
-            // Update base module data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
-                'name' => $request->name,
-            ]);
+            // Update item master and details in transaction
+            $datas = DB::transaction(function() use($id, $request){
+                // Update item master
+                $master = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
+                    'name' => $request->name_master,
+                    'description' => $request->description_master,
+                ]);
+
+                // Delete existing details
+                ItemDetail::where('item_masters_id', $id)->delete();
+
+                // Create new details
+                if($request->has('details') && is_array($request->details)){
+                    foreach($request->details as $detailData){
+                        ItemDetail::create([
+                            'item_masters_id' => $id,
+                            'name' => $detailData['name'],
+                            'description' => $detailData['description'],
+                        ]);
+                    }
+                }
+
+                // Load relation
+                $master->load('details');
+
+                return $master;
+            });
 
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
                 'data'      => $datas,
-                'message'   => 'Base module updated successfully.',
+                'message'   => 'Item updated successfully.',
             ]);
         }, ['status' => 409, 'message' => false]);
     }
@@ -164,7 +220,7 @@ class BaseModuleController extends Controller{
     // Delete
     public function delete($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
-            // Delete base module data (actually toggles activation status)
+            // Delete item data (actually toggles activation status)
             $result = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($id);
 
             // Get action and data from result
@@ -173,7 +229,7 @@ class BaseModuleController extends Controller{
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'message'   => "Base module {$action} successfully.",
+                'message'   => "Item {$action} successfully.",
             ]);
         }, ['status' => 409, 'message' => false]);
     }
@@ -192,7 +248,7 @@ class BaseModuleController extends Controller{
                 ], 400);
             }
 
-            // Delete base module data (actually toggles activation status)
+            // Delete item data (actually toggles activation status)
             $result = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($ids);
 
             // Get action and data from result
@@ -202,8 +258,9 @@ class BaseModuleController extends Controller{
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
-                'message'   => "{$count} base module(s) {$action} successfully.",
+                'message'   => "{$count} item(s) {$action} successfully.",
             ]);
         }, ['status' => 409, 'message' => false]);
     }
 }
+

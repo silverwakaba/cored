@@ -13,6 +13,7 @@ use App\Http\Controllers\Core\FE\Shared\BasedataController;
 use App\Http\Controllers\Core\FE\Shared\BaseModuleController;
 use App\Http\Controllers\Core\FE\Shared\BaseRequestController;
 use App\Http\Controllers\Core\FE\Shared\CallToActionController;
+use App\Http\Controllers\Core\FE\Shared\ItemController;
 
 // General Controller
 use App\Http\Controllers\Core\FE\PageController;
@@ -133,6 +134,9 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
 
                 // Delete
                 Route::delete('/{id}', 'delete')->name('destroy');
+
+                // Bulk Destroy
+                Route::post('bulk-destroy', 'bulkDestroy')->name('bulk-destroy');
             });
 
             // Request
@@ -155,6 +159,31 @@ Route::prefix('/')->name('fe.')->middleware(['jwt.global', 'minify.blade'])->gro
 
                 // Delete
                 Route::delete('/{id}', 'delete')->name('destroy');
+            });
+
+            // Item
+            Route::prefix('item')->name('item.')->controller(ItemController::class)->group(function(){
+                // Index
+                Route::get('/', 'index')->name('index');
+
+                // List
+                Route::get('list', 'list')->name('list')->withoutMiddleware(['jwt.fe', 'role:Root|Admin|Moderator']);
+
+                // Create
+                Route::post('/', 'create')->name('store');
+
+                // Read
+                Route::get('/{id}', 'read')->name('show');
+
+                // Update
+                Route::put('/{id}', 'update')->name('update');
+                Route::patch('/{id}', 'update')->name('update');
+
+                // Delete
+                Route::delete('/{id}', 'delete')->name('destroy');
+
+                // Bulk Destroy
+                Route::post('bulk-destroy', 'bulkDestroy')->name('bulk-destroy');
             });
         });
 

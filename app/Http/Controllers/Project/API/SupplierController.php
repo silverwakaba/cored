@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 // // Repository interface
 use App\Contracts\Project\SupplierRepositoryInterface;
 
-// // Helper
+// Helper
 use App\Helpers\Core\GeneralHelper;
 
-// // Request
-// use App\Http\Requests\Core\BaseModuleRequest;
+// Request
+use App\Http\Requests\Project\SupplierRequest;
 
-// // Internal
+// Internal
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller{
@@ -45,109 +45,107 @@ class SupplierController extends Controller{
                 $datas->withRelation($request->relation);
             }
 
-            // // Apply filters if provided
-            // $filters = $request->only(array_filter(array_keys($request->all()), function($key){
-            //     return strpos($key, 'filter') === 0;
-            // }));
-
-            // // Run filter as sub-query
-            // if(!empty($filters)){
-            //     $datas->query->where(function($query) use($filters){
-            //         foreach($filters as $filterKey => $filterValue){
-            //             // Status active filters
-            //             if(in_array($filterKey, ['filter-active'])){
-            //                 // Skip if value is empty string or null, but allow "0" and false
-            //                 if(in_array($filterValue, [null, ''])){
-            //                     continue;
-            //                 }
-                            
-            //                 // Convert to boolean if needed
-            //                 if(is_string($filterValue)){
-            //                     // Convert string to boolean
-            //                     $filterValue = filter_var($filterValue, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            //                 }
-                            
-            //                 // Only apply filter if value is valid boolean, not null after conversion
-            //                 if($filterValue !== null){
-            //                     $query->where('is_active', $filterValue);
-            //                 }
-            //             }
-            //         }
-            //     });
-            // }
-
             // Return response
             return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
         }, ['status' => 409, 'message' => false]);
     }
 
-    // // Create
-    // public function create(Request $request){
-    //     return GeneralHelper::safe(function() use($request){
-    //         // Validate input
-    //         $validated = GeneralHelper::validate($request->all(), (new BaseModuleRequest())->rules());
+    // Create
+    public function create(Request $request){
+        return GeneralHelper::safe(function() use($request){
+            // Validate input
+            $validated = GeneralHelper::validate($request->all(), (new SupplierRequest())->rules());
 
-    //         // Stop if validation failed
-    //         if(!is_array($validated)){
-    //             return $validated;
-    //         }
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
+            }
 
-    //         // Create base module
-    //         $datas = $this->repositoryInterface->create([
-    //             'name' => $request->name,
-    //         ]);
+            // Create new supplier and it's PIC
+            $datas = $this->repositoryInterface->createWithUser(
+                // Supplier
+                [
+                    // Foreign keys
+                    'base_qualification_id'     => $request->base_qualification_id,     // 363: Kecil
+                    'base_business_entity_id'   => $request->base_business_entity_id,   // 265: PT
+                    'base_bank_id'              => $request->base_bank_id,
+                    
+                    // Basic information
+                    'code'                      => $request->code,
+                    'name'                      => $request->name,
+                    'credit_day'                => $request->credit_day,
+                    
+                    // Address
+                    'address_1'                 => $request->address_1,
+                    'address_2'                 => $request->address_2,
+                    
+                    // Contact
+                    'telp'                      => $request->telp,
+                    'fax'                       => $request->fax,
+                    
+                    // Tax information
+                    'npwp'                      => $request->npwp,
+                    'npwp_address'              => $request->npwp_address,
+                    
+                    // Bank information
+                    'bank_account_name'         => $request->bank_account_name,
+                    'bank_account_number'       => $request->bank_account_number,
+                    
+                    // Additional information
+                    'pkp'                       => $request->pkp,
+                    'nib'                       => $request->nib,
+                    'notes'                     => $request->notes,
+                    // 'statement_file_path'       => $request->statement_file_path,
+                ],
 
-    //         // Return response
-    //         return GeneralHelper::jsonResponse([
-    //             'status'    => 201,
-    //             'data'      => $datas,
-    //             'message'   => 'Base module created successfully.',
-    //         ]);
-    //     }, ['status' => 409, 'message' => false]);
-    // }
-
-    // // Read
-    // public function read($id, Request $request){
-    //     return GeneralHelper::safe(function() use($id, $request){
-    //         // Get base module data
-    //         $datas = $this->repositoryInterface;
-            
-    //         // Load column selection
-    //         if(isset($request->select)){
-    //             $datas->onlySelect($request->select);
-    //         }
-
-    //         // Load relation
-    //         if(isset($request->relation)){
-    //             $relations = GeneralHelper::getType($request->relation);
+                // User
+                [
+                    'name'      => $request->pic_name,
+                    'email'     => $request->pic_email,
+                    'password'  => bcrypt(now()), // Temporary password, should be reset
+                    'created_by' => auth()->user()->id ?? null,
+                    'updated_by' => auth()->user()->id ?? null,
+                ],
                 
-    //             foreach($relations as $relation){
-    //                 // Check if this is baseRequests relation (format: "baseRequests:id,base_modules_id,name" or "baseRequests")
-    //                 if(is_string($relation) && strpos($relation, 'baseRequests') == 0){
-    //                     // Parse relation string like "baseRequests:id,base_modules_id,name"
-    //                     $parts = explode(':', $relation);
-    //                     $relationName = $parts[0];
-    //                     $columns = isset($parts[1]) ? explode(',', str_replace(' ', '', $parts[1])) : ['*'];
-                        
-    //                     // Load baseRequests relation with filter for active data only
-    //                     $datas->query->with([$relationName => function($query) use($columns){
-    //                         $query->select($columns);
-    //                         $query->where('is_active', true);
-    //                     }]);
-    //                 }
-    //             }
-    //         }
-            
-    //         // Continue variable
-    //         $datas = $datas->find($id);
+                // Role to assign
+                'Supplier'
+            );
 
-    //         // Return response
-    //         return GeneralHelper::jsonResponse([
-    //             'status'    => 200,
-    //             'data'      => $datas,
-    //         ]);
-    //     }, ['status' => 409, 'message' => false]);
-    // }
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 201,
+                'data'      => $datas,
+                'message'   => 'Supplier created successfully.',
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
+
+    // Read
+    public function read($id, Request $request){
+        return GeneralHelper::safe(function() use($id, $request){
+            // Get base module data
+            $datas = $this->repositoryInterface;
+            
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
+
+            // Load relation
+            if(isset($request->relation)){
+                $datas->withRelation($request->relation);
+            }
+            
+            // Continue variable
+            $datas = $datas->find($id);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas,
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
 
     // // Update
     // public function update($id, Request $request){

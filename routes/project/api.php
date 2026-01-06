@@ -13,6 +13,16 @@ Route::prefix('/')->name('be.')->group(function(){
         Route::prefix('supplier')->name('supplier.')->controller(SupplierController::class)->group(function(){
             // Index
             Route::get('/', 'list')->name('index');
+
+            // Create
+            Route::post('/', 'create')->name('store');
+
+            // Read
+            Route::get('/{id}', 'read')->name('show');
+
+            // // Update
+            // Route::put('/{id}', 'update')->name('update');
+            // Route::patch('/{id}', 'update')->name('update');
         });
     });
 });

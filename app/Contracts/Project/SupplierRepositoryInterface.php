@@ -3,5 +3,5 @@
 namespace App\Contracts\Project;
 
 interface SupplierRepositoryInterface{
-    // add something
+    public function createWithUser(array $supplierData, array $userData, ?string $role = 'Supplier');
 }

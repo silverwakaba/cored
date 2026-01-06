@@ -4,8 +4,6 @@ Azhar's starter pack for creating Laravel applications; And it is (sort of, stil
 
 There's not yet plan for advanced implementation such as SSO, microservice, etc. Just a tiny starter pack; Hence vertical scaling -- At least for now.
 
-Note for myself: Please create new branch for new feature / new-new branch for the new feature features / and so on. As I will think and read about it later.
-
 ## Running This Project
 
 1. Clone the repo if available.
@@ -68,27 +66,35 @@ The queue in the background can be managed using third-party tools, such as [Sup
 
 2. When working with general asset like component / feature like websocket, or any other QOL feature; Please do it inside main repo so that the entire project can get the benefit.
 
-3. For a feature, please:
+3. Because this project applies a monorepo approach, please use file named "`MONOREPO_STRUCTURE.md`" as a reference for the working folder/directory.
 
-- Create new controller inside the `feat` folder with:
-
-```
-$ php artisan make:controller API/Feat/xxx/xxxController
-
-and/or
-
-$ php artisan make:controller FE/Feat/xxx/xxxController
-```
-
-- Place new repo inside the `feat` folder (`app\Contracts\Feat` and `app\Repositories\Feat`).
-
-- Create new model inside the `feat` folder with:
+If you work using an AI-based IDE, for example Cursor, Copilot, Claude Code, Trae, etc. please use this prompt as a reference so that the IDE can make changes according to the monorepo approach:
 
 ```
-$ php artisan make:model Feat/xxx
+@MENTIONED_MONOREPO_STRUCTURE.md This is your information and reference about my monorepo directory structure. All your suggestions for file paths, imports, and code organization MUST respect this project's existing structure and conventions.
+
+Current Context:
+- Right now you're working on: [core/project - specify which one]
+
+Important Structure Notes:
+- The monorepo contains "core" and "project" directory structures.
+- These represent distinct architectural layers with specific purposes.
+
+Key principles for your responses:
+1. Path adherence: All file references must use correct relative paths from the monorepo root.
+2. Layer awareness: Respect the separation between "core" and "project" directories.
+3. Import conventions: Follow established patterns for cross-layer imports.
+4. Context focus: Prioritize solutions within the current working layer unless explicitly needed elsewhere.
+
+Before suggesting changes:
+- Verify if the change belongs in the current layer or a different one.
+- Check existing patterns in the relevant layer.
+- If unclear about layer boundaries or import patterns, ask before proceeding.
+
+Moving on, I need you to... [continue your prompt]
 ```
 
-So that it will have minimal impact on the main branch.
+This will make the job easier in managing the monorepo architecture.
 
 4. There's a new feature which is "Cloudflare D1" as a database driver by [Erimeilis](https://github.com/erimeilis/laravel-cloudflare-d1). But to be honest, I don't think it's good enough to be used as a main driver.
 
@@ -115,6 +121,29 @@ It needs to be known that the connection must be explicitly declared, or the con
 For now, I think the best use-case for Cloudflare D1 is to use it as a database driver that handles unimportant data such as queues, logs and other miscellaneous data if the project is too large.
 
 But if the project is small to medium, or not really that important (e.g: a landing page), then it is perfectly fine to use. Since other free databases like Supabase will deactivate the database if inactive for a period of time.
+
+5. As a monorepo project, git branch names must be adjusted to the scope of work.
+
+**Branch Naming Convention:**
+
+**Core/Main Branch:**
+- `main` - Main branch for core (please don't push directly to this branch)
+
+**Branches for Core:**
+- `main-rev-<description>` - Branch for revisions/fixes on core (created from `main`)
+- `main-feat-<description>` - Branch for new features on core (created from `main`)
+
+**Branches for Project:**
+- `project-<project-name>-main` - Main branch for a new project (created from `main`)
+- `project-<project-name>-main-rev-<description>` - Branch for revisions/fixes on project (created from `project-<project-name>-main`)
+- `project-<project-name>-main-feat-<description>` - Branch for new features on project (created from `project-<project-name>-main`)
+
+**Examples:**
+- `main-rev-fix-auth-bug` - Fix authentication bug in core
+- `main-feat-add-notification` - New notification feature in core
+- `project-ecommerce-main` - Main branch for ecommerce project
+- `project-ecommerce-main-rev-update-payment` - Update payment system in ecommerce project
+- `project-ecommerce-main-feat-add-cart` - New cart feature in ecommerce project
 
 ## Roadmap
 

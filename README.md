@@ -94,6 +94,31 @@ Before suggesting changes:
 Moving on, I need you to... [continue your prompt]
 ```
 
+As a monorepo project, git branch names must be adjusted to the scope of work.
+
+**Branch Naming Convention:**
+
+**Core/Main Branch:**
+- `main` - Main branch for core (please don't push directly to this branch)
+
+**Branches for Core:**
+- `main-rev-<description>` - Branch for revisions/fixes on core (created from `main`)
+- `main-feat-<description>` - Branch for new features on core (created from `main`)
+
+**Branches for Project:**
+- `project-<project-name>-main` - Main branch for a new project (created from `main`)
+- `project-<project-name>-main-rev-<description>` - Branch for revisions/fixes on project (created from `project-<project-name>-main`)
+- `project-<project-name>-main-feat-<description>` - Branch for new features on project (created from `project-<project-name>-main`)
+
+**Examples:**
+- `main-rev-fix-auth-bug` - Fix authentication bug in core
+- `main-feat-add-notification` - New notification feature in core
+- `project-ecommerce-main` - Main branch for ecommerce project
+- `project-ecommerce-main-rev-update-payment` - Update payment system in ecommerce project
+- `project-ecommerce-main-feat-add-cart` - New cart feature in ecommerce project
+
+**Important:** Due to the GitHub workflow protection (`.github/workflows/prevent-project-merge`), any branch that starts with "project" cannot be pushed or merged directly to any `main` branch. This is a safety measure to prevent accidental merges. Please be extra careful when working with project branches.
+
 This will make the job easier in managing the monorepo architecture.
 
 4. There's a new feature which is "Cloudflare D1" as a database driver by [Erimeilis](https://github.com/erimeilis/laravel-cloudflare-d1). But to be honest, I don't think it's good enough to be used as a main driver.
@@ -121,31 +146,6 @@ It needs to be known that the connection must be explicitly declared, or the con
 For now, I think the best use-case for Cloudflare D1 is to use it as a database driver that handles unimportant data such as queues, logs and other miscellaneous data if the project is too large.
 
 But if the project is small to medium, or not really that important (e.g: a landing page), then it is perfectly fine to use. Since other free databases like Supabase will deactivate the database if inactive for a period of time.
-
-5. As a monorepo project, git branch names must be adjusted to the scope of work.
-
-**Branch Naming Convention:**
-
-**Core/Main Branch:**
-- `main` - Main branch for core (please don't push directly to this branch)
-
-**Branches for Core:**
-- `main-rev-<description>` - Branch for revisions/fixes on core (created from `main`)
-- `main-feat-<description>` - Branch for new features on core (created from `main`)
-
-**Branches for Project:**
-- `project-<project-name>-main` - Main branch for a new project (created from `main`)
-- `project-<project-name>-main-rev-<description>` - Branch for revisions/fixes on project (created from `project-<project-name>-main`)
-- `project-<project-name>-main-feat-<description>` - Branch for new features on project (created from `project-<project-name>-main`)
-
-**Examples:**
-- `main-rev-fix-auth-bug` - Fix authentication bug in core
-- `main-feat-add-notification` - New notification feature in core
-- `project-ecommerce-main` - Main branch for ecommerce project
-- `project-ecommerce-main-rev-update-payment` - Update payment system in ecommerce project
-- `project-ecommerce-main-feat-add-cart` - New cart feature in ecommerce project
-
-**Important:** Due to the GitHub workflow protection (`.github/workflows/prevent-project-merge`), any branch that starts with "project" cannot be pushed or merged directly to any `main` branch. This is a safety measure to prevent accidental merges. Please be extra careful when working with project branches.
 
 ## Roadmap
 

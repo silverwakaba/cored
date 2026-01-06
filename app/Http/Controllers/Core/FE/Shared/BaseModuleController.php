@@ -51,7 +51,8 @@ class BaseModuleController extends Controller{
     public function read($id){
         // Make http call
         $http = $this->apiRepository->withToken()->get('be.core.base.module.show', [
-            'id' => $id,
+            'id'        => $id,
+            // 'relation'  => ['baseRequests:id,base_modules_id,name'],
         ]);
 
         // Response

@@ -32,21 +32,9 @@
             // Load init function
             initDatatable();
             initUpsert();
-            initWebsocket();
             loadBoolean();
             loadModule();
         });
-
-        // Init websocket
-        function initWebsocket(){
-            // Websocket channel
-            let websocket = Echo.channel('generalChannel');
-            
-            // Listen to websocket
-            websocket.listen('.generalEvent', function(data){
-                $('#theTable').DataTable().ajax.reload(null, false);
-            });
-        }
 
         // Handle overlay class for form processing state
         <x-Adminlte.ProcessingStateComponent type="modal" />

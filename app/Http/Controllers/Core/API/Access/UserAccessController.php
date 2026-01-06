@@ -86,7 +86,7 @@ class UserAccessController extends Controller{
             }
 
             // Create registered user
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->prepare([
+            $datas = $this->repositoryInterface->prepare([
                 'name'      => $request->name,
                 'email'     => $request->email,
                 'password'  => bcrypt(GeneralHelper::randomPassword()),
@@ -135,7 +135,7 @@ class UserAccessController extends Controller{
             }
 
             // Update registered user
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->modify($id, [
+            $datas = $this->repositoryInterface->modify($id, [
                 'name'  => $request->name,
                 'email' => $request->email,
             ]);
@@ -153,7 +153,7 @@ class UserAccessController extends Controller{
     public function delete($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Delete base module data (actually toggles activation status)
-            $result = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($id);
+            $result = $this->repositoryInterface->activation($id);
 
             // Get action and data from result
             $action = $result['action'];

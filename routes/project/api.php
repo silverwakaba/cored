@@ -11,8 +11,8 @@ Route::prefix('/')->name('be.')->group(function(){
     Route::prefix('project')->name('project.')->group(function(){
         // Supplier
         Route::prefix('supplier')->name('supplier.')->controller(SupplierController::class)->group(function(){
-            // Bakekok
-            Route::get('bakekok', 'bakekok')->name('bakekok');
+            // Index
+            Route::get('/', 'list')->name('index');
         });
     });
 });

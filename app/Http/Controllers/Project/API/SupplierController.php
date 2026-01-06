@@ -4,89 +4,82 @@ namespace App\Http\Controllers\Project\API;
 use App\Http\Controllers\Controller;
 
 // // Repository interface
-// use App\Contracts\Core\BaseModuleRepositoryInterface;
-
-// // Event
-// use App\Events\Core\GeneralEventHandler;
+use App\Contracts\Project\SupplierRepositoryInterface;
 
 // // Helper
-// use App\Helpers\Core\GeneralHelper;
+use App\Helpers\Core\GeneralHelper;
 
 // // Request
 // use App\Http\Requests\Core\BaseModuleRequest;
 
 // // Internal
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 
 class SupplierController extends Controller{
-    // // Property
-    // private $repositoryInterface;
+    // Property
+    private $repositoryInterface;
 
-    // // Constructor
-    // public function __construct(BaseModuleRepositoryInterface $repositoryInterface){
-    //     $this->repositoryInterface = $repositoryInterface;
-    // }
-
-    public function bakekok(){
-        return "Bakekok";
+    // Constructor
+    public function __construct(SupplierRepositoryInterface $repositoryInterface){
+        $this->repositoryInterface = $repositoryInterface;
     }
 
-    // // List
-    // public function list(Request $request){
-    //     return GeneralHelper::safe(function() use($request){
-    //         // Get data
-    //         $datas = $this->repositoryInterface;
+    // List
+    public function list(Request $request){
+        return GeneralHelper::safe(function() use($request){
+            // Get data
+            $datas = $this->repositoryInterface;
 
-    //         // Sort data
-    //         $datas->sort([
-    //             'name' => 'ASC',
-    //         ]);
+            // Sort data
+            $datas->sort([
+                'name' => 'ASC',
+            ]);
 
-    //         // Load column selection
-    //         if(isset($request->select)){
-    //             $datas->onlySelect($request->select);
-    //         }
+            // Load column selection
+            if(isset($request->select)){
+                $datas->onlySelect($request->select);
+            }
 
-    //         // Load relation
-    //         if(isset($request->relation)){
-    //             $datas->withRelation($request->relation);
-    //         }
+            // Load relation
+            if(isset($request->relation)){
+                $datas->withRelation($request->relation);
+            }
 
-    //         // Apply filters if provided
-    //         $filters = $request->only(array_filter(array_keys($request->all()), function($key){
-    //             return strpos($key, 'filter') === 0;
-    //         }));
+            // // Apply filters if provided
+            // $filters = $request->only(array_filter(array_keys($request->all()), function($key){
+            //     return strpos($key, 'filter') === 0;
+            // }));
 
-    //         // Run filter as sub-query
-    //         if(!empty($filters)){
-    //             $datas->query->where(function($query) use($filters){
-    //                 foreach($filters as $filterKey => $filterValue){
-    //                     // Status active filters
-    //                     if(in_array($filterKey, ['filter-active'])){
-    //                         // Skip if value is empty string or null, but allow "0" and false
-    //                         if(in_array($filterValue, [null, ''])){
-    //                             continue;
-    //                         }
+            // // Run filter as sub-query
+            // if(!empty($filters)){
+            //     $datas->query->where(function($query) use($filters){
+            //         foreach($filters as $filterKey => $filterValue){
+            //             // Status active filters
+            //             if(in_array($filterKey, ['filter-active'])){
+            //                 // Skip if value is empty string or null, but allow "0" and false
+            //                 if(in_array($filterValue, [null, ''])){
+            //                     continue;
+            //                 }
                             
-    //                         // Convert to boolean if needed
-    //                         if(is_string($filterValue)){
-    //                             // Convert string to boolean
-    //                             $filterValue = filter_var($filterValue, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-    //                         }
+            //                 // Convert to boolean if needed
+            //                 if(is_string($filterValue)){
+            //                     // Convert string to boolean
+            //                     $filterValue = filter_var($filterValue, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            //                 }
                             
-    //                         // Only apply filter if value is valid boolean, not null after conversion
-    //                         if($filterValue !== null){
-    //                             $query->where('is_active', $filterValue);
-    //                         }
-    //                     }
-    //                 }
-    //             });
-    //         }
+            //                 // Only apply filter if value is valid boolean, not null after conversion
+            //                 if($filterValue !== null){
+            //                     $query->where('is_active', $filterValue);
+            //                 }
+            //             }
+            //         }
+            //     });
+            // }
 
-    //         // Return response
-    //         return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
-    //     }, ['status' => 409, 'message' => false]);
-    // }
+            // Return response
+            return ($request->type === 'datatable') ? $datas->useDatatable()->all() : $datas->all();
+        }, ['status' => 409, 'message' => false]);
+    }
 
     // // Create
     // public function create(Request $request){

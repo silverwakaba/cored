@@ -28,6 +28,11 @@ class AppServiceProvider extends ServiceProvider{
             // ...add more core binding above ^^^
 
             // Project
+            \App\Contracts\Project\InvoiceRepositoryInterface::class        => \App\Repositories\Project\EloquentInvoiceRepository::class,
+            \App\Contracts\Project\PurchaseOrderRepositoryInterface::class  => \App\Repositories\Project\EloquentPurchaseOrderRepository::class,
+            \App\Contracts\Project\SupplierRepositoryInterface::class       => \App\Repositories\Project\EloquentSupplierRepository::class,
+            \App\Contracts\Project\TtbpMasterRepositoryInterface::class     => \App\Repositories\Project\EloquentTtbpMasterRepository::class,
+            \App\Contracts\Project\TtbpDetailRepositoryInterface::class     => \App\Repositories\Project\EloquentTtbpDetailRepository::class,
             // ...add more project binding above ^^^
         ];
         

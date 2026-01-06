@@ -88,7 +88,7 @@ class RoleController extends Controller{
             }
 
             // Create role
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
+            $datas = $this->repositoryInterface->create([
                 'name' => $request->name,
             ]);
 
@@ -117,7 +117,7 @@ class RoleController extends Controller{
             // Laravel handles nested transactions safely using savepoints
             $datas = DB::transaction(function() use($request){
                 // Create role with broadcaster trailing for 'create' event
-                $role = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
+                $role = $this->repositoryInterface->create([
                     'name' => $request->name,
                 ]);
 
@@ -134,14 +134,6 @@ class RoleController extends Controller{
                     // Sync role to permission
                     if($rbacCheck == true){
                         $role->syncPermissions($permissions);
-
-                        // Execute broadcaster for sync event
-                        // Note: Manual dispatch for 'stp' event since it's conditional
-                        try{
-                            GeneralEventHandler::dispatch($role, 'stp');
-                        } catch(\Throwable $th) {
-                            // Handle error silently
-                        }
                     }
                 }
 
@@ -196,7 +188,7 @@ class RoleController extends Controller{
             }
 
             // Sync permission to role (id from role)
-            $datas = $this->repositoryInterface->permission($request->permission)->broadcaster(GeneralEventHandler::class, 'stp')->syncToPermission($id);
+            $datas = $this->repositoryInterface->permission($request->permission)->syncToPermission($id);
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -219,7 +211,7 @@ class RoleController extends Controller{
             }
 
             // Sync role to user (id from user)
-            $datas = $this->repositoryInterface->withRelation('roles')->role($request->role)->broadcaster(GeneralEventHandler::class, 'stu')->syncToUser($id);
+            $datas = $this->repositoryInterface->withRelation('roles')->role($request->role)->syncToUser($id);
 
             // Return response
             return GeneralHelper::jsonResponse([

@@ -96,7 +96,7 @@ class BaseModuleController extends Controller{
             }
 
             // Create base module
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'create')->create([
+            $datas = $this->repositoryInterface->create([
                 'name' => $request->name,
             ]);
 
@@ -164,7 +164,7 @@ class BaseModuleController extends Controller{
             }
 
             // Update base module data
-            $datas = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'update')->update($id, [
+            $datas = $this->repositoryInterface->update($id, [
                 'name' => $request->name,
             ]);
 
@@ -181,7 +181,7 @@ class BaseModuleController extends Controller{
     public function delete($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Delete base module data (actually toggles activation status)
-            $result = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($id);
+            $result = $this->repositoryInterface->activation($id);
 
             // Get action and data from result
             $action = $result['action'];
@@ -209,7 +209,7 @@ class BaseModuleController extends Controller{
             }
 
             // Delete base module data (actually toggles activation status)
-            $result = $this->repositoryInterface->broadcaster(GeneralEventHandler::class, 'delete')->activation($ids);
+            $result = $this->repositoryInterface->activation($ids);
 
             // Get action and data from result
             $action = $result['action'];

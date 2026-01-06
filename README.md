@@ -145,6 +145,8 @@ But if the project is small to medium, or not really that important (e.g: a land
 - `project-ecommerce-main-rev-update-payment` - Update payment system in ecommerce project
 - `project-ecommerce-main-feat-add-cart` - New cart feature in ecommerce project
 
+**Important:** Due to the GitHub workflow protection (`.github/workflows/prevent-project-merge`), any branch that starts with "project" cannot be pushed or merged directly to any `main` branch. This is a safety measure to prevent accidental merges. Please be extra careful when working with project branches.
+
 ## Roadmap
 
 1. ~~RBAC => Done~~

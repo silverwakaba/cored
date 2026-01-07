@@ -17,7 +17,7 @@ return new class extends Migration{
             $table->foreignId('base_status_ttbp_id')->references('id')->on('base_requests');    // Base Module: Progress | Default: Draft > [In Progress, Not Approved] > Approval > Approved > [Finished / Canceled]
             $table->foreignId('base_status_payment_id')->references('id')->on('base_requests'); // Base Module: Payment  | Default: On Hold
 
-            $table->string('number');
+            $table->string('number')->unique();
             $table->date('date');
             $table->date('due_date');
             $table->smallInteger('credit_day');

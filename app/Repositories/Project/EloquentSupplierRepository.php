@@ -60,33 +60,11 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
                 // Foreign keys
                 'base_qualification_id'     => $supplierData['base_qualification_id'],     // 363: Kecil
                 'base_business_entity_id'   => $supplierData['base_business_entity_id'],   // 265: PT
-                'base_bank_id'              => $supplierData['base_bank_id'],
                 
                 // Basic information
                 'code'                      => $supplierData['code'],
                 'name'                      => $supplierData['name'],
                 'credit_day'                => $supplierData['credit_day'],
-                
-                // Address
-                'address_1'                 => $supplierData['address_1'],
-                'address_2'                 => $supplierData['address_2'],
-                
-                // Contact
-                'telp'                      => $supplierData['telp'],
-                'fax'                       => $supplierData['fax'],
-                
-                // Tax information
-                'npwp'                      => $supplierData['npwp'],
-                'npwp_address'              => $supplierData['npwp_address'],
-                
-                // Bank information
-                'bank_account_name'         => $supplierData['bank_account_name'],
-                'bank_account_number'       => $supplierData['bank_account_number'],
-                
-                // Additional information
-                'pkp'                       => $supplierData['pkp'],
-                'nib'                       => $supplierData['nib'],
-                'notes'                     => $supplierData['notes'],
             ]);
 
             // Return user with supplier relation loaded

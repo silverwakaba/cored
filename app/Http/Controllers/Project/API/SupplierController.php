@@ -152,7 +152,7 @@ class SupplierController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Base module updated successfully.',
             ]);
-        }, ['status' => 409, 'message' => true]);
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Delete

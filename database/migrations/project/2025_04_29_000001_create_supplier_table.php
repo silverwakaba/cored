@@ -19,7 +19,7 @@ return new class extends Migration{
             $table->foreignId('base_business_entity_id')->nullable()->references('id')->on('base_requests');    // Base Module: Business Entity
             $table->foreignId('base_bank_id')->nullable()->references('id')->on('base_requests');               // Base Module: Bank
             
-            $table->string('code')->nullable();
+            $table->string('code')->nullable()->unique();
             $table->string('name');
             $table->smallInteger('credit_day');
             $table->longText('address_1')->nullable();

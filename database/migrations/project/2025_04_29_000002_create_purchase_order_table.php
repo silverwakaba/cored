@@ -18,7 +18,7 @@ return new class extends Migration{
             $table->foreignId('base_status_id')->references('id')->on('base_requests');     // Base Module: Progress | Default: Draft > [In Progress, Not Approved] > Approval > Approved > [Finished / Canceled]
             $table->foreignId('base_currency_id')->references('id')->on('base_requests');   // Base Module: Currency
             
-            $table->string('number'); // PO number
+            $table->string('number')->unique(); // PO number
             $table->date('date'); // PO date
             
             $table->decimal('value', total: 20, places: 4); // 16 digit + 4 decimal

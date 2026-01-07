@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Project\API;
 use App\Http\Controllers\Controller;
 
-// // Repository interface
+// Repository interface
 use App\Contracts\Project\SupplierRepositoryInterface;
 
 // Helper
@@ -63,7 +63,7 @@ class SupplierController extends Controller{
 
             // Create new supplier and it's PIC
             $datas = $this->repositoryInterface->createWithUser(
-                // Supplier
+                // Supplier data
                 [
                     // Foreign keys
                     'base_qualification_id'     => $request->base_qualification_id,     // 363: Kecil
@@ -95,20 +95,14 @@ class SupplierController extends Controller{
                     'pkp'                       => $request->pkp,
                     'nib'                       => $request->nib,
                     'notes'                     => $request->notes,
-                    // 'statement_file_path'       => $request->statement_file_path,
                 ],
 
-                // User
+                // User data
                 [
                     'name'      => $request->pic_name,
                     'email'     => $request->pic_email,
-                    'password'  => bcrypt(now()), // Temporary password, should be reset
-                    'created_by' => auth()->user()->id ?? null,
-                    'updated_by' => auth()->user()->id ?? null,
+                    'password'  => GeneralHelper::randomPassword('120'), // Temporary password
                 ],
-                
-                // Role to assign
-                'Supplier'
             );
 
             // Return response
@@ -117,7 +111,7 @@ class SupplierController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Supplier created successfully.',
             ]);
-        }, ['status' => 409, 'message' => false]);
+        }, ['status' => 409, 'message' => true]);
     }
 
     // Read
@@ -147,30 +141,30 @@ class SupplierController extends Controller{
         }, ['status' => 409, 'message' => false]);
     }
 
-    // // Update
-    // public function update($id, Request $request){
-    //     return GeneralHelper::safe(function() use($id, $request){
-    //         // Validate input
-    //         $validated = GeneralHelper::validate($request->all(), (new BaseModuleRequest())->rules());
+    // Update
+    public function update($id, Request $request){
+        return GeneralHelper::safe(function() use($id, $request){
+            // Validate input
+            $validated = GeneralHelper::validate($request->all(), (new BaseModuleRequest())->rules());
 
-    //         // Stop if validation failed
-    //         if(!is_array($validated)){
-    //             return $validated;
-    //         }
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
+            }
 
-    //         // Update base module data
-    //         $datas = $this->repositoryInterface->update($id, [
-    //             'name' => $request->name,
-    //         ]);
+            // Update base module data
+            $datas = $this->repositoryInterface->update($id, [
+                'name' => $request->name,
+            ]);
 
-    //         // Return response
-    //         return GeneralHelper::jsonResponse([
-    //             'status'    => 200,
-    //             'data'      => $datas,
-    //             'message'   => 'Base module updated successfully.',
-    //         ]);
-    //     }, ['status' => 409, 'message' => false]);
-    // }
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas,
+                'message'   => 'Base module updated successfully.',
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
 
     // // Delete
     // public function delete($id, Request $request){

@@ -27,8 +27,8 @@ class SupplierRequest extends FormRequest{
             'base_bank_id'              => ['nullable', 'integer', 'exists:base_requests,id'],
             
             // User data (required if users_id is not provided)
-            'pic_name'                  => ['required_without:users_id', 'string', 'max:255'],
-            'pic_email'                 => ['required_without:users_id', 'email', 'unique:users,email'],
+            'pic_name'                  => ['required:users_id', 'string', 'max:255'],
+            'pic_email'                 => ['required:users_id', 'email', 'unique:users,email'],
             
             // Basic information
             'code'                      => ['required', 'string', 'max:255'],
@@ -56,9 +56,6 @@ class SupplierRequest extends FormRequest{
             'nib'                       => ['nullable', 'string', 'max:255'],
             'notes'                     => ['nullable', 'string', 'max:255'],
             'statement_file_path'       => ['nullable', 'string', 'max:255'],
-            
-            // Status
-            'is_active'                 => ['nullable', 'boolean'],
         ];
     }
 }

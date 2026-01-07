@@ -10,7 +10,8 @@ use App\Contracts\Project\SupplierRepositoryInterface;
 use App\Helpers\Core\GeneralHelper;
 
 // Request
-use App\Http\Requests\Project\SupplierRequest;
+use App\Http\Requests\Project\SupplierCreateRequest;
+use App\Http\Requests\Project\SupplierUpdateRequest;
 
 // Internal
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class SupplierController extends Controller{
     public function create(Request $request){
         return GeneralHelper::safe(function() use($request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new SupplierRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new SupplierCreateRequest())->rules());
 
             // Stop if validation failed
             if(!is_array($validated)){
@@ -68,33 +69,11 @@ class SupplierController extends Controller{
                     // Foreign keys
                     'base_qualification_id'     => $request->base_qualification_id,     // 363: Kecil
                     'base_business_entity_id'   => $request->base_business_entity_id,   // 265: PT
-                    'base_bank_id'              => $request->base_bank_id,
                     
                     // Basic information
                     'code'                      => $request->code,
                     'name'                      => $request->name,
                     'credit_day'                => $request->credit_day,
-                    
-                    // Address
-                    'address_1'                 => $request->address_1,
-                    'address_2'                 => $request->address_2,
-                    
-                    // Contact
-                    'telp'                      => $request->telp,
-                    'fax'                       => $request->fax,
-                    
-                    // Tax information
-                    'npwp'                      => $request->npwp,
-                    'npwp_address'              => $request->npwp_address,
-                    
-                    // Bank information
-                    'bank_account_name'         => $request->bank_account_name,
-                    'bank_account_number'       => $request->bank_account_number,
-                    
-                    // Additional information
-                    'pkp'                       => $request->pkp,
-                    'nib'                       => $request->nib,
-                    'notes'                     => $request->notes,
                 ],
 
                 // User data
@@ -125,7 +104,7 @@ class SupplierController extends Controller{
                 $datas->onlySelect($request->select);
             }
 
-            // Load relation
+            // Load relation (user,baseQualification,baseBusinessEntity,baseBank)
             if(isset($request->relation)){
                 $datas->withRelation($request->relation);
             }
@@ -145,7 +124,7 @@ class SupplierController extends Controller{
     public function update($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
             // Validate input
-            $validated = GeneralHelper::validate($request->all(), (new BaseModuleRequest())->rules());
+            $validated = GeneralHelper::validate($request->all(), (new SupplierUpdateRequest())->rules());
 
             // Stop if validation failed
             if(!is_array($validated)){
@@ -154,7 +133,17 @@ class SupplierController extends Controller{
 
             // Update base module data
             $datas = $this->repositoryInterface->update($id, [
-                'name' => $request->name,
+                // Foreign keys
+                'base_qualification_id'     => $request->base_qualification_id,
+                'base_business_entity_id'   => $request->base_business_entity_id,
+                
+                // Basic information
+                'code'                      => $request->code,
+                'name'                      => $request->name,
+                'credit_day'                => $request->credit_day,
+                
+                // Action info
+                'updated_by'                => auth()->user()->id ?? null,
             ]);
 
             // Return response
@@ -163,52 +152,51 @@ class SupplierController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Base module updated successfully.',
             ]);
+        }, ['status' => 409, 'message' => true]);
+    }
+
+    // Delete
+    public function delete($id, Request $request){
+        return GeneralHelper::safe(function() use($id, $request){
+            // Delete base module data (actually toggles activation status)
+            $result = $this->repositoryInterface->activation($id);
+
+            // Get action and data from result
+            $action = $result['action'];
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'message'   => "Base module {$action} successfully.",
+            ]);
         }, ['status' => 409, 'message' => false]);
     }
 
-    // // Delete
-    // public function delete($id, Request $request){
-    //     return GeneralHelper::safe(function() use($id, $request){
-    //         // Delete base module data (actually toggles activation status)
-    //         $result = $this->repositoryInterface->activation($id);
-
-    //         // Get action and data from result
-    //         $action = $result['action'];
-
-    //         // Return response
-    //         return GeneralHelper::jsonResponse([
-    //             'status'    => 200,
-    //             'message'   => "Base module {$action} successfully.",
-    //         ]);
-    //     }, ['status' => 409, 'message' => false]);
-    // }
-
-    // // Bulk Delete
-    // public function bulkDestroy(Request $request){
-    //     return GeneralHelper::safe(function() use($request){
-    //         // Validate input
-    //         $ids = $request->input('ids', []);
+    // Bulk Delete
+    public function bulkDestroy(Request $request){
+        return GeneralHelper::safe(function() use($request){
+            // Validate input
+            $ids = $request->input('ids', []);
             
-    //         // Check if ids is provided and is array
-    //         if(empty($ids) || !is_array($ids)){
-    //             return GeneralHelper::jsonResponse([
-    //                 'status'    => 400,
-    //                 'message'   => 'No data selected.',
-    //             ], 400);
-    //         }
+            // Check if ids is provided and is array
+            if(empty($ids) || !is_array($ids)){
+                return GeneralHelper::jsonResponse([
+                    'status'    => 400,
+                    'message'   => 'No data selected.',
+                ], 400);
+            }
 
-    //         // Delete base module data (actually toggles activation status)
-    //         $result = $this->repositoryInterface->activation($ids);
+            // Delete base module data (actually toggles activation status)
+            $result = $this->repositoryInterface->activation($ids);
 
-    //         // Get action and data from result
-    //         $action = $result['action'];
-    //         $count = $result['data'];
+            // Get action and data from result
+            $action = $result['action'];
 
-    //         // Return response
-    //         return GeneralHelper::jsonResponse([
-    //             'status'    => 200,
-    //             'message'   => "{$count} base module(s) {$action} successfully.",
-    //         ]);
-    //     }, ['status' => 409, 'message' => false]);
-    // }
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'message'   => "{$count} base module(s) {$action} successfully.",
+            ]);
+        }, ['status' => 409, 'message' => false]);
+    }
 }

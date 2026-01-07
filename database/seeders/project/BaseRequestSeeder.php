@@ -15,12 +15,13 @@ class BaseRequestSeeder extends Seeder{
     public function run() : void{
         // Get module IDs
         // $paymentStatusModule = BaseModule::where('name', 'Payment Status')->first();
-        $businessEntityModule = BaseModule::where('name', 'Business Entity')->first();
-        $bankModule = BaseModule::where('name', 'Bank')->first();
-        $currencyModule = BaseModule::where('name', 'Currency')->first();
-        $qualificationModule = BaseModule::where('name', 'Qualification')->first();
-        $workTypeModule = BaseModule::where('name', 'Work Type')->first();
-        $taxTypeModule = BaseModule::where('name', 'Tax Type')->first();
+        $businessEntityModule = BaseModule::select(['id', 'name'])->where('name', 'Business Entity')->first();
+        $bankModule = BaseModule::select(['id', 'name'])->where('name', 'Bank')->first();
+        $currencyModule = BaseModule::select(['id', 'name'])->where('name', 'Currency')->first();
+        $qualificationModule = BaseModule::select(['id', 'name'])->where('name', 'Qualification')->first();
+        $workTypeModule = BaseModule::select(['id', 'name'])->where('name', 'Work Type')->first();
+        $taxTypeModule = BaseModule::select(['id', 'name'])->where('name', 'Tax Type')->first();
+        $accountManagementModule = BaseModule::select(['id', 'name'])->where('name', 'Account Management')->first();
 
         BaseRequest::insert([
             // // Payment Status
@@ -511,6 +512,12 @@ class BaseRequestSeeder extends Seeder{
             [
                 'base_modules_id'   => $taxTypeModule->id,
                 'name'              => "PPh Pasal 4 Ayat (2)",
+            ],
+
+            // Account Management
+            [
+                'base_modules_id'   => $accountManagementModule->id,
+                'name'              => "Supplier Profile Completion",
             ],
         ]);
     }

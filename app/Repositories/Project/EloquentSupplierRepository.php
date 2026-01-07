@@ -6,6 +6,7 @@ namespace App\Repositories\Project;
 use App\Helpers\Core\GeneralHelper;
 
 // Model
+use App\Models\Core\BaseRequest;
 use App\Models\Project\User; // User model belongs to Project
 use App\Models\Project\Supplier;
 
@@ -35,6 +36,13 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
     public function createWithUser(array $supplierData, array $userData){
         // Implementing db transaction
         return DB::transaction(function() use($supplierData, $userData){
+            // Get base request for supplier profile completion
+            $baseRequest = BaseRequest::select(['id'])->where([
+                ['name', '=', 'Supplier Profile Completion'],
+            ])->whereHas('baseModule', function($query){
+                $query->where('name', 'Account Management');
+            })->first();
+            
             // Create user
             $user = User::create($userData);
             
@@ -43,8 +51,7 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
 
             // Create request for supplier activation token
             $request = $user->userRequests()->create([
-                'base_requests_id'  => 4,
-                'users_id'          => $user->id,
+                'base_requests_id'  => $baseRequest->id,
                 'token'             => GeneralHelper::randomToken(),
             ]);
 
@@ -80,9 +87,6 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
                 'pkp'                       => $supplierData['pkp'],
                 'nib'                       => $supplierData['nib'],
                 'notes'                     => $supplierData['notes'],
-
-                'created_by'                => auth()->user()->id ?? null,
-                'updated_by'                => auth()->user()->id ?? null,
             ]);
 
             // Return user with supplier relation loaded

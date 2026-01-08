@@ -199,4 +199,29 @@ class SupplierController extends Controller{
             ]);
         }, ['status' => 409, 'message' => false]);
     }
+
+    // Supplier Profile Completion - Get
+    public function getSupplierProfileCompletion($token, Request $request){
+        return GeneralHelper::safe(function() use($request, $token){
+            // Find supplier profile completion request by token
+            $datas = $this->repositoryInterface->findSupplierProfileCompletionByToken($token);
+            
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas,
+            ]);
+        }, ['status' => 409, 'message' => true]);
+    }
+
+    // Supplier Profile Completion - Get
+    public function postSupplierProfileCompletion($token, Request $request){
+        return GeneralHelper::safe(function() use($request, $token){
+        
+            $datas = $this->repositoryInterface->completeSupplierProfile($token, []);
+
+            return $datas;
+        
+        }, ['status' => 409, 'message' => true]);
+    }
 }

@@ -27,6 +27,10 @@ Route::prefix('/')->name('be.')->group(function(){
             // Delete
             Route::delete('/{id}', 'delete')->name('destroy');
             Route::post('bulk-destroy', 'bulkDestroy')->name('bulk-destroy');
+
+            // Supplier Profile Completion
+            Route::get('/token/{token}', 'getSupplierProfileCompletion')->name('profile-completion.show');
+            Route::post('/token/{token}', 'postSupplierProfileCompletion')->name('profile-completion.update');
         });
     });
 });

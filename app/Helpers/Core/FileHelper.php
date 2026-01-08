@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Faker\Factory;
 
 // Currently this file helper is only designed to be used with S3-compatible file system
+// I'll try to implement FTP and any other file system later
 class FileHelper{
     // Property
     protected $disk;
@@ -42,29 +43,34 @@ class FileHelper{
 
     // Set directory
     public function directory($directory){
+        // Define whitelist of predefined directories
+        $whitelist = [
+            'avatar',
+            'cta/message',
+            'invoice',
+            'po',
+            'statement',
+            'supplier',
+            'test',
+            'ttbp'
+        ];
+
         // Determine directory
-        switch($directory){
-            // Avatar
-            case 'avatar': $directory; break;
-
-            // CTA message
-            case 'cta/message': $directory; break;
-
-            // Test
-            case 'test': $directory; break;
-            
-            // Default
-            default: $directory = 'general'; break;
+        // If directory is null or empty, use default
+        if($directory === null || $directory === ''){
+            $directory = 'general';
         }
+        // If directory is in whitelist, use it as is
+        // If directory is not in whitelist but has a value, use the provided value
 
-        // Set project + document directory (e.g: The project name is silverspoon and document is avatar, so the result is: silverspoon/avatar/, etc)
-        $this->directory = Str::of($directory)->prepend(strtolower(config('app.name')) . '/')->finish('/');
+        // Set project (sluggable project name) + document directory (e.g: The project name is silverspoon and document is avatar, so the result is: silverspoon/avatar/, etc)
+        $this->directory = Str::of(strtolower($directory))->prepend(strtolower(Str::slug(config('app.name'), '-')) . '/')->finish('/');
         
         // Chainable
         return $this;
     }
 
-    // Upload
+    // Upload | e.g: (new FileHelper)->disk()->directory('general')->upload(request()->allFiles())
     public function upload($path){
         // Init storage
         $storage = Storage::disk($this->disk);

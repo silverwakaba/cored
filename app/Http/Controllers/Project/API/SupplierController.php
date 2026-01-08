@@ -7,9 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Contracts\Project\SupplierRepositoryInterface;
 
 // Helper
+use App\Helpers\Core\FileHelper;
 use App\Helpers\Core\GeneralHelper;
 
 // Request
+use App\Http\Requests\Project\SupplierCompleteProfileRequest;
 use App\Http\Requests\Project\SupplierCreateRequest;
 use App\Http\Requests\Project\SupplierUpdateRequest;
 
@@ -90,7 +92,7 @@ class SupplierController extends Controller{
                 'data'      => $datas,
                 'message'   => 'Supplier created successfully.',
             ]);
-        }, ['status' => 409, 'message' => true]);
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Read
@@ -211,17 +213,53 @@ class SupplierController extends Controller{
                 'status'    => 200,
                 'data'      => $datas,
             ]);
-        }, ['status' => 409, 'message' => true]);
+        }, ['status' => 409, 'message' => false]);
     }
 
     // Supplier Profile Completion - Get
     public function postSupplierProfileCompletion($token, Request $request){
         return GeneralHelper::safe(function() use($request, $token){
-        
-            $datas = $this->repositoryInterface->completeSupplierProfile($token, []);
+            // Validate input
+            $validated = GeneralHelper::validate($request->all(), (new SupplierCompleteProfileRequest())->rules());
 
-            return $datas;
-        
+            // Stop if validation failed
+            if(!is_array($validated)){
+                return $validated;
+            }
+
+            // return "Ok";
+
+            // Upload files and return the path
+            // $uploadPath = (new FileHelper)->disk()->directory('statement')->upload(request()->allFiles());
+            
+            // Complete supplier profile
+            $datas = $this->repositoryInterface->completeSupplierProfile($token, [
+                // Foreign keys
+                'base_qualification_id'     => $request->qualification,     // 363
+                'base_business_entity_id'   => $request->business_entity,   // 265
+                'base_bank_id'              => $request->bank,              // 
+                
+                // Supplier
+                'name'                      => $request->name,
+                'address_1'                 => $request->address_1,
+                'address_2'                 => $request->address_2,
+                'telp'                      => $request->telp,
+                'fax'                       => $request->fax,
+                'npwp'                      => $request->npwp,
+                'npwp_address'              => $request->npwp_address,
+                'bank_account_name'         => $request->bank_account_name,
+                'bank_account_number'       => $request->bank_account_number,
+                'pkp'                       => $request->pkp,
+                'nib'                       => $request->nib,
+                'notes'                     => $request->notes,
+                'statement_file_path'       => $request->statement,
+            ]);
+
+            // Return response
+            return GeneralHelper::jsonResponse([
+                'status'    => 200,
+                'data'      => $datas,
+            ]);
         }, ['status' => 409, 'message' => true]);
     }
 }

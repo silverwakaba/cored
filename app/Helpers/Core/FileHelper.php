@@ -52,16 +52,16 @@ class FileHelper{
             'statement',
             'supplier',
             'test',
-            'ttbp'
+            'ttbp',
         ];
 
         // Determine directory
         // If directory is null or empty, use default
+        // If directory is in whitelist, use it as is
+        // If directory is not in whitelist but has a value, use the provided value
         if($directory === null || $directory === ''){
             $directory = 'general';
         }
-        // If directory is in whitelist, use it as is
-        // If directory is not in whitelist but has a value, use the provided value
 
         // Set project (sluggable project name) + document directory (e.g: The project name is silverspoon and document is avatar, so the result is: silverspoon/avatar/, etc)
         $this->directory = Str::of(strtolower($directory))->prepend(strtolower(Str::slug(config('app.name'), '-')) . '/')->finish('/');
@@ -72,82 +72,88 @@ class FileHelper{
 
     // Upload | e.g: (new FileHelper)->disk()->directory('general')->upload(request()->allFiles())
     public function upload($path){
-        // Init storage
-        $storage = Storage::disk($this->disk);
+        return GeneralHelper::safe(function() use($path){
+            // Init storage
+            $storage = Storage::disk($this->disk);
 
-        // Upload files
-        foreach(GeneralHelper::getType($path) as $key => $object){
-            // Handle multiple files from a single input (e.g., name="file[]")
-            if(is_array($object)){
-                foreach($object as $index => $file){
-                    $uploaded["{$key}[{$index}]"] = Str::replace('//', '/', $storage->put($this->directory, $file));
+            // Upload files
+            foreach(GeneralHelper::getType($path) as $key => $object){
+                // Handle multiple files from a single input (e.g., name="file[]")
+                if(is_array($object)){
+                    foreach($object as $index => $file){
+                        $uploaded["{$key}[{$index}]"] = Str::replace('//', '/', $storage->put($this->directory, new File($file)));
+                    }
+                }
+                // Handle single file
+                else{
+                    $uploaded[$key] = Str::replace('//', '/', $storage->put($this->directory, new File($object)));
                 }
             }
-            // Handle single file
-            else{
-                $uploaded[$key] = Str::replace('//', '/', $storage->put($this->directory, new File($object)));
-            }
-        }
 
-        // Return response
-        return $uploaded;
+            // Return response
+            return $uploaded;
+        }, ['status' => 409, 'message' => false], false, []);
     }
 
-    // Get
+    // Get | e.g: (new FileHelper)->disk()->get('/dir')
     public function get($path, $private = false, $download = false, $proxy = true){
-        // Init storage
-        $storage = Storage::disk($this->disk);
+        return GeneralHelper::safe(function() use($path, $private, $download, $proxy){
+            // Init storage
+            $storage = Storage::disk($this->disk);
 
-        // Handle download option
-        if($download == false){
-            // No params
-            $download_params = [];
-        } else {
-            // Mime typee + new file name
-            $download_params = [
-                'ResponseContentType'           => 'application/octet-stream',
-                'ResponseContentDisposition'    => 'attachment; filename=' . Str::replace('+', '_', urlencode(Str::of($path)->basename())),
-            ];
-        }
+            // Handle download option
+            if($download == false){
+                // No params
+                $download_params = [];
+            } else {
+                // Mime typee + new file name
+                $download_params = [
+                    'ResponseContentType'           => 'application/octet-stream',
+                    'ResponseContentDisposition'    => 'attachment; filename=' . Str::replace('+', '_', urlencode(Str::of($path)->basename())),
+                ];
+            }
 
-        // Handle access
-        if($private == false){
-            // Public access
-            $url = $storage->url($path);
-        } else {
-            // Private access
-            $url = $storage->temporaryUrl(
-                $path, now()->addMinutes($this->expire), $download_params
-            );
-        }
+            // Handle access
+            if($private == false){
+                // Public access
+                $url = $storage->url($path);
+            } else {
+                // Private access
+                $url = $storage->temporaryUrl(
+                    $path, now()->addMinutes($this->expire), $download_params
+                );
+            }
 
-        // Handle proxy
-        if($proxy == false){
-            // No proxy
-            $get = $url;
-        } else {
-            // Parse original url
-            $parse_schema = parse_url($url);
+            // Handle proxy
+            if($proxy == false){
+                // No proxy
+                $get = $url;
+            } else {
+                // Parse original url
+                $parse_schema = parse_url($url);
 
-            // Proxy the url
-            $get = Str::replace("{$parse_schema['scheme']}://{$parse_schema['host']}", config("filesystems.disks.{$this->disk}.domain"), $url);
-        }
+                // Proxy the url
+                $get = Str::replace("{$parse_schema['scheme']}://{$parse_schema['host']}", config("filesystems.disks.{$this->disk}.domain"), $url);
+            }
 
-        // Return response
-        return $get;
+            // Return response
+            return $get;
+        }, ['status' => 409, 'message' => false], false, '');
     }
 
-    // Delete
+    // Delete | e.g: (new FileHelper)->disk()->delete('/dir')
     public function delete($path){
-        // Init storage
-        $storage = Storage::disk($this->disk);
+        return GeneralHelper::safe(function() use($path){
+            // Init storage
+            $storage = Storage::disk($this->disk);
 
-        // Delete files
-        foreach(GeneralHelper::getType($path) as $key => $object){
-            $deleted[$key] = $storage->delete($object);
-        }
+            // Delete files
+            foreach(GeneralHelper::getType($path) as $key => $object){
+                $deleted[$key] = $storage->delete($object);
+            }
 
-        // Return response
-        return $deleted;
+            // Return response
+            return $deleted;
+        }, ['status' => 409, 'message' => false], false, []);
     }
 }

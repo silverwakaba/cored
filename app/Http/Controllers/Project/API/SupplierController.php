@@ -207,6 +207,14 @@ class SupplierController extends Controller{
         return GeneralHelper::safe(function() use($request, $token){
             // Find supplier profile completion request by token
             $datas = $this->repositoryInterface->findSupplierProfileCompletionByToken($token);
+
+            // Return error if token is not found or invalid
+            if(!$datas){
+                return GeneralHelper::jsonResponse([
+                    'status'    => 404,
+                    'message'   => 'Token not found or invalid.',
+                ]);
+            }
             
             // Return response
             return GeneralHelper::jsonResponse([
@@ -225,7 +233,7 @@ class SupplierController extends Controller{
             // Return error if token is not found or invalid
             if(!$tokenValidation){
                 return GeneralHelper::jsonResponse([
-                    'status'    => 409,
+                    'status'    => 404,
                     'message'   => 'Token not found or invalid.',
                 ]);
             }

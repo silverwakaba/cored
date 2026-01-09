@@ -28,9 +28,11 @@ Route::prefix('/')->name('be.')->group(function(){
             Route::delete('/{id}', 'delete')->name('destroy');
             Route::post('bulk-destroy', 'bulkDestroy')->name('bulk-destroy');
 
-            // Supplier Profile Completion
-            Route::get('/token/{token}', 'getSupplierProfileCompletion')->name('profile-completion.show');
-            Route::post('/token/{token}', 'postSupplierProfileCompletion')->name('profile-completion.update');
+            // Supplier Profile Completion via token
+            Route::prefix('token')->name('profile-completion.')->withoutMiddleware(['jwt.be'])->group(function(){
+                Route::get('/{token}', 'getSupplierProfileCompletion')->name('show');
+                Route::post('/{token}', 'postSupplierProfileCompletion')->name('update');
+            });
         });
     });
 });

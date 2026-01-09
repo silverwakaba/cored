@@ -141,11 +141,6 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
             // Supplier includes baseQualification, baseBusinessEntity, and baseBank
             $request = $this->findUserRequestByBaseRequestAndToken($baseRequest, $token);
 
-            // Check if token is not found
-            if(!$request){
-                throw new \Exception('Token not found or invalid.');
-            }
-
             // Delete old statement if exist
             (new FileHelper)->disk()->delete($request['supplier']['statement_file_path']);
 
@@ -180,7 +175,7 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
             ]);
 
             // Delete supplier profile completion token
-            // $request->delete();
+            $request->delete();
 
             // Refresh supplier with updated relation
             $request->supplier->refresh();

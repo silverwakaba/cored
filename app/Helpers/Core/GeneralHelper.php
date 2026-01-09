@@ -77,18 +77,23 @@ class GeneralHelper{
     }
 
     // Execute callback with unified try-catch response
-    public static function safe(callable $callback, array $onError = ['status' => 409, 'message' => false]){
+    public static function safe(callable $callback, array $onError = ['status' => 409, 'message' => false], bool $throwable = true, mixed $default = null){
         try{
             // Callback content
             return $callback();
         }
         catch(\Throwable $th){
-            // Error payload
-            $payload = $onError;
-            $payload['message'] = ($payload['message'] === true) ? $th->getMessage() : null;
+            if($throwable == true){
+                // Error payload
+                $payload = $onError;
+                $payload['message'] = ($payload['message'] === true) ? $th->getMessage() : null;
 
-            // Return response
-            return self::jsonResponse($payload);
+                // Return response
+                return self::jsonResponse($payload);
+            } else {
+                // Return default value (completely silent)
+                return $default;
+            }
         }
     }
 

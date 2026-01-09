@@ -282,6 +282,6 @@ class SupplierController extends Controller{
                 'status'    => 200,
                 'data'      => $datas,
             ]);
-        }, ['status' => 409, 'message' => true]);
+        }, ['status' => 409, 'message' => false]);
     }
 }

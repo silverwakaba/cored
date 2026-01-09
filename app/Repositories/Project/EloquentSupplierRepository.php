@@ -29,11 +29,7 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
         $this->query = $model->query();
     }
 
-    /**
-     * Get base request for supplier profile completion
-     * 
-     * @return \App\Models\Core\BaseRequest|null
-     */
+    // Get base request for supplier profile completion
     private function getSupplierProfileCompletionBaseRequest(){
         return BaseRequest::select(['id'])->where([
             ['name', '=', 'Supplier Profile Completion'],
@@ -42,13 +38,7 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
         })->first();
     }
 
-    /**
-     * Find user request by base request and token with relations
-     * 
-     * @param \App\Models\Core\BaseRequest $baseRequest
-     * @param string $token
-     * @return \App\Models\Project\UserRequest|null
-     */
+    // Find user request by base request and token with relations
     private function findUserRequestByBaseRequestAndToken($baseRequest, string $token){
         return UserRequest::with([
             'user', 'supplier.baseQualification', 'supplier.baseBusinessEntity', 'supplier.baseBank',
@@ -58,13 +48,7 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
         ])->first();
     }
 
-    /**
-     * Create supplier with associated user
-     * 
-     * @param array $supplierData Supplier data
-     * @param array $userData User data (name, email, password, etc.)
-     * @return \App\Models\Project\User
-     */
+    // Create supplier with associated user
     public function createWithUser(array $supplierData, array $userData){
         // Implementing db transaction
         return DB::transaction(function() use($supplierData, $userData){
@@ -103,12 +87,7 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
         });
     }
 
-    /**
-     * Find supplier profile completion request by token
-     * 
-     * @param string $token Supplier profile completion token
-     * @return \App\Models\Project\UserRequest|null
-     */
+    // Find supplier profile completion request by token
     public function findSupplierProfileCompletionByToken(string $token){
         // Implementing db transaction
         return DB::transaction(function() use($token){
@@ -124,13 +103,7 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
         });
     }
 
-    /**
-     * Complete supplier profile using token
-     * 
-     * @param string $token Supplier profile completion token
-     * @param array $supplierData Supplier profile data to update
-     * @return \App\Models\Project\Supplier
-     */
+    // Complete supplier profile using token
     public function completeSupplierProfile(string $token, array $supplierData, array $userData){
         // Implementing db transaction
         return DB::transaction(function() use($token, $supplierData, $userData){
@@ -183,6 +156,14 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
 
             // Return result
             return $request->supplier;
+        });
+    }
+
+    // Assign user to supplier profile
+    public function assignUser(string $userId, int $supplierId){
+        // Implementing db transaction
+        return DB::transaction(function() use($token, $supplierData, $userData){
+            // 
         });
     }
 }

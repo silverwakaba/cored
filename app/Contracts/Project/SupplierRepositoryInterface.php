@@ -20,5 +20,5 @@ interface SupplierRepositoryInterface{
      * @param array $supplierData Supplier profile data to update
      * @return \App\Models\Project\Supplier
      */
-    public function completeSupplierProfile(string $token, array $supplierData);
+    public function completeSupplierProfile(string $token, array $supplierData, array $userData);
 }

@@ -216,9 +216,20 @@ class SupplierController extends Controller{
         }, ['status' => 409, 'message' => false]);
     }
 
-    // Supplier Profile Completion - Get
+    // Supplier Profile Completion - Post
     public function postSupplierProfileCompletion($token, Request $request){
         return GeneralHelper::safe(function() use($request, $token){
+            // Validate token first before processing anything else
+            $tokenValidation = $this->repositoryInterface->findSupplierProfileCompletionByToken($token);
+            
+            // Return error if token is not found or invalid
+            if(!$tokenValidation){
+                return GeneralHelper::jsonResponse([
+                    'status'    => 409,
+                    'message'   => 'Token not found or invalid.',
+                ]);
+            }
+
             // Validate input
             $validated = GeneralHelper::validate($request->all(), (new SupplierCompleteProfileRequest())->rules());
 
@@ -227,17 +238,15 @@ class SupplierController extends Controller{
                 return $validated;
             }
 
-            // return "Ok";
-
-            // Upload files and return the path
-            // $uploadPath = (new FileHelper)->disk()->directory('statement')->upload(request()->allFiles());
+            // Upload files and return the path (only if token is proven valid)
+            $uploadPath = (new FileHelper)->disk()->directory('statement')->upload(request()->allFiles());
             
             // Complete supplier profile
             $datas = $this->repositoryInterface->completeSupplierProfile($token, [
                 // Foreign keys
                 'base_qualification_id'     => $request->qualification,     // 363
                 'base_business_entity_id'   => $request->business_entity,   // 265
-                'base_bank_id'              => $request->bank,              // 
+                'base_bank_id'              => $request->bank,              // 268
                 
                 // Supplier
                 'name'                      => $request->name,
@@ -252,7 +261,12 @@ class SupplierController extends Controller{
                 'pkp'                       => $request->pkp,
                 'nib'                       => $request->nib,
                 'notes'                     => $request->notes,
-                'statement_file_path'       => $request->statement,
+                'statement_file_path'       => $uploadPath['statement'],
+            ], [
+                // User
+                'pic_name'                  => $request->pic_name,
+                'pic_password'              => $request->pic_password,
+                'pic_password_confirmation' => $request->pic_password_confirmation,
             ]);
 
             // Return response

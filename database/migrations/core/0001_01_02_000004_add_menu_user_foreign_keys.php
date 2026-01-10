@@ -8,12 +8,12 @@ return new class extends Migration{
     public function up() : void{
         // Add foreign key constraint for menu_user_includes
         Schema::table('menu_user_includes', function (Blueprint $table){
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
         // Add foreign key constraint for menu_user_excludes
         Schema::table('menu_user_excludes', function (Blueprint $table){
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

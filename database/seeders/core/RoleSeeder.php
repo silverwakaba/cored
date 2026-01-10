@@ -5,7 +5,7 @@ namespace Database\Seeders\Core;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-use Spatie\Permission\Models\Role;
+use App\Models\Core\Role;
 
 class RoleSeeder extends Seeder{
     /**

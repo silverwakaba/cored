@@ -8,8 +8,8 @@ use App\Helpers\Core\RBACHelper;
 
 // Model
 use App\Models\Core\User;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use App\Models\Core\Permission;
+use App\Models\Core\Role;
 
 // Interface
 use App\Contracts\Core\RoleRepositoryInterface;

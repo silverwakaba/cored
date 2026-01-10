@@ -399,7 +399,7 @@ class EloquentMenuRepository extends BaseRepository implements MenuRepositoryInt
         }
         
         // Optimize: Use whereIn to find all roles at once instead of looping
-        $roles = \Spatie\Permission\Models\Role::whereIn('id', $roleIds)
+        $roles = \App\Models\Core\Role::whereIn('id', $roleIds)
             ->orWhereIn('name', $roleIds)
             ->get();
         

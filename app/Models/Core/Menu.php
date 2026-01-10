@@ -3,12 +3,17 @@
 // app/Models/Menu.php
 namespace App\Models\Core;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Permission\Models\Role;
+use App\Models\Core\Role;
 
 class Menu extends Model{
+    use HasUlids;
+    
     protected $table = 'menus';
     protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     public $timestamps = false;
 
     protected $fillable = [

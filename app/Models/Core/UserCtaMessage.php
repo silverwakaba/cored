@@ -2,11 +2,16 @@
 
 namespace App\Models\Core;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
 class UserCtaMessage extends Model{
+    use HasUlids;
+    
     protected $table = 'user_cta_messages';
     protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     public $timestamps = true;
 
     protected $fillable = [

@@ -15,12 +15,10 @@ class BaseModuleSeeder extends Seeder{
      * Some data may not be used, but I recommend leaving it untouched. It may be needed at some point.
      */
     public function run() : void{
-        BaseModule::insert([
-            ['name' => "Authentication"],
-            ['name' => "Account Management"],
-            ['name' => "Progress"],
-            ['name' => "Approval"],
-            ['name' => "Payment"],
-        ]);
+        BaseModule::create(['name' => "Authentication"]);
+        BaseModule::create(['name' => "Account Management"]);
+        BaseModule::create(['name' => "Progress"]);
+        BaseModule::create(['name' => "Approval"]);
+        BaseModule::create(['name' => "Payment"]);
     }
 }

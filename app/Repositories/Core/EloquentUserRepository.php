@@ -10,7 +10,7 @@ use App\Helpers\Core\RBACHelper;
 use App\Models\Core\BaseRequest;
 use App\Models\Core\User;
 use App\Models\Core\UserRequest;
-use Spatie\Permission\Models\Role;
+use App\Models\Core\Role;
 
 // Interface
 use App\Contracts\Core\UserRepositoryInterface;

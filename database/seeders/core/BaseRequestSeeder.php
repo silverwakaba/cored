@@ -4,6 +4,7 @@ namespace Database\Seeders\Core;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 use App\Models\Core\BaseRequest;
 use App\Models\Core\BaseModule;
@@ -23,7 +24,8 @@ class BaseRequestSeeder extends Seeder{
         $approvalModule = BaseModule::select(['id', 'name'])->where('name', 'Approval')->first();
         $paymentModule = BaseModule::select(['id', 'name'])->where('name', 'Payment')->first();
 
-        BaseRequest::insert([
+        // Prepare data array
+        $data = [
             // Authentication Module - Verification
             [
                 'base_modules_id'   => $authenticationModule->id,
@@ -1157,6 +1159,13 @@ class BaseRequestSeeder extends Seeder{
                 'base_modules_id'   => $paymentModule->id,
                 'name'              => "Payment Draft",
             ],
-        ]);
+        ];
+        
+        // Generate ULIDs for each record and insert
+        $dataWithIds = array_map(function($record) {
+            return array_merge(['id' => (string) Str::ulid()], $record);
+        }, $data);
+        
+        BaseRequest::insert($dataWithIds);
     }
 }

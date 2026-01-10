@@ -17,6 +17,10 @@ class User extends Authenticatable implements JWTSubject{
     /** @use HasFactory<\Database\Factories\Core\UserFactory> */
     use HasFactory, Notifiable, HasUlids, HasRoles;
 
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     /**
      * The attributes that are mass assignable.
      *

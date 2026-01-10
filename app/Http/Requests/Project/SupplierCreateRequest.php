@@ -21,17 +21,17 @@ class SupplierCreateRequest extends FormRequest{
     public function rules() : array{
         return [
             // Foreign keys
-            'base_qualification_id'     => ['required', 'integer', 'exists:base_requests,id'],
-            'base_business_entity_id'   => ['required', 'integer', 'exists:base_requests,id'],
+            'qualification'     => ['required', 'integer', 'exists:base_requests,id'],
+            'business_entity'   => ['required', 'integer', 'exists:base_requests,id'],
             
             // User data
-            'pic_name'                  => ['required:users_id', 'string', 'max:255'],
-            'pic_email'                 => ['required:users_id', 'email', 'unique:users,email'],
+            'pic_name'          => ['required:users_id', 'string', 'max:255'],
+            'pic_email'         => ['required:users_id', 'email', 'unique:users,email'],
             
             // Basic information
-            'code'                      => ['required', 'string', 'max:255', 'unique:supplier,code'],
-            'name'                      => ['required', 'string', 'max:255'],
-            'credit_day'                => ['required', 'integer', 'min:0'],
+            'code'              => ['required', 'string', 'max:255', 'unique:supplier,code'],
+            'name'              => ['required', 'string', 'max:255'],
+            'credit_day'        => ['required', 'integer', 'min:0'],
         ];
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration{
             $table->id();
             
             // Mostly nullable because suppliers can be created/imported from PMO without having a vendor portal user
-            // There should be an "Add Supplier" and "Bind Supplier" menu because of this
+            // There should be an "Add Supplier" (done) and "Bind Supplier" (done) menu because of this
             $table->ulid('users_id')->nullable(); $table->foreign('users_id')->references('id')->on('users');
             $table->foreignId('base_qualification_id')->nullable()->references('id')->on('base_requests');      // Base Module: Qualification
             $table->foreignId('base_business_entity_id')->nullable()->references('id')->on('base_requests');    // Base Module: Business Entity

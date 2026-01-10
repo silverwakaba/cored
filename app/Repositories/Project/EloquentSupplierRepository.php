@@ -34,7 +34,7 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
         return BaseRequest::select(['id'])->where([
             ['name', '=', 'Supplier Profile Completion'],
         ])->whereHas('baseModule', function($query){
-            $query->where('name', 'Account Management');
+            $query->where('name', '=', 'Account Management');
         })->first();
     }
 
@@ -160,10 +160,26 @@ class EloquentSupplierRepository extends BaseRepository implements SupplierRepos
     }
 
     // Assign user to supplier profile
-    public function assignUser(string $userId, int $supplierId){
+    public function assignUser(int $supplierId, string $userId){
         // Implementing db transaction
-        return DB::transaction(function() use($token, $supplierData, $userData){
-            // 
+        return DB::transaction(function() use($supplierId, $userId){
+            // Get supplier info
+            $datas = Supplier::where([
+                ['id', '=', $supplierId],
+                ['users_id', '=', null],
+            ])->first();
+
+            // Assign user
+            $user = $datas->update([
+                'users_id' => $userId,
+            ]);
+
+            // Refresh supplier with assigned user
+            $datas->refresh();
+            $datas->load(['user']);
+
+            // Return result
+            return $datas;
         });
     }
 }

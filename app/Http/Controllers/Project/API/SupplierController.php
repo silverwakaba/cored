@@ -11,6 +11,7 @@ use App\Helpers\Core\FileHelper;
 use App\Helpers\Core\GeneralHelper;
 
 // Request
+use App\Http\Requests\Project\SupplierAssignRequest;
 use App\Http\Requests\Project\SupplierCompleteProfileRequest;
 use App\Http\Requests\Project\SupplierCreateRequest;
 use App\Http\Requests\Project\SupplierUpdateRequest;
@@ -69,8 +70,8 @@ class SupplierController extends Controller{
                 // Supplier data
                 [
                     // Foreign keys
-                    'base_qualification_id'     => $request->base_qualification_id,     // 363: Kecil
-                    'base_business_entity_id'   => $request->base_business_entity_id,   // 265: PT
+                    'base_qualification_id'     => $request->qualification,     // 363: Kecil
+                    'base_business_entity_id'   => $request->business_entity,   // 265: PT
                     
                     // Basic information
                     'code'                      => $request->code,
@@ -85,6 +86,9 @@ class SupplierController extends Controller{
                     'password'  => GeneralHelper::randomPassword('120'), // Temporary password
                 ],
             );
+
+            // Send email to $request->pic_email
+            // TBA
 
             // Return response
             return GeneralHelper::jsonResponse([
@@ -114,6 +118,14 @@ class SupplierController extends Controller{
             // Continue variable
             $datas = $datas->find($id);
 
+            // Return error if supplier is not found or invalid
+            if(!$datas){
+                return GeneralHelper::jsonResponse([
+                    'status'    => 404,
+                    'message'   => 'Supplier not found or invalid.',
+                ]);
+            }
+
             // Return response
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
@@ -125,6 +137,17 @@ class SupplierController extends Controller{
     // Update
     public function update($id, Request $request){
         return GeneralHelper::safe(function() use($id, $request){
+            // Find supplier
+            $find = $this->repositoryInterface->onlySelect(['id'])->find($id);
+
+            // Return error if supplier is not found or invalid
+            if(!$find){
+                return GeneralHelper::jsonResponse([
+                    'status'    => 404,
+                    'message'   => 'Supplier not found or invalid.',
+                ]);
+            }
+            
             // Validate input
             $validated = GeneralHelper::validate($request->all(), (new SupplierUpdateRequest())->rules());
 
@@ -281,7 +304,43 @@ class SupplierController extends Controller{
             return GeneralHelper::jsonResponse([
                 'status'    => 200,
                 'data'      => $datas,
+                'message'   => 'Supplier profile completed successfully.',
             ]);
         }, ['status' => 409, 'message' => false]);
+    }
+
+    // Assign user to supplier profile
+    public function assignUser($id, Request $request){
+        // Find supplier
+        $find = $this->repositoryInterface->onlySelect(['id'])->find($id);
+
+        // Return error if supplier is not found or invalid
+        if(!$find){
+            return GeneralHelper::jsonResponse([
+                'status'    => 404,
+                'message'   => 'Supplier not found or invalid.',
+            ]);
+        }
+
+        // Validate input
+        $validated = GeneralHelper::validate($request->all(), (new SupplierAssignRequest())->rules());
+
+        // Stop if validation failed
+        if(!is_array($validated)){
+            return $validated;
+        }
+
+        // Complete user assignment
+        $datas = $this->repositoryInterface->assignUser($id, $request->user);
+
+        // Send email to $datas['user']['email']
+        // TBA
+        
+        // Return response
+        return GeneralHelper::jsonResponse([
+            'status'    => 200,
+            'data'      => $datas,
+            'message'   => 'User assigned to supplier successfully.',
+        ]);
     }
 }

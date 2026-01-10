@@ -8,7 +8,7 @@ use App\Http\Controllers\Project\API\SupplierController;
 // API routing project
 Route::prefix('/')->name('be.')->group(function(){
     // Project
-    Route::prefix('project')->name('project.')->middleware(['jwt.be'])->group(function(){
+    Route::prefix('project')->name('project.')->middleware(['jwt.be', 'role:Root|Admin|Moderator'])->group(function(){
         // Supplier
         Route::prefix('supplier')->name('supplier.')->controller(SupplierController::class)->group(function(){
             // Index
@@ -29,10 +29,13 @@ Route::prefix('/')->name('be.')->group(function(){
             Route::post('bulk-destroy', 'bulkDestroy')->name('bulk-destroy');
 
             // Supplier Profile Completion via token
-            Route::prefix('token')->name('profile-completion.')->withoutMiddleware(['jwt.be'])->group(function(){
+            Route::prefix('token')->name('profile-completion.')->withoutMiddleware(['jwt.be', 'role:Root|Admin|Moderator'])->group(function(){
                 Route::get('/{token}', 'getSupplierProfileCompletion')->name('show');
                 Route::post('/{token}', 'postSupplierProfileCompletion')->name('update');
             });
+
+            // Assign existing user to supplier profile
+            Route::post('assign-user/{id}', 'assignUser')->name('assign-user');
         });
     });
 });

@@ -7,14 +7,15 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration{
     public function up() : void{
         Schema::create('item_masters', function (Blueprint $table){
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('name');
             $table->text('description');
         });
 
         Schema::create('item_details', function (Blueprint $table){
-            $table->id();
-            $table->foreignId('item_masters_id')->references('id')->on('item_masters');
+            $table->ulid('id')->primary();
+            $table->ulid('item_masters_id');
+            $table->foreign('item_masters_id')->references('id')->on('item_masters');
             $table->string('name');
             $table->text('description');
         });

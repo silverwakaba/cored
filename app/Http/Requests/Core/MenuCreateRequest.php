@@ -31,11 +31,11 @@ class MenuCreateRequest extends FormRequest{
                 }
             ],
             'type'              => ['required', 'string', Rule::in(['h', 'p', 'c'])],
-            'parent'            => ['nullable', 'integer', 'exists:menus,id'],
+            'parent'            => ['nullable', 'string', 'exists:menus,id'],
             'authenticate'      => ['nullable', 'boolean'],
             'guest_only'        => ['nullable', 'boolean'],
             'position'          => ['nullable', 'string', Rule::in(['before', 'after'])],
-            'reference_id'      => ['nullable', 'integer', 'exists:menus,id'],
+            'reference_id'      => ['nullable', 'string', 'exists:menus,id'],
         ];
     }
 }

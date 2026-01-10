@@ -10,8 +10,9 @@ return new class extends Migration{
      */
     public function up() : void{
         Schema::create('user_requests', function (Blueprint $table){
-            $table->id();
-            $table->foreignId('base_requests_id')->references('id')->on('base_requests');
+            $table->ulid('id')->primary();
+            $table->ulid('base_requests_id');
+            $table->foreign('base_requests_id')->references('id')->on('base_requests');
             $table->ulid('users_id');
             $table->foreign('users_id')->references('id')->on('users');
             $table->string('token')->nullable();

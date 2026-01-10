@@ -20,7 +20,7 @@ class PermissionCreateRequest extends FormRequest{
      */
     public function rules() : array{
         return [
-            'name' => ['required', 'string', Rule::unique('permissions')->ignore(request()->id ?? 0)],
+            'name' => ['required', 'string', Rule::unique('permissions')->ignore(request()->id)],
         ];
     }
 }

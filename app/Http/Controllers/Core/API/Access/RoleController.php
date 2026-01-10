@@ -124,7 +124,7 @@ class RoleController extends Controller{
                 // Sync role to permission if permission is provided
                 if($request->permission){
                     // Prepare permissions
-                    $permissions = collect(\Spatie\Permission\Models\Permission::select('name')
+                    $permissions = collect(\App\Models\Core\Permission::select('name')
                         ->whereIn('name', \App\Helpers\Core\GeneralHelper::getType($request->permission))
                     ->get())->pluck('name');
 

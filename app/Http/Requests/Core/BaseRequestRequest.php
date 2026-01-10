@@ -19,7 +19,7 @@ class BaseRequestRequest extends FormRequest{
      */
     public function rules() : array{
         return [
-            'module'    => ['required', 'integer'],
+            'module'    => ['required', 'string', 'exists:base_modules,id'],
             'name'      => ['required', 'string'],
             'detail'    => ['nullable', 'json'],
         ];

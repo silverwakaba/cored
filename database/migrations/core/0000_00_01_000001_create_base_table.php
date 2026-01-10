@@ -11,22 +11,23 @@ return new class extends Migration{
     public function up() : void{
         // Boolean
         Schema::create('base_boolean', function (Blueprint $table){
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('text');
             $table->boolean('value')->unique();
         });
         
         // Module
         Schema::create('base_modules', function (Blueprint $table){
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('name');
             $table->boolean('is_active')->default(true);
         });
 
         // Request
         Schema::create('base_requests', function (Blueprint $table){
-            $table->id();
-            $table->foreignId('base_modules_id')->references('id')->on('base_modules');
+            $table->ulid('id')->primary();
+            $table->ulid('base_modules_id');
+            $table->foreign('base_modules_id')->references('id')->on('base_modules');
             $table->string('name');
             $table->json('detail')->nullable();
             $table->boolean('is_active')->default(true);

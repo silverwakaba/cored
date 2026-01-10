@@ -8,8 +8,9 @@ return new class extends Migration{
     public function up() : void{
         // Table for menu
         Schema::create('menus', function (Blueprint $table){
-            $table->id();
-            $table->foreignId('parent_id')->nullable()->constrained('menus')->onDelete('cascade');
+            $table->ulid('id')->primary();
+            $table->ulid('parent_id')->nullable();
+            $table->foreign('parent_id')->references('id')->on('menus')->onDelete('cascade');
             $table->string('name');
             $table->string('icon')->nullable();
             $table->string('route')->nullable();
@@ -21,22 +22,28 @@ return new class extends Migration{
 
         // Pivot table for menu-role relationship
         Schema::create('menu_roles', function (Blueprint $table){
-            $table->foreignId('menu_id')->constrained()->onDelete('cascade');
-            $table->foreignId('role_id')->constrained()->onDelete('cascade');
+            $table->ulid('menu_id');
+            $table->foreign('menu_id')->references('id')->on('menus')->onDelete('cascade');
+            $table->ulid('role_id');
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
             $table->primary(['menu_id', 'role_id']);
         });
 
         // Pivot table for menu-user includes (users who can see menu even without role)
         Schema::create('menu_user_includes', function (Blueprint $table){
-            $table->foreignId('menu_id')->constrained()->onDelete('cascade');
+            $table->ulid('menu_id');
+            $table->foreign('menu_id')->references('id')->on('menus')->onDelete('cascade');
             $table->ulid('user_id');
+            // Foreign key to users will be added in a later migration (after users table is created)
             $table->primary(['menu_id', 'user_id']);
         });
 
         // Pivot table for menu-user excludes (users who cannot see menu even with role)
         Schema::create('menu_user_excludes', function (Blueprint $table){
-            $table->foreignId('menu_id')->constrained()->onDelete('cascade');
+            $table->ulid('menu_id');
+            $table->foreign('menu_id')->references('id')->on('menus')->onDelete('cascade');
             $table->ulid('user_id');
+            // Foreign key to users will be added in a later migration (after users table is created)
             $table->primary(['menu_id', 'user_id']);
         });
     }

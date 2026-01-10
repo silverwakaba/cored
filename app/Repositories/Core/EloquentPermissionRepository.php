@@ -7,8 +7,8 @@ use App\Helpers\Core\GeneralHelper;
 
 // Model
 use App\Models\Core\User;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use App\Models\Core\Permission;
+use App\Models\Core\Role;
 
 // Interface
 use App\Contracts\Core\PermissionRepositoryInterface;

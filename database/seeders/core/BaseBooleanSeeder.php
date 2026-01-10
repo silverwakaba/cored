@@ -12,15 +12,14 @@ class BaseBooleanSeeder extends Seeder{
      * Run the database seeds.
      */
     public function run() : void{
-        BaseBoolean::insert([
-            [
-                'text'  => 'No',
-                'value' => false,
-            ],
-            [
-                'text'  => 'Yes',
-                'value' => true,
-            ],
+        BaseBoolean::create([
+            'text'  => 'No',
+            'value' => false,
+        ]);
+        
+        BaseBoolean::create([
+            'text'  => 'Yes',
+            'value' => true,
         ]);
     }
 }

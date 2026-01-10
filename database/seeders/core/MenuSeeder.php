@@ -119,7 +119,7 @@ class MenuSeeder extends Seeder{
             'route'     => 'fe.apps.base.request.index',
             'type'      => 'c',
             'parent_id' => $parentAppsBase->id,
-            'order'     => $childAppsBaseModule->id + 1,
+            'order'     => $childAppsBaseModule->order + 1,
         ]);
 
         /**
@@ -164,12 +164,15 @@ class MenuSeeder extends Seeder{
 
         /**
          * Assign roles to menu items
-        */
+         */
 
-        // App
-        $childMenu->roles()->attach([1, 2, 3]);
-        $parentAppsBase->roles()->attach([1, 2, 3]);
-        $parentAppsRBAC->roles()->attach([1, 2, 3]);
+        // App - Get roles by name since we're using ULID now
+        $roles = \App\Models\Core\Role::whereIn('name', ['Root', 'Admin', 'Moderator'])->get();
+        $roleIds = $roles->pluck('id')->toArray();
+        
+        $childMenu->roles()->attach($roleIds);
+        $parentAppsBase->roles()->attach($roleIds);
+        $parentAppsRBAC->roles()->attach($roleIds);
 
         /**
          * Exclude user from menu items regarding roles (inclusion have the similar application)
